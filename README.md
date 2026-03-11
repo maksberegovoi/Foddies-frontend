@@ -1,3 +1,10 @@
+## To run the project
+
+```bash
+npm install
+npm run dev
+```
+
 # React Router + shadcn/ui
 
 This is a template for a new React Router project with React, TypeScript, and shadcn/ui.
