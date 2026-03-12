@@ -35,7 +35,10 @@ export default defineConfig([
         "warn",
         { allowConstantExport: true },
       ],
-      "no-unused-vars": ["error", { varsIgnorePattern: "^[A-Z_]" }],
+      "no-unused-vars": [
+        "error",
+        { varsIgnorePattern: "^[A-Z_]", args: "none" },
+      ],
     },
   },
   prettierConfig,
