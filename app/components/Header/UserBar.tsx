@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { Link } from "react-router"
 import sprite from "../../assets/icons/sprite.svg"
+import { cn } from "../../lib/utils"
 
 type UserBarProps = {
   variant?: "dark" | "light"
@@ -32,9 +33,10 @@ export default function UserBar({ variant = "dark" }: UserBarProps) {
         </span>
 
         <svg
-          className={`h-3 w-3 transition-transform md:h-4 md:w-4 ${
-            open ? "rotate-180" : ""
-          }`}
+          className={cn(
+            "h-3 w-3 transition-transform md:h-4 md:w-4",
+            open && "rotate-180"
+          )}
         >
           <use href={`${sprite}#chevron-down`} />
         </svg>
@@ -42,11 +44,12 @@ export default function UserBar({ variant = "dark" }: UserBarProps) {
 
       {open && (
         <div
-          className={`absolute right-0 mt-3 w-[180px] rounded-xl border p-3 shadow-lg ${
+          className={cn(
+            "absolute right-0 mt-3 w-[180px] rounded-xl border p-3 shadow-lg",
             variant === "dark"
               ? "border-gray bg-dark text-white"
               : "border-gray bg-white text-dark"
-          }`}
+          )}
         >
           <Link to="/user/1" className="block py-2 text-sm hover:opacity-70">
             PROFILE

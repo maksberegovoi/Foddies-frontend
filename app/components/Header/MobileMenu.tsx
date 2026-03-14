@@ -1,5 +1,5 @@
 import { NavLink } from "react-router"
-import Logo from "./Logo"
+import Logo from "../Logo"
 import sprite from "../../assets/icons/sprite.svg"
 
 type MobileMenuProps = {

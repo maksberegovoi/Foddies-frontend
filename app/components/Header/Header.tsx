@@ -1,11 +1,12 @@
 import { useState } from "react"
 import { matchPath, useLocation } from "react-router"
-import Logo from "./Logo"
+import Logo from "../Logo"
 import Nav from "./Nav"
 import AuthBar from "./AuthBar"
 import UserBar from "./UserBar"
 import MobileMenu from "./MobileMenu"
 import sprite from "../../assets/icons/sprite.svg"
+import { cn } from "../../lib/utils"
 
 type HeaderProps = {
   isAuthenticated?: boolean
@@ -20,34 +21,36 @@ export default function Header({ isAuthenticated = false }: HeaderProps) {
   const variant = getHeaderVariant(pathname)
   const isHomePage = pathname === "/"
   const burgerId = variant === "dark" ? "burger-white" : "burger-black"
+  const showNav = isAuthenticated || isHomePage
+  const navBreakpoint = isAuthenticated ? "md:block" : "lg:block"
 
   return (
     <>
       <div
-        className={isHomePage ? "absolute inset-x-5 top-5 z-20" : "mx-5 mt-5"}
+        className={cn(
+          isHomePage ? "absolute inset-x-5 top-5 z-20" : "mx-5 mt-5"
+        )}
       >
         <header
-          className={
+          className={cn(
+            "w-full",
             isHomePage
-              ? "w-full px-5 py-4 text-white md:px-8 lg:px-[60px]"
-              : `w-full rounded-[30px] px-5 py-3 md:px-8 md:py-4 lg:px-[60px] ${
-                  variant === "dark"
-                    ? "bg-dark text-white"
-                    : "bg-white text-dark"
-                }`
-          }
+              ? "px-5 py-4 text-white md:px-8 lg:px-[60px]"
+              : "rounded-[30px] px-5 py-3 md:px-8 md:py-4 lg:px-[60px]",
+            !isHomePage &&
+              (variant === "dark" ? "bg-dark text-white" : "bg-white text-dark")
+          )}
         >
           <div className="relative flex items-center justify-between">
-            <Logo variant={variant} />
+            <Logo variant={variant === "dark" ? "white" : "black"} />
 
-            {isAuthenticated && (
-              <div className="absolute left-1/2 hidden -translate-x-1/2 md:block">
-                <Nav variant={variant} />
-              </div>
-            )}
-
-            {!isAuthenticated && isHomePage && (
-              <div className="absolute left-1/2 hidden -translate-x-1/2 lg:block">
+            {showNav && (
+              <div
+                className={cn(
+                  "absolute left-1/2 hidden -translate-x-1/2",
+                  navBreakpoint
+                )}
+              >
                 <Nav variant={variant} />
               </div>
             )}
