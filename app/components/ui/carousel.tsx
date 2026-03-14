@@ -189,11 +189,12 @@ const CarouselDots = React.forwardRef<
   React.HTMLAttributes<HTMLDivElement> & {
     dotClassName?: string
   }
->(({ className, dotClassName, ...props }) => {
+>(({ className, dotClassName, ...props }, ref) => {
   const { selectedIndex, scrollTo, api } = useCarousel()
 
   return (
     <div
+      ref={ref}
       className={cn(
         "embla__dots absolute z-50 mt-4 flex w-[calc(100vw-16px)] items-center justify-center gap-4",
         className
