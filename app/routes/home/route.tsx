@@ -186,11 +186,11 @@ export default function Home() {
                 <div className="rounded-[30px] border border-white/20 bg-white/20 px-3.5 py-2.5 text-xl leading-6 font-medium text-white">
                   {c.title}
                 </div>
-
-                <Link
-                  to={c.title.toLowerCase()}
-                  className="rounded-full border border-white/20 p-[13px]"
-                ></Link>
+                // link in link error
+                {/*<Link*/}
+                {/*  to={c.title.toLowerCase()}*/}
+                {/*  className="rounded-full border border-white/20 p-[13px]"*/}
+                {/*></Link>*/}
               </div>
             </Link>
           ))}
