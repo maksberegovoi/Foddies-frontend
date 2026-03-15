@@ -6,7 +6,7 @@ interface Category {
   title: string
 }
 
-// TODO Replace with real API call
+// TODO: Replace with real API call
 const mockFetchCategories = async (): Promise<Category[]> => [
   {
     id: 1,
@@ -73,27 +73,29 @@ export default function CategoriesSection() {
   }, [])
 
   const handleSelectCategory = (categoryId: number | null) => {
-    // TODO Implement fetch recipes by category logic here
+    // TODO: Implement fetch recipes by category logic here
     console.log("Selected category ID:", categoryId)
   }
 
   return (
-    <section className="flex flex-col gap-10 px-20">
-      <div className="flex max-w-[532px] flex-col gap-5">
-        <h2 className="text-[40px] leading-11 font-extrabold uppercase">
+    <section className="px-4 min-[768px]:px-8 min-[1440px]:px-20">
+      <div className="mx-auto max-w-85.75 min-[768px]:w-176 min-[768px]:max-w-none min-[1440px]:w-7xl">
+        {/* TODO: Replace with universal MainTitle component */}
+        <h2 className="mb-4 text-[28px] leading-[1.1] font-extrabold uppercase min-[768px]:mb-5 min-[768px]:text-[40px]">
           Categories
         </h2>
-        <p>
+        {/* TODO: Replace with universal Subtitle component */}
+        <p className="mb-8 text-sm text-gray min-[768px]:mb-10 min-[768px]:w-132.75 min-[768px]:text-base min-[768px]:text-light-dark">
           Discover a limitless world of culinary possibilities and enjoy
           exquisite recipes that combine taste, style and the warm atmosphere of
           the kitchen.
         </p>
-      </div>
 
-      <CategoryList
-        categories={categories}
-        onSelectCategory={handleSelectCategory}
-      />
+        <CategoryList
+          categories={categories}
+          onSelectCategory={handleSelectCategory}
+        />
+      </div>
     </section>
   )
 }

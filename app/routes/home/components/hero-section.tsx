@@ -15,7 +15,7 @@ export default function HeroSection() {
       <div className="mx-auto max-w-81.75 min-[768px]:w-169.5 min-[768px]:max-w-none min-[1440px]:w-218.75">
         <h1
           className={cn(
-            "mb-5 justify-start text-center text-[40px] leading-none font-extrabold text-white uppercase",
+            "mb-5 text-center text-[40px] leading-none font-extrabold text-white uppercase",
             "min-[768px]:mb-10 min-[768px]:text-[70px]",
             "min-[1440px]:text-[90px]"
           )}
@@ -35,7 +35,7 @@ export default function HeroSection() {
 
         <Button
           className={cn(
-            "item-center mx-auto mb-12 flex h-11 w-32.75 justify-center uppercase",
+            "mx-auto mb-12 flex h-11 w-32.75 items-center justify-center uppercase",
             "min-[768px]:mb-14.5 min-[768px]:h-14 min-[768px]:w-39.75 min-[768px]:text-base"
           )}
           variant="outlineWhite"

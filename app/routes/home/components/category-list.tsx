@@ -1,5 +1,4 @@
 import CategoryCard from "./category-card"
-import { useBreakpoints } from "~/hooks/useBreakpoints"
 
 interface CategoyListProps {
   categories: {
@@ -13,35 +12,40 @@ export default function CategoyList({
   categories,
   onSelectCategory,
 }: CategoyListProps) {
-  const { isMobile, isTablet } = useBreakpoints()
-  const GAP_PX = 20 // matches gap-5 (sm:gap-5) between category cards
-
   return (
-    <ul className="flex flex-wrap gap-4 sm:gap-5">
+    <ul className="grid grid-cols-1 gap-4 min-[768px]:grid-cols-2 min-[768px]:gap-5 min-[1440px]:grid-cols-4">
       {categories.map((c, idx) => (
         <CategoryCard
           key={c.id}
           title={c.title}
-          idx={idx}
+          backgroundImageUrl={`/category_${c.id}.jpg`}
+          size={getCardSize(idx)}
           onButtonClick={() => onSelectCategory(c.id)}
         />
       ))}
-
       <li
-        className="flex h-63 items-center justify-center rounded-[30px] bg-black sm:h-92"
-        style={{
-          width: isMobile
-            ? "100%"
-            : isTablet
-              ? `calc(50% - ${GAP_PX / 2}px)`
-              : `calc(27% - ${(3 * GAP_PX) / 4}px)`,
-        }}
+        className="flex h-63 cursor-pointer items-center justify-center rounded-[30px] bg-black min-[768px]:h-92"
         onClick={() => onSelectCategory(null)}
       >
-        <span className="text-xl leading-6 font-bold text-white uppercase">
+        <span className="text-base font-extrabold text-white uppercase min-[768px]:text-xl min-[768px]:leading-[1.2]">
           All Categories
         </span>
       </li>
     </ul>
   )
+}
+
+function getCardSize(idx: number): {
+  tablet: "full" | "normal"
+  desktop: "small" | "medium"
+} {
+  // Tablet: indices 2, 7 are full-width
+  // Desktop: indices 2,3,7,9 are medium (span 2), rest are small
+  const tabletFullWidth = [2, 7]
+  const desktopMedium = [2, 3, 7, 9]
+
+  return {
+    tablet: tabletFullWidth.includes(idx) ? "full" : "normal",
+    desktop: desktopMedium.includes(idx) ? "medium" : "small",
+  }
 }
