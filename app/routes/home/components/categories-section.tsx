@@ -81,7 +81,7 @@ export default function CategoriesSection() {
     <section className="px-4 min-[768px]:px-8 min-[1440px]:px-20">
       <div className="mx-auto max-w-85.75 min-[768px]:w-176 min-[768px]:max-w-none min-[1440px]:w-7xl">
         {/* TODO: Replace with universal MainTitle component */}
-        <h2 className="mb-4 text-[28px] leading-[1.1] font-extrabold uppercase min-[768px]:mb-5 min-[768px]:text-[40px]">
+        <h2 className="mb-4 text-[28px] leading-[1.1] font-extrabold text-dark uppercase min-[768px]:mb-5 min-[768px]:text-[40px]">
           Categories
         </h2>
         {/* TODO: Replace with universal Subtitle component */}

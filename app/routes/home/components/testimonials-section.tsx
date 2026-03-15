@@ -1,18 +1,26 @@
+import { useEffect, useState } from "react"
 import {
   CarouselDots,
   Carousel,
   CarouselContent,
   CarouselItem,
 } from "~/components/ui/carousel"
+import spriteUrl from "~/assets/icons/sprite.svg"
 
-export default function TestimonialsSection() {
-  const testimonials = [
+interface Testimonial {
+  text: string
+  author: string
+}
+
+// TODO: replace with real API call
+const fetchTestimonialsMock = async (): Promise<Testimonial[]> => {
+  return [
     {
       text: "Thank you for the wonderful recipe for feta pasta with tomatoes and basil. It turned out to be not only tasty, but also incredibly colorful. This has become a favorite family meal!",
       author: "Larry Pageim",
     },
     {
-      text: "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Impedit nam reiciendis explicabo iusto atque veritatis, vel similique facere non? Consectetur ab veniam repudiandae quae quos dolore possimus quam odio provident.",
+      text: "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Impedit nam reiciendis explicabo iusto atque veritatis, vel similique facere non? Consectetur ab veniam repudiandae quae quos dolore possimus quam odio provident.Lorem ipsum dolor sit, amet consectetur adipisicing elit. Impedit nam reiciendis explicabo iusto atque veritatis, vel similique facere non? Consectetur ab veniam repudiandae quae quos dolore possimus quam odio provident.",
       author: "Tony Stark",
     },
     {
@@ -20,38 +28,53 @@ export default function TestimonialsSection() {
       author: "Elon Musk",
     },
   ]
+}
+
+export default function TestimonialsSection() {
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([])
+
+  useEffect(() => {
+    const fetchTestimonials = async () => {
+      // TODO: Replace with real API call
+      const data = await fetchTestimonialsMock()
+      setTestimonials(data)
+    }
+    fetchTestimonials()
+  }, [])
 
   return (
-    <section className="mb-30 flex flex-col items-center">
-      <div className="flex h-108 max-w-206 flex-col">
-        <div className="flex flex-col items-center gap-4">
-          <span className="">What our customer say</span>
-          <h2 className="text-[40px] leading-11 font-extrabold uppercase">
-            Testimonials
-          </h2>
-        </div>
+    <section className="mb-33.5 px-4 min-[768px]:mb-39 min-[1440px]:mb-44">
+      <div className="mx-auto max-w-85.75 min-[768px]:w-176 min-[768px]:max-w-none min-[1440px]:w-205.5">
+        <span className="mb-4 block text-center text-sm font-medium text-light-dark min-[768px]:text-base">
+          What our customer say
+        </span>
+        <h2 className="mb-3 text-center text-[28px] leading-[1.1] font-extrabold text-dark uppercase min-[768px]:mb-0 min-[768px]:text-[40px]">
+          Testimonials
+        </h2>
 
-        <div></div>
+        <svg
+          className="mb-5 ml-2 h-8 w-10 fill-gray min-[768px]:mb-10 min-[768px]:ml-10 min-[768px]:h-12 min-[768px]:w-14.75"
+          aria-hidden="true"
+        >
+          <use href={`${spriteUrl}#quotes`} />
+        </svg>
 
-        <Carousel className="flex flex-1 flex-col">
-          <CarouselContent className="h-full">
+        <Carousel>
+          <CarouselContent>
             {testimonials.map((i, idx) => (
-              <CarouselItem className="flex" key={idx}>
-                <div className="mt-20 flex flex-col justify-between select-none">
-                  <span className="text-center text-2xl leading-9">
-                    {i.text}
-                  </span>
-
-                  <span className="text-center text-xl leading-6 font-extrabold uppercase">
-                    {i.author}
-                  </span>
-                </div>
+              <CarouselItem key={idx}>
+                <p className="mb-16 text-center text-lg leading-[1.3] font-medium text-dark min-[768px]:mb-20 min-[768px]:text-2xl">
+                  {i.text}
+                </p>
+                <span className="block text-center text-base font-extrabold text-dark uppercase min-[768px]:text-xl">
+                  {i.author}
+                </span>
               </CarouselItem>
             ))}
           </CarouselContent>
           <CarouselDots
-            className="relative mt-10 w-full gap-3"
-            dotClassName="size-4 p-0"
+            className="mt-10 w-full gap-2"
+            dotClassName="size-[14px] p-0 min-[768px]:size-4"
           />
         </Carousel>
       </div>
