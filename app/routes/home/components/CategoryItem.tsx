@@ -11,7 +11,7 @@ interface CategoryItemProps {
 const CategoryItem = ({ category, width }: CategoryItemProps) => {
   return (
     <Link
-      key={category.title}
+      key={category.name}
       to={`category/${category.id}`}
       className={
         "relative flex h-63 items-end overflow-hidden rounded-[30px] bg-dark p-6 sm:h-92"
@@ -26,7 +26,7 @@ const CategoryItem = ({ category, width }: CategoryItemProps) => {
       />
       <div className="relative flex gap-1">
         <div className="rounded-[30px] border border-white bg-white/20 px-3.5 py-2.5 text-xl leading-6 font-medium text-white lg:border-white/20">
-          {category.title}
+          {category.name}
         </div>
 
         <div className="rounded-full border border-white/20 p-[13px]">
