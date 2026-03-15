@@ -130,7 +130,7 @@
   }
   body {
     @apply bg-background text-foreground;
-    @apply tracking-[-2%];
+    @apply tracking-[-0.02619em];
   }
   html {
     @apply font-sans;
