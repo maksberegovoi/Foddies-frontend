@@ -7,9 +7,10 @@ import {
 
 export default [
   layout("./layout.tsx", [
-    index("routes/home/route.tsx"),
-
-    route("category/:id", "routes/temp.tsx", { id: "category-route" }),
+    route("/", "routes/home/route.tsx", [
+      index("routes/home/categories.tsx"),
+      route("category/:cid", "routes/home/category.tsx"),
+    ]),
   ]),
 
   route(".well-known/appspecific/com.chrome.devtools.json", "routes/temp.tsx", {
