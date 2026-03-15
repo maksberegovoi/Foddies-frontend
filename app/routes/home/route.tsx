@@ -4,7 +4,7 @@ import { cn } from "~/lib/utils"
 import HeroBig from "~/assets/images/hero_big.png"
 import HeroSmall from "~/assets/images/hero_small.png"
 import { Link } from "react-router"
-import { useMemo } from "react"
+import { useState, useMemo } from "react"
 import { useMediaQuery } from "@uidotdev/usehooks"
 import {
   Carousel,
@@ -12,8 +12,12 @@ import {
   CarouselDots,
   CarouselItem,
 } from "~/components/ui/carousel"
+import { SignInModal } from "~/components/modals/sign-in-modal"
+import { SignUpModal } from "~/components/modals/sign-up-modal"
 
 export default function Home() {
+  const [isSignInOpen, setIsSignInOpen] = useState(false)
+  const [isSignUpOpen, setIsSignUpOpen] = useState(false)
   const isMobile = useMediaQuery("only screen and (max-width : 768px)")
   const isTablet = useMediaQuery(
     "only screen and (min-width : 769px) and (max-width : 1280px)"
@@ -137,6 +141,7 @@ export default function Home() {
 
           <Button
             className="px-8 text-base font-medium uppercase"
+            onClick={() => setIsSignInOpen(true)}
             variant="outlineWhite"
           >
             Add recipe
@@ -246,6 +251,24 @@ export default function Home() {
           </Carousel>
         </div>
       </section>
+
+      <SignInModal
+        onOpenChange={setIsSignInOpen}
+        onSwitchToSignUp={() => {
+          setIsSignInOpen(false)
+          setIsSignUpOpen(true)
+        }}
+        open={isSignInOpen}
+      />
+
+      <SignUpModal
+        onOpenChange={setIsSignUpOpen}
+        onSwitchToSignIn={() => {
+          setIsSignUpOpen(false)
+          setIsSignInOpen(true)
+        }}
+        open={isSignUpOpen}
+      />
     </div>
   )
 }
