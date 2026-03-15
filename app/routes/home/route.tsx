@@ -6,7 +6,7 @@ import {
   CarouselItem,
   CarouselContent,
 } from "~/components/ui/carousel"
-import HeroSection from "./Hero"
+import HeroSection from "./components/Hero"
 import { testimonials } from "./mocks"
 import FIcon from "~/components/FIcon"
 import TestimonialItem from "./components/TestimonialItem"
