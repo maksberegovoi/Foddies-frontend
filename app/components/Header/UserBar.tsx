@@ -8,7 +8,7 @@ type UserBarProps = {
 }
 
 export default function UserBar({ variant = "dark" }: UserBarProps) {
-  const [open, setOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
 
   const user = {
     name: "Victoria",
@@ -20,7 +20,7 @@ export default function UserBar({ variant = "dark" }: UserBarProps) {
   return (
     <div className="relative">
       <button
-        onClick={() => setOpen(!open)}
+        onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 rounded-full bg-light-dark px-2 py-1 text-white md:px-3 md:py-2"
       >
         <img
@@ -35,14 +35,14 @@ export default function UserBar({ variant = "dark" }: UserBarProps) {
         <svg
           className={cn(
             "h-3 w-3 transition-transform md:h-4 md:w-4",
-            open && "rotate-180"
+            isOpen && "rotate-180"
           )}
         >
           <use href={`${sprite}#chevron-down`} />
         </svg>
       </button>
 
-      {open && (
+      {isOpen && (
         <div
           className={cn(
             "absolute right-0 mt-3 w-[180px] rounded-xl border p-3 shadow-lg",
