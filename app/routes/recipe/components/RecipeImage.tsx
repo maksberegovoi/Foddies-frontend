@@ -4,7 +4,7 @@ type RecipeImageProps = Pick<RecipeDetails, "image" | "title">
 
 export default function RecipeImage({ image, title }: RecipeImageProps) {
   return (
-    <div className="h-[calc(100vw-2rem)] max-h-79.5 w-full overflow-hidden rounded-[30px] xs:h-79.5 md:h-108.75 lg:h-114.5">
+    <div className="h-79.5 max-h-79.5 w-full overflow-hidden rounded-[30px] md:h-108.75 lg:h-114.5">
       <img
         className="h-full w-full object-cover"
         src={image.phone}

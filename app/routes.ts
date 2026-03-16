@@ -2,6 +2,7 @@ import {
   type RouteConfig,
   index,
   layout,
+  prefix,
   route,
 } from "@react-router/dev/routes"
 
@@ -12,7 +13,7 @@ export default [
       route("category/:cid", "routes/home/category.tsx"),
     ]),
 
-    route("recipe", "routes/recipe/route.tsx", [
+    ...prefix("recipe", [
       index("routes/recipe/index.tsx"),
       route("add", "routes/recipe/add.tsx"),
       route(":id", "routes/recipe/details.tsx"),
