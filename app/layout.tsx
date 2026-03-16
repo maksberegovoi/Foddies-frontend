@@ -4,7 +4,7 @@ import Footer from "./components/Footer/Footer"
 
 export default function Layout() {
   return (
-    <>
+    <div className="mx-auto w-full max-w-360">
       <Header />
 
       <main>
@@ -12,6 +12,6 @@ export default function Layout() {
       </main>
 
       <Footer />
-    </>
+    </div>
   )
 }
