@@ -22,7 +22,7 @@ export default function RecipeSummarySection({
         </li>
       </ul>
 
-      <p className="text-sm text-light-dark md:text-base">
+      <p className="text-sm font-medium text-light-dark md:text-base">
         {recipe.description}
       </p>
 
