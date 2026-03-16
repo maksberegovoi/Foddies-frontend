@@ -123,6 +123,9 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  --container-mobile: 23.4375rem;
+  --container-tablet: 48rem;
+  --container-desktop: 90rem;
 }
 
 @layer base {

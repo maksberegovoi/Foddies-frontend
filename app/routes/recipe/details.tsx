@@ -57,7 +57,7 @@ export default function Details({ loaderData }: Route.ComponentProps) {
   }
 
   return (
-    <div className="flex flex-col gap-8 px-4 md:gap-10 md:px-8 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-start lg:gap-8 lg:px-20">
+    <div className="flex w-full max-w-mobile flex-col gap-8 px-4 md:max-w-tablet md:gap-10 md:px-8 lg:grid lg:max-w-desktop lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-start lg:gap-8 lg:px-20 mx-auto">
       <div>
         <RecipeImage image={recipe.image} title={recipe.title} />
       </div>

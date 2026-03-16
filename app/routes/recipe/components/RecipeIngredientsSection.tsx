@@ -16,20 +16,20 @@ export default function RecipeIngredientsSection({
           return (
             <li key={ingredient.name}>
               <div className="flex items-center gap-2.5 p-2.5">
-                <div className="flex size-14 shrink-0 items-center justify-center rounded-lg border border-gray p-2">
+                <div className="flex shrink-0 items-center justify-center rounded-lg border border-gray p-2.25 md:p-3.5">
                   <img
                     src={ingredient.imageURL}
                     alt={ingredient.name}
-                    className="max-h-79.5 max-w-full object-contain md:max-h-100"
+                    className="w-13.75 md:w-15"
                   />
                 </div>
 
                 <div className="min-w-0">
-                  <p className="text-sm text-dark md:text-base">
+                  <p className="text-sm font-medium text-dark md:text-base">
                     {ingredient.name}
                   </p>
                   <p
-                    className="truncate text-sm text-gray md:text-base"
+                    className="truncate text-sm font-medium text-gray md:text-base"
                     title={ingredient.measure}
                   >
                     {ingredient.measure}
