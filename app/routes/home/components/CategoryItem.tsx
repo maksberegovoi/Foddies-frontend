@@ -1,7 +1,7 @@
 import { Link } from "react-router"
 
 import FIcon from "~/components/FIcon"
-import type { Category } from "../interfaces/category.interfaces"
+import type { Category } from "../../../types/home/category.interfaces"
 
 interface CategoryItemProps {
   category: Category

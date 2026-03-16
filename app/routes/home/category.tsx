@@ -21,7 +21,7 @@ import {
 import { categories } from "./mocks"
 import FIcon from "~/components/FIcon"
 import type { Route } from "./+types/category"
-import RecipeItem from "./components/RecipeItem"
+import RecipeItem from "~/components/RecipeItem"
 
 const ITEMS_PER_PAGE = 6
 
