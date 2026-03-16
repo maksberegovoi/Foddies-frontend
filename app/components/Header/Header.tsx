@@ -9,20 +9,24 @@ import sprite from "../../assets/icons/sprite.svg"
 import { cn } from "../../lib/utils"
 
 type HeaderProps = {
-  isAuthenticated?: boolean
+  isAuth?: boolean
 }
 
 type HeaderVariant = "dark" | "light"
 
-export default function Header({ isAuthenticated = false }: HeaderProps) {
+export default function Header({ isAuth = false }: HeaderProps) {
   const { pathname } = useLocation()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
-  const variant = getHeaderVariant(pathname)
   const isHomePage = pathname === "/"
-  const burgerId = variant === "dark" ? "burger-white" : "burger-black"
-  const showNav = isAuthenticated || isHomePage
-  const navBreakpoint = isAuthenticated ? "md:block" : "lg:block"
+
+  const variant: HeaderVariant =
+    isHomePage ||
+    (!matchPath("/recipe/add", pathname) &&
+      !matchPath("/recipe/:id", pathname) &&
+      !matchPath("/user/:id", pathname))
+      ? "dark"
+      : "light"
 
   return (
     <>
@@ -44,11 +48,11 @@ export default function Header({ isAuthenticated = false }: HeaderProps) {
           <div className="relative flex items-center justify-between">
             <Logo variant={variant === "dark" ? "white" : "black"} />
 
-            {showNav && (
+            {(isAuth || isHomePage) && (
               <div
                 className={cn(
                   "absolute left-1/2 hidden -translate-x-1/2",
-                  navBreakpoint
+                  isAuth ? "md:block" : "lg:block"
                 )}
               >
                 <Nav variant={variant} />
@@ -56,17 +60,21 @@ export default function Header({ isAuthenticated = false }: HeaderProps) {
             )}
 
             <div className="flex items-center gap-3">
-              {isAuthenticated ? <UserBar variant={variant} /> : <AuthBar />}
+              {isAuth ? <UserBar variant={variant} /> : <AuthBar />}
 
-              {isAuthenticated && (
+              {isAuth && (
                 <button
                   type="button"
                   onClick={() => setIsMenuOpen(true)}
-                  className="md:hidden"
+                  className="cursor-pointer md:hidden"
                   aria-label="Open menu"
                 >
                   <svg className="h-6 w-6">
-                    <use href={`${sprite}#${burgerId}`} />
+                    <use
+                      href={`${sprite}#${
+                        variant === "dark" ? "burger-white" : "burger-black"
+                      }`}
+                    />
                   </svg>
                 </button>
               )}
@@ -78,12 +86,4 @@ export default function Header({ isAuthenticated = false }: HeaderProps) {
       <MobileMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
     </>
   )
-}
-
-function getHeaderVariant(pathname: string): HeaderVariant {
-  if (pathname === "/") return "dark"
-  if (matchPath("/recipe/add", pathname)) return "light"
-  if (matchPath("/recipe/:id", pathname)) return "light"
-  if (matchPath("/user/:id", pathname)) return "light"
-  return "dark"
 }
