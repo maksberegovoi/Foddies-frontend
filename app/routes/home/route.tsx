@@ -1,8 +1,5 @@
-import { useState } from "react"
 import { Outlet } from "react-router"
 
-import { SignInModal } from "~/components/modals/sign-in-modal"
-import { SignUpModal } from "~/components/modals/sign-up-modal"
 import FIcon from "~/components/FIcon"
 import {
   Carousel,
@@ -16,17 +13,14 @@ import TestimonialItem from "./components/TestimonialItem"
 import { testimonials } from "./mocks"
 
 export default function Home() {
-  const [isSignInOpen, setIsSignInOpen] = useState(false)
-  const [isSignUpOpen, setIsSignUpOpen] = useState(false)
-
   return (
     <div className="flex min-h-svh flex-col gap-16 md:gap-25 lg:gap-30">
-      <HeroSection onAddRecipe={() => setIsSignInOpen(true)} />
+      <HeroSection />
 
       <Outlet />
 
       <section className="mb-30 flex flex-col items-center">
-        <div className="relative mx-4 flex h-[394px] max-w-206 flex-col md:mx-8 md:h-108 lg:mx-0">
+        <div className="relative mx-4 flex h-98.5 max-w-206 flex-col md:mx-8 md:h-108 lg:mx-0">
           <div className="flex flex-col items-center gap-4">
             <span className="text-sm font-medium md:text-base">
               What our customer say
@@ -38,7 +32,7 @@ export default function Home() {
 
           <FIcon
             iconName="quotes"
-            className="absolute top-20 left-2 h-8 w-10 text-gray md:top-19 md:left-10 md:h-12 md:w-[59px]"
+            className="absolute top-20 left-2 h-8 w-10 text-gray md:top-19 md:left-10 md:h-12 md:w-14.75"
           />
 
           <Carousel className="flex flex-1 flex-col">
@@ -57,24 +51,6 @@ export default function Home() {
           </Carousel>
         </div>
       </section>
-
-      <SignInModal
-        onOpenChange={setIsSignInOpen}
-        onSwitchToSignUp={() => {
-          setIsSignInOpen(false)
-          setIsSignUpOpen(true)
-        }}
-        open={isSignInOpen}
-      />
-
-      <SignUpModal
-        onOpenChange={setIsSignUpOpen}
-        onSwitchToSignIn={() => {
-          setIsSignUpOpen(false)
-          setIsSignInOpen(true)
-        }}
-        open={isSignUpOpen}
-      />
     </div>
   )
 }

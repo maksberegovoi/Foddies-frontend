@@ -1,3 +1,4 @@
+import FIcon from "~/components/FIcon"
 import { Button } from "~/components/ui/button"
 import {
   Dialog,
@@ -6,7 +7,6 @@ import {
   DialogDescription,
   DialogTitle,
 } from "~/components/ui/dialog"
-import { CloseIcon } from "~/components/ui/modal-icons"
 
 type LogOutModalProps = {
   isLoading?: boolean
@@ -30,7 +30,7 @@ function LogOutModal({
             className="absolute top-5 right-5 inline-flex size-6 items-center justify-center text-dark transition-opacity hover:opacity-70"
             type="button"
           >
-            <CloseIcon className="size-6" />
+            <FIcon className="size-6" iconName="close-x" />
           </button>
         </DialogClose>
 
@@ -38,7 +38,7 @@ function LogOutModal({
           <DialogTitle className="text-center">
             ARE YOU LOGGING OUT?
           </DialogTitle>
-          <DialogDescription className="text-base leading-6 text-[#1A1A1A]">
+          <DialogDescription className="text-base leading-6 text-light-dark">
             You can always log back in at my time.
           </DialogDescription>
         </div>
@@ -55,7 +55,7 @@ function LogOutModal({
 
           <DialogClose>
             <Button
-              className="h-14 rounded-[30px] border-[#1A1A1A] bg-white text-base leading-6 font-bold tracking-[-0.02em] text-dark hover:bg-muted"
+              className="h-14 rounded-[30px] border-dark bg-white text-base leading-6 font-bold tracking-[-0.02em] text-dark hover:bg-muted"
               type="button"
               variant="outlineBlack"
             >

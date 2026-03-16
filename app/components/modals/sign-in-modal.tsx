@@ -1,5 +1,7 @@
-import * as React from "react"
+import { useState } from "react"
+import { useFormik } from "formik"
 
+import FIcon from "~/components/FIcon"
 import { Button } from "~/components/ui/button"
 import {
   Dialog,
@@ -8,7 +10,6 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog"
 import { Input } from "~/components/ui/input"
-import { CloseIcon, EyeIcon, EyeOffIcon } from "~/components/ui/modal-icons"
 
 type SignInValues = {
   email: string
@@ -24,6 +25,9 @@ type SignInModalProps = {
   open?: boolean
 }
 
+const inputClassName =
+  "h-14 rounded-[30px] border-gray px-[18px] py-4 text-base leading-6 tracking-[-0.02em] placeholder:text-gray focus-visible:border-dark focus-visible:ring-0 md:text-base"
+
 function SignInModal({
   errorMessage,
   isLoading = false,
@@ -32,26 +36,30 @@ function SignInModal({
   onSwitchToSignUp,
   open = false,
 }: SignInModalProps) {
-  const [showPassword, setShowPassword] = React.useState(false)
-  const [values, setValues] = React.useState<SignInValues>({
-    email: "",
-    password: "",
+  const [showPassword, setShowPassword] = useState(false)
+  const formik = useFormik<SignInValues>({
+    initialValues: {
+      email: "",
+      password: "",
+    },
+    onSubmit: async (values) => {
+      await onSubmit?.(values)
+    },
   })
-  const isFilled = values.email.trim() !== "" && values.password.trim() !== ""
+  const { handleBlur, handleChange, handleSubmit, resetForm, values } = formik
 
-  const handleChange =
-    (field: keyof SignInValues) =>
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      setValues((current) => ({ ...current, [field]: event.target.value }))
+  const isFilled = values.email.trim() !== "" && values.password.trim() !== ""
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (!nextOpen) {
+      resetForm()
+      setShowPassword(false)
     }
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    await onSubmit?.(values)
+    onOpenChange?.(nextOpen)
   }
 
   return (
-    <Dialog onOpenChange={onOpenChange} open={open}>
+    <Dialog onOpenChange={handleOpenChange} open={open}>
       <DialogContent className="gap-10">
         <DialogClose>
           <button
@@ -59,7 +67,7 @@ function SignInModal({
             className="absolute top-5 right-5 inline-flex size-6 items-center justify-center text-dark transition-opacity hover:opacity-70"
             type="button"
           >
-            <CloseIcon className="size-6" />
+            <FIcon className="size-6" iconName="close-x" />
           </button>
         </DialogClose>
 
@@ -70,8 +78,10 @@ function SignInModal({
             <div className="flex flex-col gap-[14px]">
               <Input
                 aria-label="Email"
-                className="h-14 rounded-[30px] border-[#BFBEBE] px-[18px] py-4 text-base leading-6 tracking-[-0.02em] placeholder:text-[#BFBEBE] focus-visible:border-[#050505] focus-visible:ring-0"
-                onChange={handleChange("email")}
+                className={inputClassName}
+                name="email"
+                onBlur={handleBlur}
+                onChange={handleChange}
                 placeholder="Email*"
                 type="email"
                 value={values.email}
@@ -80,8 +90,10 @@ function SignInModal({
               <div className="relative">
                 <Input
                   aria-label="Password"
-                  className="h-14 rounded-[30px] border-[#BFBEBE] px-[18px] py-4 pr-12 text-base leading-6 tracking-[-0.02em] placeholder:text-[#BFBEBE] focus-visible:border-[#050505] focus-visible:ring-0"
-                  onChange={handleChange("password")}
+                  className={`${inputClassName} pr-12`}
+                  name="password"
+                  onBlur={handleBlur}
+                  onChange={handleChange}
                   placeholder="Password"
                   type={showPassword ? "text" : "password"}
                   value={values.password}
@@ -95,11 +107,10 @@ function SignInModal({
                     onClick={() => setShowPassword((current) => !current)}
                     type="button"
                   >
-                    {showPassword ? (
-                      <EyeIcon className="size-5" />
-                    ) : (
-                      <EyeOffIcon className="size-5" />
-                    )}
+                    <FIcon
+                      className="size-5"
+                      iconName={showPassword ? "eye" : "eye-off"}
+                    />
                   </button>
                 ) : null}
               </div>
@@ -111,18 +122,16 @@ function SignInModal({
               className={`h-14 rounded-[30px] text-base leading-6 font-bold tracking-[-0.02em] text-white ${
                 isFilled
                   ? "bg-dark hover:bg-light-dark"
-                  : "bg-[#BFBEBE] hover:bg-[#BFBEBE]"
-              } disabled:bg-[#BFBEBE]`}
-              disabled={isLoading}
+                  : "bg-gray hover:bg-gray"
+              } disabled:bg-gray`}
+              disabled={isLoading || !isFilled}
               type="submit"
             >
               {isLoading ? "SIGNING IN..." : "SIGN IN"}
             </Button>
 
             <div className="flex items-center justify-center gap-2 text-center text-sm leading-[18px] font-medium tracking-[-0.02em]">
-              <span className="text-[#BFBEBE]">
-                Don&apos;t have an account?
-              </span>
+              <span className="text-gray">Don&apos;t have an account?</span>
               <button
                 className="text-dark transition-opacity hover:opacity-70"
                 onClick={onSwitchToSignUp}
