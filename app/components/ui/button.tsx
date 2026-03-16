@@ -14,7 +14,7 @@ const buttonVariants = cva(
         outlineBlack:
           "border-black bg-white aria-expanded:bg-muted aria-expanded:text-foreground",
         outlineLightBlack:
-          "border-gray bg-white text-light-dark hover:border-dark hover:bg-dark hover:text-white aria-expanded:bg-muted aria-expanded:text-foreground",
+          "border-light-black bg-white aria-expanded:bg-muted aria-expanded:text-foreground",
         outlineGray: "border-gray bg-white",
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80 aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",

@@ -1,4 +1,4 @@
-import type { Route } from "./+types/Details"
+import type { Route } from "./+types/details"
 import { Button } from "~/components/ui/button"
 import PopularRecipesSection from "./components/PopularRecipesSection"
 import RecipeImage from "./components/RecipeImage"
@@ -69,7 +69,7 @@ export default function Details({ loaderData }: Route.ComponentProps) {
 
         <Button
           className="self-start"
-          variant="outlineLightBlack"
+          variant="outlineGray"
           onClick={onAddToFavorites}
         >
           ADD TO FAVORITES

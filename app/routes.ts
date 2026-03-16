@@ -12,10 +12,10 @@ export default [
       route("category/:cid", "routes/home/category.tsx"),
     ]),
 
-    route("recipe", "routes/recipe/Route.tsx", [
-      index("routes/recipe/Index.tsx"),
-      route("add", "routes/recipe/Add.tsx"),
-      route(":id", "routes/recipe/Details.tsx"),
+    route("recipe", "routes/recipe/route.tsx", [
+      index("routes/recipe/index.tsx"),
+      route("add", "routes/recipe/add.tsx"),
+      route(":id", "routes/recipe/details.tsx"),
     ]),
   ]),
 
