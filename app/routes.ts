@@ -11,6 +11,12 @@ export default [
       index("routes/home/categories.tsx"),
       route("category/:cid", "routes/home/category.tsx"),
     ]),
+
+    route("recipe", "routes/recipe/Route.tsx", [
+      index("routes/recipe/Index.tsx"),
+      route("add", "routes/recipe/Add.tsx"),
+      route(":id", "routes/recipe/Details.tsx"),
+    ]),
   ]),
 
   route(".well-known/appspecific/com.chrome.devtools.json", "routes/temp.tsx", {

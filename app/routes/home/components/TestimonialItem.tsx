@@ -1,4 +1,4 @@
-import type { Testimonial } from "../interfaces"
+import type { Testimonial } from "../../../types/home"
 
 type TestimonialItemProps = {
   item: Testimonial
