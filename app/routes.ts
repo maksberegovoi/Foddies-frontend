@@ -18,6 +18,8 @@ export default [
       route("add", "routes/recipe/add.tsx"),
       route(":id", "routes/recipe/details.tsx"),
     ]),
+
+    route("user/:id", "routes/users/route.tsx"),
   ]),
 
   route(".well-known/appspecific/com.chrome.devtools.json", "routes/temp.tsx", {
