@@ -7,9 +7,14 @@ import { defineConfig, globalIgnores } from "eslint/config"
 import tseslint from "typescript-eslint"
 
 export default defineConfig([
-  globalIgnores(["dist", "node_modules", "app/api/generated/**"]),
+  globalIgnores([
+    ".react-router",
+    "build",
+    "dist",
+    "node_modules",
+    "app/api/generated/**",
+  ]),
   tseslint.configs.base,
-
   {
     files: ["**/*.{js,jsx,ts,tsx}"],
     plugins: {

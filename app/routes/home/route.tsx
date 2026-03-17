@@ -1,15 +1,16 @@
 import { Outlet } from "react-router"
 
+import FIcon from "~/components/FIcon"
 import {
   Carousel,
+  CarouselContent,
   CarouselDots,
   CarouselItem,
-  CarouselContent,
 } from "~/components/ui/carousel"
+
 import HeroSection from "./components/Hero"
-import { testimonials } from "./mocks"
-import FIcon from "~/components/FIcon"
 import TestimonialItem from "./components/TestimonialItem"
+import { testimonials } from "./mocks"
 
 export default function Home() {
   return (
@@ -19,7 +20,7 @@ export default function Home() {
       <Outlet />
 
       <section className="mb-30 flex flex-col items-center">
-        <div className="relative mx-4 flex h-[394px] max-w-206 flex-col md:mx-8 md:h-108 lg:mx-0">
+        <div className="relative mx-4 flex h-98.5 max-w-206 flex-col md:mx-8 md:h-108 lg:mx-0">
           <div className="flex flex-col items-center gap-4">
             <span className="text-sm font-medium md:text-base">
               What our customer say
@@ -31,14 +32,14 @@ export default function Home() {
 
           <FIcon
             iconName="quotes"
-            className="absolute top-20 left-2 h-8 w-10 text-gray md:top-19 md:left-10 md:h-12 md:w-[59px]"
+            className="absolute top-20 left-2 h-8 w-10 text-gray md:top-19 md:left-10 md:h-12 md:w-14.75"
           />
 
           <Carousel className="flex flex-1 flex-col">
             <CarouselContent className="h-full">
-              {testimonials.map((i, idx) => (
+              {testimonials.map((item, idx) => (
                 <CarouselItem className="flex" key={idx}>
-                  <TestimonialItem item={i} />
+                  <TestimonialItem item={item} />
                 </CarouselItem>
               ))}
             </CarouselContent>
