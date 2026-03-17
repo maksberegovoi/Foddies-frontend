@@ -22,6 +22,9 @@ export default [
     route("user/:id", "routes/users/route.tsx"),
   ]),
 
+  // remove later
+  route("test-path", "routes/test/route.tsx"),
+
   route(".well-known/appspecific/com.chrome.devtools.json", "routes/temp.tsx", {
     id: "chrome-devtools-fix",
   }),
