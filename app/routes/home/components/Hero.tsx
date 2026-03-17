@@ -1,5 +1,8 @@
+import type { HTMLAttributes } from "react"
+
 import { useMediaQuery } from "@uidotdev/usehooks"
 
+import { useModal } from "~/components/modals/modal-context"
 import { cn } from "~/lib/utils"
 import { Button } from "~/components/ui/button"
 import HeroBig from "~/assets/images/hero_big.png"
@@ -7,10 +10,7 @@ import HeroSmall from "~/assets/images/hero_small.png"
 
 const HeroSection = () => {
   const isMobile = useMediaQuery("only screen and (max-width : 768px)")
-
-  const handleAddRecepie = () => {
-    // TO DO: add logic
-  }
+  const { openSignIn } = useModal()
 
   return (
     <div
@@ -39,7 +39,7 @@ const HeroSection = () => {
 
         <Button
           variant="outlineWhite"
-          onClick={handleAddRecepie}
+          onClick={openSignIn}
           className="px-8 text-base font-bold uppercase"
         >
           <span>Add recipe</span>
@@ -62,7 +62,7 @@ const HeroSection = () => {
   )
 }
 
-type HeroLineProps = React.HTMLAttributes<HTMLDivElement>
+type HeroLineProps = HTMLAttributes<HTMLDivElement>
 
 const HeroLine = ({ className, ...props }: HeroLineProps) => {
   return (
