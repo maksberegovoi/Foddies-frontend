@@ -1,11 +1,15 @@
 import { Outlet } from "react-router"
 
+import { ModalProvider } from "~/components/modals/modal-provider"
+
 export default function Layout() {
   return (
-    <div className="mx-auto w-full max-w-360">
-      <header></header>
+    <ModalProvider>
+      <div className="mx-auto w-full max-w-360">
+        <header></header>
 
-      <Outlet />
-    </div>
+        <Outlet />
+      </div>
+    </ModalProvider>
   )
 }
