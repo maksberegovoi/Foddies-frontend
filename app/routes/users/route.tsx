@@ -4,6 +4,7 @@ import { cn } from "~/lib/utils"
 import PathInfo from "~/components/PathInfo"
 import MainTitle from "~/components/MainTitle"
 import Subtitle from "~/components/Subtitle"
+import { Tabs, TabsContent } from "~/components/ui/tabs"
 
 import UserInfo from "./components/UserInfo"
 import TabsList from "./components/TabsList"
@@ -36,8 +37,25 @@ export default function UserPage() {
 
           {/* Content Area */}
           <div className="flex w-full flex-1 flex-col gap-10">
-            <TabsList />
-            <ListItems />
+            <Tabs
+              defaultValue="my-recipes"
+              className="flex w-full flex-col gap-10"
+            >
+              <TabsList />
+
+              <TabsContent value="my-recipes" className="p-0 outline-none">
+                <ListItems />
+              </TabsContent>
+              <TabsContent value="my-favorites" className="p-0 outline-none">
+                <ListItems />
+              </TabsContent>
+              <TabsContent value="followers" className="p-0 outline-none">
+                <ListItems />
+              </TabsContent>
+              <TabsContent value="following" className="p-0 outline-none">
+                <ListItems />
+              </TabsContent>
+            </Tabs>
 
             {/* Pagination Placeholder */}
             <div className="mt-10 flex justify-center">
