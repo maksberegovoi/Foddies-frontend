@@ -2,6 +2,7 @@ import { Button, buttonVariants } from "~/components/ui/button"
 import type { Recipe } from "~/types/home"
 
 import FIcon from "~/components/FIcon"
+import FavoriteRecipeToggle from "~/components/FavoriteRecipeToggle"
 import { Link } from "react-router"
 import { cn } from "~/lib/utils"
 
@@ -10,10 +11,6 @@ type RecipeItemProps = {
 }
 
 const RecipeItem = ({ item }: RecipeItemProps) => {
-  const handleAddToFav = () => {
-    // TODO: Add logic
-  }
-
   return (
     <div className="flex flex-col gap-4">
       <img
@@ -40,9 +37,21 @@ const RecipeItem = ({ item }: RecipeItemProps) => {
         </div>
 
         <div className="flex gap-1">
-          <Button size="icon-lg" variant="outlineGray" onClick={handleAddToFav}>
-            <FIcon className="size-4.5" iconName="heart" />
-          </Button>
+          <FavoriteRecipeToggle recipe={item}>
+            {({ isFavorite, isMutating, toggleFavorite }) => (
+              <Button
+                size="icon-lg"
+                variant={isFavorite ? "default" : "outlineGray"}
+                onClick={toggleFavorite}
+                disabled={isMutating}
+                aria-label={
+                  isFavorite ? "Remove from favorites" : "Add to favorites"
+                }
+              >
+                <FIcon className="size-4.5" iconName="heart" />
+              </Button>
+            )}
+          </FavoriteRecipeToggle>
 
           <Link
             to={`/recipe/${item.id}`}

@@ -1,9 +1,8 @@
+import type { RecipeDto } from "~/api/generated/model"
 import { Badge } from "~/components/ui/badge"
 
-import type { RecipeDetails } from "../types"
-
 type RecipeSummarySectionProps = {
-  recipe: RecipeDetails
+  recipe: RecipeDto
 }
 
 export default function RecipeSummarySection({

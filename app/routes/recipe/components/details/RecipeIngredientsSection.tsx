@@ -1,4 +1,4 @@
-import type { RecipeIngredient } from "../types"
+import type { RecipeIngredient } from "../../types"
 
 type RecipeIngredientsSectionProps = {
   ingredients: RecipeIngredient[]

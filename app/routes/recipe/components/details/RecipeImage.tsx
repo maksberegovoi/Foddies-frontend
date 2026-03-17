@@ -1,4 +1,4 @@
-import type { RecipeDetails } from "../types"
+import type { RecipeDetails } from "../../types"
 
 type RecipeImageProps = Pick<RecipeDetails, "image" | "title">
 
