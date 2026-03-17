@@ -1,5 +1,5 @@
 import { Button, buttonVariants } from "~/components/ui/button"
-import type { Recipe } from "../interfaces"
+import type { Recipe } from "~/types/home"
 
 import FIcon from "~/components/FIcon"
 import { Link } from "react-router"
@@ -16,7 +16,11 @@ const RecipeItem = ({ item }: RecipeItemProps) => {
 
   return (
     <div className="flex flex-col gap-4">
-      <img src={item.image.thumbnail} alt={`${item.title} Image`} />
+      <img
+        className="rounded-[30px]"
+        src={item.image.tablet}
+        alt={`${item.title} Image`}
+      />
 
       <div className="flex flex-col gap-2">
         <h4 className="text-xl leading-6 font-extrabold uppercase">
@@ -27,15 +31,11 @@ const RecipeItem = ({ item }: RecipeItemProps) => {
 
       <div className="flex justify-between">
         <div className="flex items-center gap-2">
-          {item.ownerAvatarURL ? (
-            <img
-              src={item.ownerAvatarURL}
-              alt="Owner Avatar"
-              className="size-10 rounded-full"
-            />
-          ) : (
-            <div className="size-10 rounded-full bg-gray" />
-          )}
+          <img
+            src={item.ownerAvatarURL || "/fallback_ava.png"}
+            alt="Owner Avatar"
+            className="size-10 rounded-full"
+          />
           <span className="font-semibold">{item.ownerName}</span>
         </div>
 
@@ -45,7 +45,7 @@ const RecipeItem = ({ item }: RecipeItemProps) => {
           </Button>
 
           <Link
-            to={`recipe/${item.id}`}
+            to={`/recipe/${item.id}`}
             className={cn(
               buttonVariants({
                 variant: "outlineGray",

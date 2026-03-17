@@ -1,4 +1,4 @@
-import type { Category, Recipe } from "../interfaces/category.interfaces"
+import type { Category, Recipe } from "../../../types/home/category.interfaces"
 
 const recipes: Recipe[] = [
   {
