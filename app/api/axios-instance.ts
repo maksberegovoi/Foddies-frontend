@@ -1,8 +1,7 @@
 import axios, { type AxiosRequestConfig, AxiosError } from "axios"
 
-// Твой базовый URL бэкенда
 export const AXIOS_INSTANCE = axios.create({
-  baseURL: import.meta.env.VITE_BASE, // замени на свой
+  baseURL: import.meta.env.VITE_BASE_API_URL,
   withCredentials: true,
 })
 
