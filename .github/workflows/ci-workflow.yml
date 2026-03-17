@@ -34,8 +34,15 @@ jobs:
       - name: Format
         run: npm run format:check
 
+      - name: Generate api types
+        run: |
+          echo "💡 Hint: if this fails try to check the 'target' field in 'orval.config.cjs' there must be the deployed api url, not localhost "
+          npm run generate-api
+
       - name: Typecheck
-        run: npm run typecheck
+        run: |
+          echo "💡 Hint:  if this check fails try to regenerate the api types with 'npm run generate-api'"
+          npm run typecheck
 
       #      - name: Unit tests
       #        run: npm test
