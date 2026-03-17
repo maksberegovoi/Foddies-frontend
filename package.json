@@ -1,48 +1,72 @@
 {
-    "name": "foodies-frontend",
-    "private": true,
-    "version": "0.0.0",
-    "type": "module",
-    "scripts": {
-        "dev": "vite",
-        "build": "vite build",
-        "lint": "eslint .",
-        "lint:fix": "eslint . --fix",
-        "format": "prettier --write .",
-        "format:check": "prettier --check .",
-        "preview": "vite preview",
-        "prepare": "husky"
-    },
-    "lint-staged": {
-        "*.{ts,tsx,js,jsx}": [
-            "eslint --fix",
-            "prettier --write"
-        ]
-    },
-    "dependencies": {
-        "@tailwindcss/vite": "^4.2.1",
-        "clsx": "^2.1.1",
-        "react": "^19.2.0",
-        "react-dom": "^19.2.0",
-        "react-router-dom": "^7.13.1",
-        "tailwind-merge": "^3.5.0"
-    },
-    "devDependencies": {
-        "@eslint/js": "^9.39.1",
-        "@types/react": "^19.2.7",
-        "@types/react-dom": "^19.2.3",
-        "@vitejs/plugin-react": "^5.1.1",
-        "autoprefixer": "^10.4.27",
-        "eslint": "^9.39.1",
-        "eslint-config-prettier": "^10.1.8",
-        "eslint-plugin-react-hooks": "^7.0.1",
-        "eslint-plugin-react-refresh": "^0.4.24",
-        "globals": "^16.5.0",
-        "husky": "^9.1.7",
-        "lint-staged": "^16.3.3",
-        "prettier": "^3.8.1",
-        "prettier-plugin-tailwindcss": "^0.7.2",
-        "tailwindcss": "^4.2.1",
-        "vite": "^7.3.1"
-    }
+  "name": "foodies-frontend",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "react-router build",
+    "dev": "react-router dev",
+    "start": "react-router-serve ./build/server/index.js",
+    "generate-api": "orval",
+    "typecheck": "react-router typegen && tsc",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write \"**/*.{ts,tsx}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx}\"",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  },
+  "dependencies": {
+    "@base-ui/react": "^1.2.0",
+    "@fontsource-variable/mulish": "^5.2.8",
+    "@react-router/node": "7.12.0",
+    "@react-router/serve": "7.12.0",
+    "@tanstack/react-query": "^5.90.21",
+    "@uidotdev/usehooks": "^2.4.1",
+    "axios": "^1.13.6",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "embla-carousel-react": "^8.6.0",
+    "formik": "^2.4.9",
+    "isbot": "^5.1.31",
+    "lucide-react": "^0.577.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "react-hook-form": "^7.71.2",
+    "react-router": "7.12.0",
+    "shadcn": "^4.0.3",
+    "tailwind-merge": "^3.5.0",
+    "tw-animate-css": "^1.4.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@react-router/dev": "7.12.0",
+    "@tailwindcss/vite": "^4.1.13",
+    "@tanstack/eslint-plugin-query": "^5.91.4",
+    "@types/node": "^22",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "dotenv": "^17.3.1",
+    "eslint": "^9.39.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.4.24",
+    "globals": "^16.5.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.3.3",
+    "openapi-typescript": "^7.13.0",
+    "orval": "^7.13.2",
+    "prettier": "^3.8.1",
+    "prettier-plugin-tailwindcss": "^0.7.2",
+    "tailwindcss": "^4.1.13",
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.57.0",
+    "vite": "^7.1.7",
+    "vite-tsconfig-paths": "^5.1.4"
+  }
 }
