@@ -12,6 +12,7 @@ import type { Route } from "./+types/root"
 import "./app.css"
 import { QueryClientProvider } from "@tanstack/react-query"
 import { queryClient } from "~/api/query-client"
+import Title from "~/components/Title"
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -57,7 +58,7 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 
   return (
     <main className="container mx-auto p-4 pt-16">
-      <h1>{message}</h1>
+      <Title>{message}</Title>
       <p>{details}</p>
       {stack && (
         <pre className="w-full overflow-x-auto p-4">

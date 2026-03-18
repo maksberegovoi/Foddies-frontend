@@ -12,6 +12,7 @@ import {
 import type { RecipesQueryDto } from "~/api/generated/model"
 import { useState } from "react"
 import { queryClient } from "~/api/query-client"
+import Title from "~/components/Title"
 
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const initialParams: RecipesQueryDto = {
@@ -35,7 +36,8 @@ export default function TestRoute() {
 
   return (
     <div>
-      <h1>Recipes</h1>
+      <Title>Recipes</Title>
+
       <button onClick={() => setPage(page + 1)}>next</button>
       <button onClick={() => setPage(page - 1)}>prev</button>
       {recipes.map((i) => (

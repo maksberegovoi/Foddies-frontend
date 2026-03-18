@@ -1,4 +1,5 @@
 import type { RecipeDtoIngredientsItem } from "~/api/generated/model"
+import Title from "~/components/Title"
 
 type RecipeIngredientsSectionProps = {
   ingredients: RecipeDtoIngredientsItem[]
@@ -9,7 +10,7 @@ export default function RecipeIngredientsSection({
 }: RecipeIngredientsSectionProps) {
   return (
     <section className="flex flex-col gap-5">
-      <h2 className="font-extrabold">INGREDIENTS</h2>
+      <Title as={"h4"}>INGREDIENTS</Title>
 
       <ul className="grid grid-cols-2 gap-4 md:grid-cols-3">
         {ingredients.map((ingredient) => {
@@ -29,7 +30,7 @@ export default function RecipeIngredientsSection({
                     {ingredient.name}
                   </p>
                   <p
-                    className="truncate text-sm font-medium text-gray md:text-base"
+                    className="text-sm font-medium text-gray md:text-base"
                     title={ingredient.measure}
                   >
                     {ingredient.measure}

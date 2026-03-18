@@ -7,6 +7,7 @@ import { cn } from "~/lib/utils"
 import { Button } from "~/components/ui/button"
 import HeroBig from "~/assets/images/hero_big.png"
 import HeroSmall from "~/assets/images/hero_small.png"
+import Title from "~/components/Title"
 
 const HeroSection = () => {
   const isMobile = useMediaQuery("only screen and (max-width : 768px)")
@@ -28,9 +29,7 @@ const HeroSection = () => {
       )}
 
       <div className="flex max-w-4xl flex-col items-center gap-10 px-4 pt-[194px] md:pt-[217px] lg:px-0 lg:pt-[154px]">
-        <h1 className="text-center text-[40px] leading-[40px] font-extrabold text-white uppercase md:text-[70px] md:leading-[70px] lg:text-[90px] lg:leading-[90px]">
-          Improve Your Culinary Talents
-        </h1>
+        <Title>Improve Tour Culinary Talents</Title>
 
         <span className="max-w-xl px-4 text-center text-sm leading-[20px] font-light text-white sm:text-base sm:leading-6 md:px-0">
           Amazing recipes for beginners in the world of cooking, enveloping you

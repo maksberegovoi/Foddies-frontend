@@ -1,3 +1,5 @@
+import Title from "~/components/Title"
+
 type RecipePreparationSectionProps = {
   instructions: string
 }
@@ -7,7 +9,7 @@ export default function RecipePreparationSection({
 }: RecipePreparationSectionProps) {
   return (
     <section className="flex flex-col gap-5">
-      <h2 className="font-extrabold">RECIPE PREPARATION</h2>
+      <Title as={"h4"}>RECIPE PREPARATION</Title>
       <p className="text-sm leading-6 font-medium text-light-dark md:text-base">
         {instructions}
       </p>

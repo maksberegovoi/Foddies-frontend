@@ -1,5 +1,6 @@
 import type { RecipeDto } from "~/api/generated/model"
 import { Badge } from "~/components/ui/badge"
+import Title from "~/components/Title"
 
 type RecipeSummarySectionProps = {
   recipe: RecipeDto
@@ -10,7 +11,7 @@ export default function RecipeSummarySection({
 }: RecipeSummarySectionProps) {
   return (
     <section className="flex flex-col gap-5">
-      <h1 className="font-extrabold">{recipe.title.toUpperCase()}</h1>
+      <Title as={"h3"}>{recipe.title.toUpperCase()}</Title>
 
       <ul className="flex flex-wrap gap-2">
         <li>

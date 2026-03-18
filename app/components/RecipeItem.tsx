@@ -5,6 +5,7 @@ import FIcon from "~/components/FIcon"
 import FavoriteRecipeToggle from "~/components/FavoriteRecipeToggle"
 import { Link } from "react-router"
 import { cn } from "~/lib/utils"
+import Title from "~/components/Title"
 
 type RecipeItemProps = {
   item: Recipe
@@ -20,9 +21,9 @@ const RecipeItem = ({ item }: RecipeItemProps) => {
       />
 
       <div className="flex flex-col gap-2">
-        <h4 className="line-clamp-1 text-xl leading-6 font-extrabold uppercase">
+        <Title as={"h4"} className={"line-clamp-1"}>
           {item.title}
-        </h4>
+        </Title>
         <p className="line-clamp-2 h-13.5">{item.instructions}</p>
       </div>
 
