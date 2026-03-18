@@ -1,6 +1,7 @@
 import { Link } from "react-router"
 import FIcon from "../FIcon"
 import { cn } from "../../lib/utils"
+import { useModal } from "../modals/modal-context"
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -13,6 +14,8 @@ type UserBarProps = {
 }
 
 export default function UserBar({ variant = "dark" }: UserBarProps) {
+  const { openLogOut } = useModal()
+
   const user = {
     name: "Victoria",
     avatar: "",
@@ -51,24 +54,31 @@ export default function UserBar({ variant = "dark" }: UserBarProps) {
         )}
       >
         <div className="flex h-full flex-col gap-4">
-          <DropdownMenuItem className="p-0 text-white">
+          <DropdownMenuItem className="p-0">
             <Link
               to="/user/1"
-              className="inline-block cursor-pointer text-[12px] leading-[1.2] font-medium text-white uppercase md:text-sm"
+              className={cn(
+                "inline-block cursor-pointer text-[12px] leading-[1.2] font-medium uppercase md:text-sm",
+                variant === "dark" ? "text-white" : "text-dark"
+              )}
             >
               PROFILE
             </Link>
           </DropdownMenuItem>
 
-          <DropdownMenuItem className="p-0 text-white">
+          <DropdownMenuItem className="p-0">
             <button
               type="button"
-              className="flex cursor-pointer items-center gap-1 text-[12px] leading-[1.2] font-medium text-white uppercase md:text-sm"
+              onClick={openLogOut}
+              className={cn(
+                "flex cursor-pointer items-center gap-1 text-[12px] leading-[1.2] font-medium uppercase md:text-sm",
+                variant === "dark" ? "text-white" : "text-dark"
+              )}
             >
               LOG OUT
               <FIcon
                 iconName="arrow-up-right"
-                className="h-3 w-3 text-white md:h-4 md:w-4"
+                className="h-3 w-3 md:h-4 md:w-4"
               />
             </button>
           </DropdownMenuItem>
