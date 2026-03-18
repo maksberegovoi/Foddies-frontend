@@ -1,7 +1,7 @@
-import type { RecipeIngredient } from "../types"
+import type { RecipeDtoIngredientsItem } from "~/api/generated/model"
 
 type RecipeIngredientsSectionProps = {
-  ingredients: RecipeIngredient[]
+  ingredients: RecipeDtoIngredientsItem[]
 }
 
 export default function RecipeIngredientsSection({
@@ -15,8 +15,8 @@ export default function RecipeIngredientsSection({
         {ingredients.map((ingredient) => {
           return (
             <li key={ingredient.name}>
-              <div className="flex items-center gap-2.5 p-2.5">
-                <div className="flex shrink-0 items-center justify-center rounded-lg border border-gray p-2.25 md:p-3.5">
+              <div className="flex h-full items-center gap-2.5 p-2.5">
+                <div className="flex h-full shrink-0 items-center justify-center rounded-lg border border-gray p-2.25 md:p-3.5">
                   <img
                     src={ingredient.imageURL}
                     alt={ingredient.name}

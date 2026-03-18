@@ -3,7 +3,6 @@
 //   getIngredients,
 //   useGetIngredients,
 // } from "~/api/generated/endpoints/ingredients/ingredients"
-import { queryClient } from "~/api/query-client"
 import type { Route } from "./+types/route"
 import {
   getGetRecipesQueryKey,
@@ -12,13 +11,17 @@ import {
 } from "~/api/generated/endpoints/recipes/recipes"
 import type { RecipesQueryDto } from "~/api/generated/model"
 import { useState } from "react"
+import { queryClient } from "~/api/query-client"
 
-export async function clientLoader({ params }: Route.LoaderArgs) {
-  const queryKey = getGetRecipesQueryKey()
+export async function clientLoader({ params }: Route.ClientLoaderArgs) {
+  const initialParams: RecipesQueryDto = {
+    page: 1,
+  }
+  const queryKey = getGetRecipesQueryKey(initialParams)
 
-  return await queryClient.ensureQueryData({
+  await queryClient.ensureQueryData({
     queryKey,
-    queryFn: () => getRecipes(),
+    queryFn: () => getRecipes(initialParams),
   })
 }
 

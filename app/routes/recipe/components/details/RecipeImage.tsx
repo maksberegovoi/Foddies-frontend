@@ -1,6 +1,6 @@
-import type { RecipeDetails } from "../types"
+import type { RecipeDto } from "~/api/generated/model"
 
-type RecipeImageProps = Pick<RecipeDetails, "image" | "title">
+type RecipeImageProps = Pick<RecipeDto, "image" | "title">
 
 export default function RecipeImage({ image, title }: RecipeImageProps) {
   return (
