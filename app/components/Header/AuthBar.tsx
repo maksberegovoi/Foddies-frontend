@@ -13,14 +13,14 @@ export default function AuthBar() {
   const [activeTab, setActiveTab] = useState<ActiveAuthTab>("signin")
 
   return (
-    <div className="flex items-center rounded-full border border-white bg-white p-[2px]">
+    <div className="flex items-center gap-[2px] rounded-[30px] border border-white bg-white p-[2px]">
       {tabs.map(({ value, label }) => (
         <Button
           key={value}
           type="button"
           onClick={() => setActiveTab(value)}
           className={cn(
-            "rounded-full px-7 py-[14px] text-sm font-medium uppercase transition-colors",
+            "h-[38px] min-w-[80px] rounded-[30px] px-4 py-[10px] text-[12px] leading-none font-medium uppercase transition-colors md:h-auto md:min-w-0 md:px-6 md:py-3 md:text-sm",
             activeTab === value
               ? "bg-dark text-white hover:bg-dark"
               : "bg-transparent text-dark hover:bg-transparent"

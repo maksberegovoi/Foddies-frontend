@@ -1,4 +1,4 @@
-import sprite from "../../assets/icons/sprite.svg"
+import FIcon from "../FIcon"
 
 const socialLinks = [
   {
@@ -16,7 +16,7 @@ const socialLinks = [
     icon: "youtube",
     label: "YouTube",
   },
-]
+] as const
 
 export default function NetworkLinks() {
   return (
@@ -30,9 +30,7 @@ export default function NetworkLinks() {
             aria-label={label}
             className="flex h-10 w-10 items-center justify-center rounded-full border border-border"
           >
-            <svg className="h-4 w-4">
-              <use href={`${sprite}#${icon}`} />
-            </svg>
+            <FIcon iconName={icon} className="h-4 w-4" />
           </a>
         </li>
       ))}

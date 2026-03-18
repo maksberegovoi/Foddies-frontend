@@ -1,5 +1,5 @@
 import { Link } from "react-router"
-import sprite from "../assets/icons/sprite.svg"
+import FIcon from "./FIcon"
 
 type LogoProps = {
   variant?: "white" | "black"
@@ -8,9 +8,10 @@ type LogoProps = {
 export default function Logo({ variant = "white" }: LogoProps) {
   return (
     <Link to="/" aria-label="Foodies homepage">
-      <svg className="h-[28px] w-[83px]">
-        <use href={`${sprite}#logo-${variant}`} />
-      </svg>
+      <FIcon
+        iconName={`logo-${variant}` as "logo-white" | "logo-black"}
+        className="h-[24px] w-[69px] md:h-[28px] md:w-[83px]"
+      />
     </Link>
   )
 }

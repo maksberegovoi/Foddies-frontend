@@ -1,6 +1,6 @@
 import { NavLink } from "react-router"
 import Logo from "../Logo"
-import sprite from "../../assets/icons/sprite.svg"
+import FIcon from "../FIcon"
 import { cn } from "../../lib/utils"
 
 type MobileMenuProps = {
@@ -23,9 +23,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
           <Logo variant="white" />
 
           <button type="button" onClick={onClose} aria-label="Close menu">
-            <svg className="h-6 w-6 text-white">
-              <use href={`${sprite}#close`} />
-            </svg>
+            <FIcon iconName="close-x" className="h-6 w-6 text-white" />
           </button>
         </div>
 

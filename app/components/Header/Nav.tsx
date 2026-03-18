@@ -3,6 +3,7 @@ import { cn } from "../../lib/utils"
 
 type NavProps = {
   variant?: "dark" | "light"
+  className?: string
 }
 
 const navLinks = [
@@ -10,9 +11,9 @@ const navLinks = [
   { to: "/recipe/add", label: "ADD RECIPE" },
 ]
 
-export default function Nav({ variant = "dark" }: NavProps) {
+export default function Nav({ variant = "dark", className }: NavProps) {
   return (
-    <nav className="hidden items-center gap-6 md:flex">
+    <nav className={cn("items-center gap-6", className)}>
       {navLinks.map(({ to, label }) => (
         <NavLink
           key={to}
