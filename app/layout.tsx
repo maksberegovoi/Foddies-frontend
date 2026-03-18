@@ -9,11 +9,11 @@ export default function Layout() {
       <div className="mx-auto w-full max-w-360">
         <Header />
 
-      <main>
+        <main>
           <Outlet />
-      </main>
+        </main>
 
-      <Footer />
+        <Footer />
       </div>
     </ModalProvider>
   )
