@@ -1,7 +1,8 @@
 import axios, { type AxiosRequestConfig, AxiosError } from "axios"
+import { env } from "~/lib/env"
 
 export const AXIOS_INSTANCE = axios.create({
-  baseURL: import.meta.env.VITE_BASE_API_URL,
+  baseURL: env.VITE_BASE_API_URL,
   withCredentials: true,
 })
 
