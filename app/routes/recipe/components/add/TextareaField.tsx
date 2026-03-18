@@ -46,7 +46,7 @@ export default function TextareaField({
           <span
             className={`ml-2 shrink-0 text-xs ${error ? "text-destructive" : "text-gray"}`}
           >
-            {value.length}/{maxLength}
+            <span className="text-dark">{value.length}</span>/{maxLength}
           </span>
         ) : null}
       </div>

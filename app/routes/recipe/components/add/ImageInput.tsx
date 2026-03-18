@@ -61,7 +61,7 @@ function ImageInput({ control }: ImageInputProps) {
 
           <label
             htmlFor="recipe-image"
-            className="block cursor-pointer text-center text-sm font-medium text-dark underline underline-offset-2"
+            className="mx-auto block w-fit cursor-pointer text-center text-sm font-medium text-dark underline underline-offset-2"
           >
             Upload another photo
           </label>

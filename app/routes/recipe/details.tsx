@@ -52,7 +52,7 @@ export default function Details({ params }: Route.ComponentProps) {
           {({ isFavorite, isMutating, toggleFavorite }) => (
             <Button
               className="self-start"
-              variant="outlineGray"
+              variant={isFavorite ? "default" : "outlineGray"}
               onClick={toggleFavorite}
               disabled={isMutating}
             >

@@ -14,16 +14,16 @@ const RecipeItem = ({ item }: RecipeItemProps) => {
   return (
     <div className="flex flex-col gap-4">
       <img
-        className="rounded-[30px]"
+        className="h-68.75 rounded-[30px]"
         src={item.image.tablet}
         alt={`${item.title} Image`}
       />
 
       <div className="flex flex-col gap-2">
-        <h4 className="text-xl leading-6 font-extrabold uppercase">
+        <h4 className="line-clamp-1 text-xl leading-6 font-extrabold uppercase">
           {item.title}
         </h4>
-        <p className="line-clamp-2">{item.instructions}</p>
+        <p className="line-clamp-2 h-13.5">{item.instructions}</p>
       </div>
 
       <div className="flex justify-between">

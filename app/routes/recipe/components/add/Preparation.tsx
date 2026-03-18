@@ -26,9 +26,7 @@ export default function Preparation({ control }: PreparationProps) {
         showCounter
       />
       {preparationError ? (
-        <p className="text-sm text-destructive">
-          {preparationError.message as string}
-        </p>
+        <p className="text-sm text-destructive">{preparationError.message}</p>
       ) : null}
     </section>
   )

@@ -17,7 +17,7 @@ export default function RecipeSummarySection({
           <Badge variant="outline">{recipe.category}</Badge>
         </li>
         <li>
-          <Badge variant="outline">{recipe.time}</Badge>
+          <Badge variant="outline">{recipe.time} min</Badge>
         </li>
       </ul>
 

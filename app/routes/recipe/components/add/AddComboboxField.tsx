@@ -69,7 +69,7 @@ function AddComboboxField({
       </Combobox>
 
       {error ? (
-        <p className="text-sm text-destructive">{error.message as string}</p>
+        <p className="text-sm text-destructive">{error.message}</p>
       ) : null}
     </div>
   )

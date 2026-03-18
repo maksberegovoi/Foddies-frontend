@@ -47,9 +47,7 @@ function Details({ control }: DetailsProps) {
           {...titleInputBindings}
         />
         {titleError ? (
-          <p className="text-sm text-destructive">
-            {titleError.message as string}
-          </p>
+          <p className="text-sm text-destructive">{titleError.message}</p>
         ) : null}
       </div>
 

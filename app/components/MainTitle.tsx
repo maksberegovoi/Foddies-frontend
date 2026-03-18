@@ -9,7 +9,7 @@ export default function MainTitle({ children, className }: MainTitleProps) {
   return (
     <h1
       className={cn(
-        "text-4xl leading-11 font-extrabold tracking-[-0.8px] text-dark uppercase",
+        "mb-4 text-[28px] leading-8 font-extrabold tracking-[-0.8px] text-dark uppercase md:mb-5 md:text-[40px] md:leading-11",
         className
       )}
     >
