@@ -28,7 +28,7 @@ export default function Layout() {
     <SignInProvider initialSignedIn={isSignedIn}>
       <ModalProvider>
         <ModalSearchBridge />
-        <div className="mx-auto w-full max-w-360">
+        <div className="container mx-auto w-full max-w-360">
           <Header />
 
           <main>

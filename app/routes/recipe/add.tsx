@@ -20,15 +20,20 @@ import type { PostRecipesBody } from "~/api/generated/model"
 import { recipeSchema } from "./validation"
 import type { AddRecipeFormValues } from "./validation"
 import MainTitle from "~/components/MainTitle"
-import { requireSignedIn } from "~/lib/auth-guard"
-
-export async function clientLoader() {
-  await requireSignedIn()
-}
+import { useIsSignedIn } from "~/components/auth/sign-in-hooks"
+import { useEffect } from "react"
 
 export default function AddRecipe() {
   const navigate = useNavigate()
   const { mutate: postRecipes } = usePostRecipes()
+
+  const isSignedIn = useIsSignedIn()
+
+  useEffect(() => {
+    if (!isSignedIn) {
+      navigate("/?modal=sign-in")
+    }
+  }, [isSignedIn])
 
   const methods = useForm<AddRecipeFormValues>({
     resolver: zodResolver(recipeSchema),
@@ -76,8 +81,8 @@ export default function AddRecipe() {
     )
   }
 
-  return (
-    <div className="mx-auto w-full max-w-mobile px-4 md:max-w-tablet md:px-8 lg:max-w-desktop lg:px-20">
+  return isSignedIn ? (
+    <div className="px-4 md:px-8 lg:px-20">
       <MainTitle>ADD RECIPE</MainTitle>
       <form
         className="space-y-8 md:space-y-10 lg:grid lg:grid-cols-[minmax(0,1fr)_650px] lg:items-start lg:space-y-0 lg:gap-x-20 lg:gap-y-10"
@@ -125,5 +130,5 @@ export default function AddRecipe() {
         </div>
       </form>
     </div>
-  )
+  ) : null
 }

@@ -26,7 +26,7 @@ type SignInModalProps = {
 }
 
 const inputClassName =
-  "h-14 rounded-[30px] border-gray px-[18px] py-4 text-base leading-6 tracking-[-0.02em] placeholder:text-gray focus-visible:border-dark focus-visible:ring-0 md:text-base"
+  "h-14 rounded-[30px] bg-white border-gray px-[18px] py-4 text-base leading-6 tracking-[-0.02em] placeholder:text-gray focus-visible:border-dark focus-visible:ring-0 md:text-base"
 
 function SignInModal({
   errorMessage,
@@ -71,11 +71,11 @@ function SignInModal({
           </button>
         </DialogClose>
 
-        <form className="flex flex-col gap-10" onSubmit={handleSubmit}>
-          <div className="flex flex-col gap-10">
+        <form className="flex flex-col gap-8 md:gap-10" onSubmit={handleSubmit}>
+          <div className="flex flex-col gap-8 md:gap-10">
             <DialogTitle>SIGN IN</DialogTitle>
 
-            <div className="flex flex-col gap-[14px]">
+            <div className="flex flex-col gap-3.5">
               <Input
                 aria-label="Email"
                 className={inputClassName}
@@ -94,7 +94,7 @@ function SignInModal({
                   name="password"
                   onBlur={handleBlur}
                   onChange={handleChange}
-                  placeholder="Password"
+                  placeholder="Password*"
                   type={showPassword ? "text" : "password"}
                   value={values.password}
                 />
@@ -130,7 +130,7 @@ function SignInModal({
               {isLoading ? "SIGNING IN..." : "SIGN IN"}
             </Button>
 
-            <div className="flex items-center justify-center gap-2 text-center text-sm leading-[18px] font-medium tracking-[-0.02em]">
+            <div className="flex items-center justify-center text-center text-sm leading-[18px] font-medium tracking-[-0.02em] md:gap-2">
               <span className="text-gray">Don&apos;t have an account?</span>
               <button
                 className="text-dark transition-opacity hover:opacity-70"
