@@ -19,6 +19,8 @@ type IconNames =
   | "quotes"
   | "trash"
   | "youtube"
+  | "logo-white"
+  | "logo-black"
 
 type FIconProps = {
   iconName: IconNames
