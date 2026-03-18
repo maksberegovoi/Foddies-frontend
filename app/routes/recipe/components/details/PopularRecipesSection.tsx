@@ -1,13 +1,11 @@
 import RecipeItem from "~/components/RecipeItem"
-import type { Recipe } from "~/types/home/category.interfaces"
 
-type PopularRecipesSectionProps = {
-  popularRecipes: Recipe[]
-}
+import { useGetRecipesPopular } from "~/api/generated/endpoints/recipes/recipes"
 
-export default function PopularRecipesSection({
-  popularRecipes,
-}: PopularRecipesSectionProps) {
+export default function PopularRecipesSection() {
+  const { data } = useGetRecipesPopular()
+  const popularRecipes = data?.data || []
+
   return (
     <section className="flex flex-col gap-5 lg:col-span-2">
       <h2 className="font-extrabold">POPULAR RECIPES</h2>

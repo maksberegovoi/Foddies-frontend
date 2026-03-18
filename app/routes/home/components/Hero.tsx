@@ -42,7 +42,7 @@ const HeroSection = () => {
           onClick={openSignIn}
           className="px-8 text-base font-bold uppercase"
         >
-          <span>Add recipe</span>
+          Add recipe
         </Button>
 
         <div className="flex gap-9 pt-17 pb-28">
