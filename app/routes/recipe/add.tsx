@@ -20,6 +20,11 @@ import type { PostRecipesBody } from "~/api/generated/model"
 import { recipeSchema } from "./validation"
 import type { AddRecipeFormValues } from "./validation"
 import MainTitle from "~/components/MainTitle"
+import { requireSignedIn } from "~/lib/auth-guard"
+
+export async function clientLoader() {
+  await requireSignedIn()
+}
 
 export default function AddRecipe() {
   const navigate = useNavigate()

@@ -4,6 +4,8 @@ import {
   useGetRecipesFavorite,
   usePostRecipesIdFavorite,
 } from "~/api/generated/endpoints/recipes/recipes"
+import { useIsSignedIn } from "~/components/auth/sign-in-hooks"
+import { useModal } from "~/components/modals/modal-context"
 import type {
   GetRecipesFavorite200,
   RecipeCardDto,
@@ -11,6 +13,19 @@ import type {
 import { queryClient } from "~/api/query-client"
 
 const favoriteQueryKey = getGetRecipesFavoriteQueryKey()
+
+function createFavoritesSnapshot(data: RecipeCardDto[]): GetRecipesFavorite200 {
+  const total = data.length
+
+  return {
+    data,
+    meta: {
+      total,
+      page: 1,
+      limit: Math.max(1, total),
+    },
+  }
+}
 
 function getFavoritesSnapshot() {
   return queryClient.getQueryData<GetRecipesFavorite200>(favoriteQueryKey)
@@ -24,19 +39,25 @@ function addRecipeToFavoritesCache(recipe: RecipeCardDto) {
   queryClient.setQueryData<GetRecipesFavorite200>(
     favoriteQueryKey,
     (current) => {
-      if (!current) {
-        return current
-      }
+      const nextCurrent = current ?? createFavoritesSnapshot([])
 
-      const alreadyExists = current.data.some((item) => item.id === recipe.id)
+      const alreadyExists = nextCurrent.data.some(
+        (item) => item.id === recipe.id
+      )
 
       if (alreadyExists) {
-        return current
+        return nextCurrent
       }
 
+      const nextData = [recipe, ...nextCurrent.data]
+
       return {
-        ...current,
-        data: [recipe, ...current.data],
+        ...nextCurrent,
+        data: nextData,
+        meta: {
+          ...nextCurrent.meta,
+          total: nextData.length,
+        },
       }
     }
   )
@@ -50,9 +71,16 @@ function removeRecipeFromFavoritesCache(recipeId: string) {
         return current
       }
 
+      const nextData = current.data.filter((item) => item.id !== recipeId)
+      const wasRemoved = nextData.length !== current.data.length
+
       return {
         ...current,
-        data: current.data.filter((item) => item.id !== recipeId),
+        data: nextData,
+        meta: {
+          ...current.meta,
+          total: wasRemoved ? nextData.length : current.meta.total,
+        },
       }
     }
   )
@@ -73,11 +101,17 @@ export default function FavoriteRecipeToggle({
   recipe,
   children,
 }: FavoriteRecipeToggleProps) {
+  const isSignedIn = useIsSignedIn()
+  const { openSignIn } = useModal()
   const { mutate: addFavorite, isPending: isAdding } =
     usePostRecipesIdFavorite()
   const { mutate: removeFavorite, isPending: isRemoving } =
     useDeleteRecipesIdFavorite()
-  const { data: favoriteRecipesData } = useGetRecipesFavorite()
+  const { data: favoriteRecipesData } = useGetRecipesFavorite(undefined, {
+    query: {
+      enabled: isSignedIn,
+    },
+  })
 
   const isFavorite =
     favoriteRecipesData?.data.some((favorite) => favorite.id === recipe.id) ||
@@ -85,6 +119,12 @@ export default function FavoriteRecipeToggle({
   const isMutating = isAdding || isRemoving
 
   const toggleFavorite = () => {
+    if (!isSignedIn) {
+      openSignIn()
+
+      return
+    }
+
     const previousFavorites = getFavoritesSnapshot()
 
     if (isFavorite) {

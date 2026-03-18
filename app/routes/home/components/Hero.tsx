@@ -1,16 +1,17 @@
 import type { HTMLAttributes } from "react"
 
 import { useMediaQuery } from "@uidotdev/usehooks"
+import { Link } from "react-router"
 
 import { useModal } from "~/components/modals/modal-context"
 import { cn } from "~/lib/utils"
-import { Button } from "~/components/ui/button"
+import { buttonVariants } from "~/components/ui/button"
 import HeroBig from "~/assets/images/hero_big.png"
 import HeroSmall from "~/assets/images/hero_small.png"
 
 const HeroSection = () => {
   const isMobile = useMediaQuery("only screen and (max-width : 768px)")
-  const { openSignIn } = useModal()
+  const { openLogOut } = useModal()
 
   return (
     <div
@@ -37,13 +38,23 @@ const HeroSection = () => {
           in the aromas and tastes of various cuisines.
         </span>
 
-        <Button
-          variant="outlineWhite"
-          onClick={openSignIn}
-          className="px-8 text-base font-bold uppercase"
+        <Link
+          className={cn(
+            buttonVariants({ variant: "outlineWhite" }),
+            "px-8 text-base font-bold uppercase"
+          )}
+          to="/recipe/add"
         >
           Add recipe
-        </Button>
+        </Link>
+
+        <button
+          className="text-xs font-semibold tracking-wide text-white/80 uppercase transition-opacity hover:opacity-70"
+          onClick={openLogOut}
+          type="button"
+        >
+          Test log out
+        </button>
 
         <div className="flex gap-9 pt-17 pb-28">
           <img

@@ -1,24 +1,156 @@
-import { useMemo, useState } from "react"
+import { useMemo, useSyncExternalStore } from "react"
 
 import {
   ModalContext,
   type ModalContextValue,
 } from "~/components/modals/modal-context"
+import { useSignInActions } from "~/components/auth/sign-in-hooks"
 import { LogOutModal } from "~/components/modals/log-out-modal"
 import { SignInModal } from "~/components/modals/sign-in-modal"
 import { SignUpModal } from "~/components/modals/sign-up-modal"
+import {
+  usePostAuthSignin,
+  usePostAuthSignup,
+  usePostAuthSignout,
+} from "~/api/generated/endpoints/auth/auth"
 
 type ModalType = "log-out" | "sign-in" | "sign-up" | null
 
-function ModalProvider({ children }: { children: React.ReactNode }) {
-  const [activeModal, setActiveModal] = useState<ModalType>(null)
+type ModalStore = {
+  getSnapshot: () => ModalType
+  subscribe: (listener: () => void) => () => void
+  setModal: (nextModal: ModalType) => void
+}
 
+function createModalStore(initialState: ModalType = null): ModalStore {
+  let currentModal = initialState
+  const listeners = new Set<() => void>()
+
+  return {
+    getSnapshot: () => currentModal,
+    subscribe: (listener) => {
+      listeners.add(listener)
+
+      return () => {
+        listeners.delete(listener)
+      }
+    },
+    setModal: (nextModal) => {
+      if (currentModal === nextModal) {
+        return
+      }
+
+      currentModal = nextModal
+
+      listeners.forEach((listener) => {
+        listener()
+      })
+    },
+  }
+}
+
+const modalStore = createModalStore()
+
+function getErrorMessage(error: unknown) {
+  if (
+    typeof error === "object" &&
+    error !== null &&
+    "response" in error &&
+    typeof (error as { response?: unknown }).response === "object" &&
+    (error as { response?: unknown }).response !== null
+  ) {
+    const response = (error as { response?: { data?: unknown } }).response
+
+    if (
+      response &&
+      typeof response.data === "object" &&
+      response.data !== null &&
+      "message" in response.data &&
+      typeof (response.data as { message?: unknown }).message === "string"
+    ) {
+      return (response.data as { message: string }).message
+    }
+  }
+
+  return null
+}
+
+function ModalHost() {
+  const { setSignedIn } = useSignInActions()
+  const signInMutation = usePostAuthSignin()
+  const signUpMutation = usePostAuthSignup()
+  const signOutMutation = usePostAuthSignout()
+
+  const activeModal = useSyncExternalStore(
+    modalStore.subscribe,
+    modalStore.getSnapshot,
+    modalStore.getSnapshot
+  )
+
+  return (
+    <>
+      <SignInModal
+        errorMessage={getErrorMessage(signInMutation.error)}
+        isLoading={signInMutation.isPending}
+        onOpenChange={(open) => {
+          if (!open) {
+            signInMutation.reset()
+            modalStore.setModal(null)
+          }
+        }}
+        onSubmit={async (values) => {
+          await signInMutation.mutateAsync({ data: values })
+          setSignedIn(true)
+          modalStore.setModal(null)
+        }}
+        onSwitchToSignUp={() => modalStore.setModal("sign-up")}
+        open={activeModal === "sign-in"}
+      />
+
+      <SignUpModal
+        errorMessage={getErrorMessage(signUpMutation.error)}
+        isLoading={signUpMutation.isPending}
+        onOpenChange={(open) => {
+          if (!open) {
+            signUpMutation.reset()
+            modalStore.setModal(null)
+          }
+        }}
+        onSubmit={async (values) => {
+          await signUpMutation.mutateAsync({ data: values })
+          setSignedIn(true)
+          modalStore.setModal(null)
+        }}
+        onSwitchToSignIn={() => modalStore.setModal("sign-in")}
+        open={activeModal === "sign-up"}
+      />
+
+      <LogOutModal
+        isLoading={signOutMutation.isPending}
+        onConfirm={async () => {
+          await signOutMutation.mutateAsync()
+          setSignedIn(false)
+          modalStore.setModal(null)
+        }}
+        onOpenChange={(open) => {
+          if (!open) {
+            signOutMutation.reset()
+            modalStore.setModal(null)
+          }
+        }}
+        open={activeModal === "log-out"}
+      />
+    </>
+  )
+}
+
+function ModalProvider({ children }: { children: React.ReactNode }) {
   const value = useMemo<ModalContextValue>(
     () => ({
-      closeModal: () => setActiveModal(null),
-      openLogOut: () => setActiveModal("log-out"),
-      openSignIn: () => setActiveModal("sign-in"),
-      openSignUp: () => setActiveModal("sign-up"),
+      closeModal: () => modalStore.setModal(null),
+      openLogOut: () => modalStore.setModal("log-out"),
+      openSignIn: () => modalStore.setModal("sign-in"),
+      openSignUp: () => modalStore.setModal("sign-up"),
     }),
     []
   )
@@ -26,35 +158,7 @@ function ModalProvider({ children }: { children: React.ReactNode }) {
   return (
     <ModalContext.Provider value={value}>
       {children}
-
-      <SignInModal
-        onOpenChange={(open) => {
-          if (!open) {
-            setActiveModal(null)
-          }
-        }}
-        onSwitchToSignUp={() => setActiveModal("sign-up")}
-        open={activeModal === "sign-in"}
-      />
-
-      <SignUpModal
-        onOpenChange={(open) => {
-          if (!open) {
-            setActiveModal(null)
-          }
-        }}
-        onSwitchToSignIn={() => setActiveModal("sign-in")}
-        open={activeModal === "sign-up"}
-      />
-
-      <LogOutModal
-        onOpenChange={(open) => {
-          if (!open) {
-            setActiveModal(null)
-          }
-        }}
-        open={activeModal === "log-out"}
-      />
+      <ModalHost />
     </ModalContext.Provider>
   )
 }
