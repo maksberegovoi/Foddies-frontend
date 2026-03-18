@@ -8,6 +8,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "../ui/dropdown-menu"
+import { useGetUsersCurrent } from "~/api/generated/endpoints/user/user"
 
 type UserBarProps = {
   variant?: "dark" | "light"
@@ -15,25 +16,20 @@ type UserBarProps = {
 
 export default function UserBar({ variant = "dark" }: UserBarProps) {
   const { openLogOut } = useModal()
-
-  const user = {
-    name: "Victoria",
-    avatar: "",
-  }
-
-  const defaultAvatar = "https://ui-avatars.com/api/?name=User"
+  const { data } = useGetUsersCurrent()
+  const user = data?.data
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="flex cursor-pointer items-center gap-2 rounded-full bg-light-dark px-2 py-1 text-white outline-none md:px-3 md:py-2">
         <img
-          src={user.avatar || defaultAvatar}
-          alt={user.name}
+          src={user?.avatarURL || "/fallback_ava.png"}
+          alt={user?.name}
           className="h-6 w-6 rounded-full object-cover md:h-8 md:w-8"
         />
 
         <span className="text-[10px] font-semibold uppercase md:text-sm">
-          {user.name}
+          {user?.name}
         </span>
 
         <FIcon

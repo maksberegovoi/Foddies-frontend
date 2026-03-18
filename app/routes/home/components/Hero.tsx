@@ -19,7 +19,7 @@ const HeroSection = () => {
   return (
     <div
       className={cn(
-        "relative mx-2 mt-2 flex flex-col items-center rounded-4xl bg-foreground md:mx-4 md:mt-4 lg:mx-5 lg:mt-5"
+        "relative mx-2 mt-2 flex flex-col items-center rounded-[20px] bg-foreground md:mx-4 md:mt-4 md:rounded-4xl lg:mx-5 lg:mt-5"
       )}
     >
       <HeroLine className="left-4 md:left-8 lg:left-15" />

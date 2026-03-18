@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { matchPath, useLocation } from "react-router"
+import { useLocation } from "react-router"
 import Logo from "../Logo"
 import Nav from "./Nav"
 import AuthBar from "./AuthBar"
@@ -7,45 +7,36 @@ import UserBar from "./UserBar"
 import MobileMenu from "./MobileMenu"
 import FIcon from "../FIcon"
 import { cn } from "../../lib/utils"
-
-type HeaderProps = {
-  isAuth?: boolean
-}
+import { useIsSignedIn } from "../auth/sign-in-hooks"
 
 type HeaderVariant = "dark" | "light"
 
-export default function Header({ isAuth = false }: HeaderProps) {
+export default function Header() {
   const { pathname } = useLocation()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const isSignedIn = useIsSignedIn()
 
   const isHomePage = pathname === "/"
-  const isAddRecipePage = !!matchPath("/recipe/add", pathname)
-  const isRecipePage = !!matchPath("/recipe/:id", pathname)
-  const isUserPage = !!matchPath("/user/:id", pathname)
 
-  const isProtectedPage = isAddRecipePage || isRecipePage || isUserPage
-  const isAuthHeader = isAuth || isProtectedPage
-
-  const variant: HeaderVariant =
-    isHomePage || (!isAddRecipePage && !isRecipePage && !isUserPage)
-      ? "dark"
-      : "light"
+  const variant: HeaderVariant = isHomePage ? "dark" : "light"
 
   const navDisplayClass =
-    isHomePage && !isAuthHeader ? "hidden min-[1024px]:flex" : "hidden md:flex"
+    isHomePage && !isSignedIn ? "hidden min-[1024px]:flex" : "hidden md:flex"
 
   return (
     <>
       <div
-        className={cn(isHomePage ? "absolute inset-x-0 top-5 z-20" : "mt-5")}
+        className={cn(
+          isHomePage ? "absolute top-2 z-20 container md:top-5" : "mt-5"
+        )}
       >
-        <div className="mx-auto px-4 md:px-8">
+        <div className="mx-auto px-4 md:px-8 lg:px-20">
           <header
             className={cn(
               "w-full",
               isHomePage
-                ? "px-5 py-4 text-white lg:px-[60px]"
-                : "rounded-[30px] px-5 py-3 md:py-4 lg:px-[60px]",
+                ? "px-2 py-4 text-white md:px-5"
+                : "rounded-[30px] py-3 md:py-4",
               !isHomePage &&
                 (variant === "dark"
                   ? "bg-dark text-white"
@@ -55,20 +46,20 @@ export default function Header({ isAuth = false }: HeaderProps) {
             <div className="relative flex items-center justify-between">
               <Logo variant={variant === "dark" ? "white" : "black"} />
 
-              {(isHomePage || isAuthHeader) && (
+              {(isHomePage || isSignedIn) && (
                 <div className="absolute left-1/2 -translate-x-1/2">
                   <Nav variant={variant} className={navDisplayClass} />
                 </div>
               )}
 
               <div className="flex items-center gap-3">
-                {isAuthHeader ? (
+                {isSignedIn ? (
                   <UserBar variant={variant} />
                 ) : isHomePage ? (
                   <AuthBar />
                 ) : null}
 
-                {isAuthHeader && (
+                {isSignedIn && (
                   <button
                     type="button"
                     onClick={() => setIsMenuOpen(true)}
