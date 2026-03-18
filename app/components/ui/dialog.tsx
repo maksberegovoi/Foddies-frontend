@@ -112,7 +112,7 @@ function DialogOverlay({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="dialog-overlay"
       className={cn(
-        "fixed inset-0 animate-in bg-dark/45 backdrop-blur-[2px] duration-200 fade-in-0",
+        "fixed inset-0 w-1.5 animate-in bg-dark/45 backdrop-blur-[2px] duration-200 fade-in-0",
         className
       )}
       {...props}
@@ -158,7 +158,7 @@ function DialogContent({
 
   return (
     <DialogPortal>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-8">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
         <DialogOverlay onClick={() => setOpen(false)} />
         <div
           ref={contentRef}
@@ -166,7 +166,7 @@ function DialogContent({
           aria-labelledby={titleId}
           aria-modal="true"
           className={cn(
-            "relative z-10 flex w-full max-w-[560px] animate-in flex-col rounded-[30px] bg-white px-8 py-14 duration-200 fade-in-0 outline-none zoom-in-95 sm:px-20 sm:py-20",
+            "relative z-10 flex animate-in flex-col rounded-[30px] bg-white px-7.5 py-15 shadow-2xl duration-200 fade-in-0 outline-none zoom-in-95 md:w-140 md:p-20",
             className
           )}
           data-slot="dialog-content"
@@ -191,7 +191,7 @@ function DialogTitle({ className, ...props }: React.ComponentProps<"h2">) {
   return (
     <h2
       className={cn(
-        "text-[32px] leading-10 font-extrabold tracking-[-0.02em] uppercase",
+        "text-[28px] leading-10 font-extrabold tracking-[-0.02em] uppercase md:text-[32px]",
         className
       )}
       data-slot="dialog-title"

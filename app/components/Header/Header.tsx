@@ -39,7 +39,7 @@ export default function Header({ isAuth = false }: HeaderProps) {
       <div
         className={cn(isHomePage ? "absolute inset-x-0 top-5 z-20" : "mt-5")}
       >
-        <div className="container mx-auto px-4 md:px-8">
+        <div className="mx-auto px-4 md:px-8">
           <header
             className={cn(
               "w-full",

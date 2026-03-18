@@ -1,16 +1,20 @@
 import type { HTMLAttributes } from "react"
 
 import { useMediaQuery } from "@uidotdev/usehooks"
+import { useNavigate } from "react-router"
 
 import { useModal } from "~/components/modals/modal-context"
 import { cn } from "~/lib/utils"
-import { Button } from "~/components/ui/button"
+import { buttonVariants } from "~/components/ui/button"
 import HeroBig from "~/assets/images/hero_big.png"
 import HeroSmall from "~/assets/images/hero_small.png"
+import { useIsSignedIn } from "~/components/auth/sign-in-hooks"
 
 const HeroSection = () => {
   const isMobile = useMediaQuery("only screen and (max-width : 768px)")
   const { openSignIn } = useModal()
+  const navigate = useNavigate()
+  const isSignedIn = useIsSignedIn()
 
   return (
     <div
@@ -37,13 +41,22 @@ const HeroSection = () => {
           in the aromas and tastes of various cuisines.
         </span>
 
-        <Button
-          variant="outlineWhite"
-          onClick={openSignIn}
-          className="px-8 text-base font-bold uppercase"
+        <button
+          className={cn(
+            buttonVariants({ variant: "outlineWhite" }),
+            "px-8 text-base font-bold uppercase"
+          )}
+          type="button"
+          onClick={() => {
+            if (isSignedIn) {
+              navigate("/recipe/add")
+            } else {
+              openSignIn()
+            }
+          }}
         >
           Add recipe
-        </Button>
+        </button>
 
         <div className="flex gap-9 pt-17 pb-28">
           <img
