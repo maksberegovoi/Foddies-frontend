@@ -8,6 +8,7 @@ import AuthBar from "./AuthBar"
 import UserBar from "./UserBar"
 import { cn } from "../../lib/utils"
 import MobileMenu from "./MobileMenu"
+import { useIsSignedIn } from "../auth/sign-in-hooks"
 
 type HeaderProps = {
   isAuth: boolean
@@ -15,9 +16,10 @@ type HeaderProps = {
 
 type HeaderVariant = "dark" | "light"
 
-export default function Header({ isAuth }: HeaderProps) {
+export default function Header() {
   const { pathname } = useLocation()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const isLoggedIn = useIsSignedIn()
 
   const isPageHasHero = pathname === "/" || pathname.includes("/category/")
 
@@ -26,14 +28,14 @@ export default function Header({ isAuth }: HeaderProps) {
   return (
     <>
       <header
-        className={cn("mt-6 md:mt-9 lg:mt-5", {
-          "absolute inset-x-0 top-5 z-20 container": isPageHasHero,
+        className={cn("mt-6 md:mt-10", {
+          "absolute inset-x-0 z-20 container": isPageHasHero,
         })}
       >
         <div className="relative flex items-center justify-between gap-2">
           <Logo variant={variant} />
 
-          {isAuth && (
+          {isLoggedIn && (
             <Nav
               variant={variant}
               className={cn(
@@ -44,9 +46,9 @@ export default function Header({ isAuth }: HeaderProps) {
           )}
 
           <div className="flex items-center gap-3">
-            {isAuth ? <UserBar variant={variant} /> : <AuthBar />}
+            {isLoggedIn ? <UserBar variant={variant} /> : <AuthBar />}
 
-            {isAuth && (
+            {isLoggedIn && (
               <button
                 type="button"
                 onClick={() => setIsMenuOpen(true)}
