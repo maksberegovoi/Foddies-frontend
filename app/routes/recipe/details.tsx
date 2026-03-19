@@ -12,8 +12,8 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   try {
     // TODO: replace with real API call
     const [data, popular] = await Promise.all([
-      fetch("http://localhost:3000/api/v1/recipes/" + params.id),
-      fetch("http://localhost:3000/api/v1/recipes/popular"),
+      fetch("https://foddies-backend.onrender.com/api/v1/recipes/" + params.id),
+      fetch("https://foddies-backend.onrender.com/api/v1/recipes/popular"),
     ])
 
     if (!data.ok || !popular.ok) {
