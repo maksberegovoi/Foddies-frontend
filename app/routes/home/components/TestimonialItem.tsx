@@ -1,7 +1,7 @@
-import type { Testimonial } from "../../../types/home"
+import type { TestimonialDto } from "~/api/generated/model"
 
 type TestimonialItemProps = {
-  item: Testimonial
+  item: TestimonialDto
 }
 
 const TestimonialItem = ({ item }: TestimonialItemProps) => {
@@ -12,7 +12,7 @@ const TestimonialItem = ({ item }: TestimonialItemProps) => {
       </span>
 
       <span className="text-center text-base leading-6 font-extrabold uppercase md:text-xl">
-        {item.author}
+        {item.owner}
       </span>
     </div>
   )
