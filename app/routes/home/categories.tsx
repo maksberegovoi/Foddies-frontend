@@ -20,7 +20,7 @@ const Categories = () => {
   )
 
   return (
-    <section className="flex flex-col gap-8 px-4 md:gap-10 md:px-8 lg:px-20">
+    <section className="flex flex-col gap-8 md:gap-10">
       <div className="flex max-w-[532px] flex-col gap-4 md:gap-5">
         <Title as={"h2"}>Categories</Title>
         <Text className="text-gray md:text-light-dark">

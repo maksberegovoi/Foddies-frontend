@@ -14,7 +14,7 @@ export default function UserPage() {
   useParams()
 
   return (
-    <div className="container mx-auto flex flex-col items-center gap-30 px-4 py-42.5">
+    <div className="flex flex-col items-center gap-30 py-42.5">
       {/* Header Section */}
       <div className="flex w-full max-w-7xl flex-col items-start gap-10">
         <div className="flex w-full flex-col items-start gap-10">

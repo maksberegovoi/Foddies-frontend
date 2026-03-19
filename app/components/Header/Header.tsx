@@ -37,52 +37,48 @@ export default function Header({ isAuth = false }: HeaderProps) {
   return (
     <>
       <div
-        className={cn(isHomePage ? "absolute inset-x-0 top-5 z-20" : "mt-5")}
+        className={isHomePage ? "absolute inset-x-0 top-5 z-20 container" : ""}
       >
-        <div className="mx-auto px-4 md:px-8">
-          <header
-            className={cn(
-              "lg:5 mt-6 w-full md:mt-9",
-              isHomePage ? "text-white" : "rounded-[30px]",
-              !isHomePage &&
-                (variant === "dark"
-                  ? "bg-dark text-white"
-                  : "bg-white text-dark")
-            )}
-          >
-            <div className="relative flex items-center justify-between gap-2">
-              <Logo variant={variant === "dark" ? "white" : "black"} />
+        <header
+          className={cn(
+            "mt-6 md:mt-9 lg:mt-5",
+            isHomePage ? "px-4 text-white" : "rounded-[30px]",
+            !isHomePage &&
+              (variant === "dark" ? "bg-dark text-white" : "bg-white text-dark")
+          )}
+        >
+          <div className="relative flex items-center justify-between gap-2">
+            <Logo variant={variant === "dark" ? "white" : "black"} />
 
-              {(isHomePage || isAuthHeader) && (
-                <div className="absolute left-1/2 -translate-x-1/2">
-                  <Nav variant={variant} className={navDisplayClass} />
-                </div>
-              )}
-
-              <div className="flex items-center gap-3">
-                {isAuthHeader ? (
-                  <UserBar variant={variant} />
-                ) : isHomePage ? (
-                  <AuthBar />
-                ) : null}
-
-                {isAuthHeader && (
-                  <button
-                    type="button"
-                    onClick={() => setIsMenuOpen(true)}
-                    className={cn(
-                      "flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center md:hidden",
-                      variant === "dark" ? "text-white" : "text-dark"
-                    )}
-                    aria-label="Open menu"
-                  >
-                    <FIcon iconName="burger" className="h-5 w-6 shrink-0" />
-                  </button>
-                )}
+            {(isHomePage || isAuthHeader) && (
+              <div className="absolute left-1/2 -translate-x-1/2">
+                <Nav variant={variant} className={navDisplayClass} />
               </div>
+            )}
+
+            <div className="flex items-center gap-3">
+              {isAuthHeader ? (
+                <UserBar variant={variant} />
+              ) : isHomePage ? (
+                <AuthBar />
+              ) : null}
+
+              {isAuthHeader && (
+                <button
+                  type="button"
+                  onClick={() => setIsMenuOpen(true)}
+                  className={cn(
+                    "flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center md:hidden",
+                    variant === "dark" ? "text-white" : "text-dark"
+                  )}
+                  aria-label="Open menu"
+                >
+                  <FIcon iconName="burger" className="h-5 w-6 shrink-0" />
+                </button>
+              )}
             </div>
-          </header>
-        </div>
+          </div>
+        </header>
       </div>
 
       <MobileMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />

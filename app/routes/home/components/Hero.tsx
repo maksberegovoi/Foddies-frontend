@@ -27,9 +27,10 @@ const HeroSection = () => {
 
   return (
     <div
-      className={
-        "relative mx-2 mt-2 flex flex-col items-center rounded-4xl bg-foreground md:mx-4 md:mt-4 lg:mx-5 lg:mt-5"
-      }
+      className={cn(
+        "relative mt-2 flex flex-col items-center rounded-4xl bg-foreground md:mt-4 lg:mt-5",
+        "lg:-mx-[60px] lg:w-[calc(100%+120px)] lg:max-w-none"
+      )}
     >
       <HeroLine className="left-4 md:left-8 lg:left-15" />
       {!isMobile && (
