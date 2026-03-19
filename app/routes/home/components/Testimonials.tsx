@@ -8,6 +8,7 @@ import FIcon from "~/components/FIcon"
 import Title from "~/components/Title"
 import TestimonialItem from "./TestimonialItem"
 import type { TestimonialDto } from "~/api/generated/model"
+import Text from "~/components/Text"
 
 interface TestimonialsProps {
   items: TestimonialDto[]
@@ -18,9 +19,9 @@ const Testimonials = ({ items }: TestimonialsProps) => {
     <section className="mb-30 flex flex-col items-center">
       <div className="relative mx-4 flex h-98.5 max-w-206 flex-col md:mx-8 md:h-108 lg:mx-0">
         <div className="flex flex-col items-center gap-4">
-          <span className="text-sm font-medium md:text-base">
+          <Text as="span" className="text-sm font-medium md:text-base">
             What our customer say
-          </span>
+          </Text>
           <Title as={"h2"}>Testimonials</Title>
         </div>
 

@@ -89,9 +89,12 @@ const Categories = ({ loaderData }: Route.ComponentProps) => {
                   : `calc(27% - ${(3 * GAP_PX) / 4}px)`,
             }}
           >
-            <span className="text-xl leading-6 font-bold text-white uppercase">
+            <Text
+              as="span"
+              className="text-xl leading-6 font-bold text-white uppercase"
+            >
               All Categories
-            </span>
+            </Text>
           </div>
         )}
       </div>

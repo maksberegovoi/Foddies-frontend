@@ -1,4 +1,5 @@
 import type { TestimonialDto } from "~/api/generated/model"
+import Text from "~/components/Text"
 
 type TestimonialItemProps = {
   item: TestimonialDto
@@ -7,13 +8,19 @@ type TestimonialItemProps = {
 const TestimonialItem = ({ item }: TestimonialItemProps) => {
   return (
     <div className="mt-16 flex flex-col justify-between select-none md:mt-20">
-      <span className="text-center text-lg leading-6 md:text-2xl md:leading-9">
+      <Text
+        as="span"
+        className="text-center text-lg leading-6 md:text-2xl md:leading-9"
+      >
         {item.text}
-      </span>
+      </Text>
 
-      <span className="text-center text-base leading-6 font-extrabold uppercase md:text-xl">
+      <Text
+        as="span"
+        className="text-center text-base leading-6 font-extrabold uppercase md:text-xl"
+      >
         {item.owner}
-      </span>
+      </Text>
     </div>
   )
 }

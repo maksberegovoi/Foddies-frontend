@@ -110,7 +110,9 @@ export default function Category({ params }: Route.ComponentProps) {
       <div className="flex max-w-[532px] flex-col items-start gap-4 md:gap-5">
         <NavLink preventScrollReset to="/" className="flex gap-1.5">
           <FIcon width={18} height={18} iconName="arrow-to-left" />
-          <span className="text-sm leading-4.5 font-bold uppercase">Back</span>
+          <Text as="span" className="text-sm leading-4.5 font-bold uppercase">
+            Back
+          </Text>
         </NavLink>
 
         <Title as={"h2"}>{selectedCategory?.name ?? "Category"}</Title>

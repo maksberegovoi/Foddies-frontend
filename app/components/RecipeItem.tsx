@@ -35,7 +35,9 @@ const RecipeItem = ({ item }: RecipeItemProps) => {
             alt="Owner Avatar"
             className="size-10 rounded-full"
           />
-          <span className="font-semibold">{item.ownerName}</span>
+          <Text as="span" className="font-semibold">
+            {item.ownerName}
+          </Text>
         </div>
 
         <div className="flex gap-1">
