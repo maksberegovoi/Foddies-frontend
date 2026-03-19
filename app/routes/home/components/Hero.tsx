@@ -1,15 +1,16 @@
 import type { HTMLAttributes } from "react"
-
-import { useMediaQuery } from "@uidotdev/usehooks"
 import { useNavigate } from "react-router"
 
-import { useModal } from "~/components/modals/modal-context"
+import { useMediaQuery } from "@uidotdev/usehooks"
+
 import { cn } from "~/lib/utils"
-import { buttonVariants } from "~/components/ui/button"
+import Text from "~/components/Text"
+import Title from "~/components/Title"
 import HeroBig from "~/assets/images/hero_big.png"
 import HeroSmall from "~/assets/images/hero_small.png"
+import { buttonVariants } from "~/components/ui/button"
+import { useModal } from "~/components/modals/modal-context"
 import { useIsSignedIn } from "~/components/auth/sign-in-hooks"
-import Title from "~/components/Title"
 
 const HeroSection = () => {
   const isMobile = useMediaQuery("only screen and (max-width : 768px)")
@@ -46,10 +47,13 @@ const HeroSection = () => {
           Improve Your Culinary Talents
         </Title>
 
-        <span className="max-w-xl px-4 text-center text-sm leading-[20px] font-light text-white sm:text-base sm:leading-6 md:px-0">
+        <Text
+          as="span"
+          className="max-w-xl px-4 text-center text-sm leading-[20px] font-light text-white sm:text-base sm:leading-6 md:px-0"
+        >
           Amazing recipes for beginners in the world of cooking, enveloping you
           in the aromas and tastes of various cuisines.
-        </span>
+        </Text>
 
         <button
           className={cn(

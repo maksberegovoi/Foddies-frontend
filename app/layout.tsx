@@ -29,7 +29,7 @@ export default function Layout() {
       <ModalProvider>
         <ModalSearchBridge />
         <div className="container">
-          <Header />
+          <Header isAuth={isSignedIn} />
 
           <main>
             <Outlet />

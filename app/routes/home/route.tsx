@@ -1,55 +1,47 @@
+import { useState } from "react"
 import { Outlet } from "react-router"
 
-import FIcon from "~/components/FIcon"
-import {
-  Carousel,
-  CarouselContent,
-  CarouselDots,
-  CarouselItem,
-} from "~/components/ui/carousel"
-
+import type { Route } from "./+types/route"
 import HeroSection from "./components/Hero"
-import TestimonialItem from "./components/TestimonialItem"
-import { testimonials } from "./mocks"
-import Title from "~/components/Title"
+import { queryClient } from "~/api/query-client"
+import type { HomeContextType } from "./home.types"
+import Testimonials from "./components/Testimonials"
+import type { CategoryDto } from "~/api/generated/model"
+import {
+  getTestimonials,
+  getGetTestimonialsQueryKey,
+} from "~/api/generated/endpoints/testimonials/testimonials"
 
-export default function Home() {
+export async function clientLoader() {
+  const queryKey = getGetTestimonialsQueryKey()
+
+  return await queryClient.ensureQueryData({
+    queryKey,
+    queryFn: () => getTestimonials(),
+  })
+}
+
+export default function Home({ loaderData }: Route.ComponentProps) {
+  const [selectedCategory, setSelectedCategory] = useState<CategoryDto>()
+
+  const handleSelectCategory = (category: CategoryDto) => {
+    setSelectedCategory(category)
+  }
+
   return (
     <div className="flex min-h-svh flex-col gap-16 md:gap-25 lg:gap-30">
       <HeroSection />
 
-      <Outlet />
+      <Outlet
+        context={
+          {
+            selectedCategory,
+            handleSelectCategory,
+          } satisfies HomeContextType
+        }
+      />
 
-      <section className="mb-30 flex flex-col items-center">
-        <div className="relative mx-4 flex h-98.5 max-w-206 flex-col md:mx-8 md:h-108 lg:mx-0">
-          <div className="flex flex-col items-center gap-4">
-            <span className="text-sm font-medium md:text-base">
-              What our customer say
-            </span>
-            <Title as={"h2"}>Testimonials</Title>
-          </div>
-
-          <FIcon
-            iconName="quotes"
-            className="absolute top-20 left-2 h-8 w-10 text-gray md:top-19 md:left-10 md:h-12 md:w-14.75"
-          />
-
-          <Carousel className="flex flex-1 flex-col">
-            <CarouselContent className="h-full">
-              {testimonials.map((item, idx) => (
-                <CarouselItem className="flex" key={idx}>
-                  <TestimonialItem item={item} />
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-
-            <CarouselDots
-              className="relative mt-10 w-full gap-3"
-              dotClassName="size-4 p-0"
-            />
-          </Carousel>
-        </div>
-      </section>
+      <Testimonials items={loaderData.data} />
     </div>
   )
 }

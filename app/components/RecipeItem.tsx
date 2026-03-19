@@ -1,15 +1,15 @@
-import { Button, buttonVariants } from "~/components/ui/button"
-import type { Recipe } from "~/types/home"
-
-import FIcon from "~/components/FIcon"
-import FavoriteRecipeToggle from "~/components/FavoriteRecipeToggle"
 import { Link } from "react-router"
+
 import { cn } from "~/lib/utils"
 import Title from "~/components/Title"
 import Text from "~/components/Text"
+import FIcon from "~/components/FIcon"
+import { Button, buttonVariants } from "~/components/ui/button"
+import FavoriteRecipeToggle from "~/components/FavoriteRecipeToggle"
+import type { RecipeCardDto } from "~/api/generated/model/recipeCardDto"
 
 type RecipeItemProps = {
-  item: Recipe
+  item: RecipeCardDto
 }
 
 const RecipeItem = ({ item }: RecipeItemProps) => {
@@ -35,7 +35,9 @@ const RecipeItem = ({ item }: RecipeItemProps) => {
             alt="Owner Avatar"
             className="size-10 rounded-full"
           />
-          <span className="font-semibold">{item.ownerName}</span>
+          <Text as="span" className="font-semibold">
+            {item.ownerName}
+          </Text>
         </div>
 
         <div className="flex gap-1">

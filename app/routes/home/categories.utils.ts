@@ -13,6 +13,10 @@ export const getCategoriesWidthByIdx = (gapPx: number, isTablet: boolean) => {
         8: `calc(50% - ${gapPx / 2}px)`,
         9: `calc(50% - ${gapPx / 2}px)`,
         10: `calc(50% - ${gapPx / 2}px)`,
+        11: `calc(50% - ${gapPx / 2}px)`,
+        12: "100%",
+        13: `calc(50% - ${gapPx / 2}px)`,
+        14: `calc(50% - ${gapPx / 2}px)`,
       }
     : {
         // 4 columns: 26% minus (3*gap)/4; 48% minus gap/2
@@ -27,5 +31,9 @@ export const getCategoriesWidthByIdx = (gapPx: number, isTablet: boolean) => {
         8: `calc(27% - ${(3 * gapPx) / 4}px)`,
         9: `calc(46% - ${gapPx / 2}px)`,
         10: `calc(27% - ${(3 * gapPx) / 4}px)`,
+        11: `calc(27% - ${(3 * gapPx) / 4}px)`,
+        12: `calc(27% - ${(3 * gapPx) / 4}px)`,
+        13: `calc(27% - ${(3 * gapPx) / 4}px)`,
+        14: `calc(46% - ${gapPx / 2}px)`,
       }
 }
