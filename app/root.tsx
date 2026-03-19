@@ -14,6 +14,7 @@ import { QueryClientProvider } from "@tanstack/react-query"
 import { queryClient } from "~/api/query-client"
 import Title from "./components/Title"
 import Text from "~/components/Text"
+import { Toaster } from "sonner"
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -26,6 +27,19 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         {children}
+        <Toaster
+          position="top-right"
+          richColors
+          closeButton
+          toastOptions={{
+            style: {
+              background: "var(--popover)",
+              color: "var(--popover-foreground)",
+              borderRadius: "var(--radius)",
+            },
+            className: "my-custom-toast",
+          }}
+        />
         <ScrollRestoration />
         <Scripts />
       </body>
