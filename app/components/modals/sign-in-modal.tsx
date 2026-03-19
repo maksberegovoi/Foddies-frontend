@@ -10,6 +10,7 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog"
 import { Input } from "~/components/ui/input"
+import Text from "~/components/Text"
 
 type SignInValues = {
   email: string
@@ -98,7 +99,7 @@ function SignInModal({
                   type={showPassword ? "text" : "password"}
                   value={values.password}
                 />
-                {values.password ? (
+                {values.password && (
                   <button
                     aria-label={
                       showPassword ? "Hide password" : "Show password"
@@ -112,7 +113,7 @@ function SignInModal({
                       iconName={showPassword ? "eye" : "eye-off"}
                     />
                   </button>
-                ) : null}
+                )}
               </div>
             </div>
           </div>
@@ -141,11 +142,11 @@ function SignInModal({
               </button>
             </div>
 
-            {errorMessage ? (
-              <p className="text-center text-sm text-destructive">
+            {errorMessage && (
+              <Text as={"span"} className="text-center text-destructive">
                 {errorMessage}
-              </p>
-            ) : null}
+              </Text>
+            )}
           </div>
         </form>
       </DialogContent>

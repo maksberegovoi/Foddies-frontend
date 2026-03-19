@@ -42,13 +42,13 @@ export default function TextareaField({
           className={`min-h-0 flex-1 resize-none rounded-none border-none bg-transparent px-0 py-0 text-sm shadow-none ring-0 outline-none focus-visible:ring-0 ${error ? "placeholder:text-destructive" : "placeholder:text-gray"}`}
           {...textareaBindings}
         />
-        {hasCounter ? (
+        {hasCounter && (
           <span
             className={`ml-2 shrink-0 text-xs ${error ? "text-destructive" : "text-gray"}`}
           >
             <span className="text-dark">{value.length}</span>/{maxLength}
           </span>
-        ) : null}
+        )}
       </div>
     </div>
   )

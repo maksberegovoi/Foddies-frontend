@@ -1,4 +1,5 @@
 import { Button } from "~/components/ui/button"
+import Title from "~/components/Title"
 
 export default function UserInfo() {
   return (
@@ -18,10 +19,7 @@ export default function UserInfo() {
           </div>
         </div>
 
-        <h3 className="text-xl font-extrabold tracking-[-0.4px] text-dark uppercase">
-          Victoria
-        </h3>
-
+        <Title as={"h3"}>VICTORIA</Title>
         <div className="flex w-full flex-col gap-1.5">
           {[
             { label: "Email:", value: "victoria28682@gmai.com" },

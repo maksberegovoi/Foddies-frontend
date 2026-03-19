@@ -11,6 +11,7 @@ import {
 import HeroSection from "./components/Hero"
 import TestimonialItem from "./components/TestimonialItem"
 import { testimonials } from "./mocks"
+import Title from "~/components/Title"
 
 export default function Home() {
   return (
@@ -25,9 +26,7 @@ export default function Home() {
             <span className="text-sm font-medium md:text-base">
               What our customer say
             </span>
-            <h2 className="text-[28px] leading-8 font-extrabold uppercase md:text-[40px] md:leading-11">
-              Testimonials
-            </h2>
+            <Title as={"h2"}>Testimonials</Title>
           </div>
 
           <FIcon

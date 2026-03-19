@@ -1,5 +1,7 @@
 import type { RecipeDto } from "~/api/generated/model"
 import { Badge } from "~/components/ui/badge"
+import Title from "~/components/Title"
+import Text from "~/components/Text"
 
 type RecipeSummarySectionProps = {
   recipe: RecipeDto
@@ -10,7 +12,7 @@ export default function RecipeSummarySection({
 }: RecipeSummarySectionProps) {
   return (
     <section className="flex flex-col gap-5">
-      <h1 className="font-extrabold">{recipe.title.toUpperCase()}</h1>
+      <Title as={"h3"}>{recipe.title.toUpperCase()}</Title>
 
       <ul className="flex flex-wrap gap-2">
         <li>
@@ -21,9 +23,7 @@ export default function RecipeSummarySection({
         </li>
       </ul>
 
-      <p className="text-sm font-medium text-light-dark md:text-base">
-        {recipe.description}
-      </p>
+      <Text>{recipe.description}</Text>
 
       <div className="flex items-center gap-3">
         <img
@@ -31,11 +31,16 @@ export default function RecipeSummarySection({
           src={recipe.ownerAvatarURL || "/fallback_ava.png"}
           alt=""
         />
-        <div className="flex flex-col text-gray">
-          <p className="text-xs font-medium md:text-sm">Created by:</p>
-          <p className="text-sm font-bold text-dark md:text-base">
+        <div className="flex flex-col">
+          <Text
+            as={"span"}
+            className="text-xs font-medium text-gray md:text-sm"
+          >
+            Created by:
+          </Text>
+          <Text as={"span"} className="font-bold text-dark">
             {recipe.ownerName}
-          </p>
+          </Text>
         </div>
       </div>
     </section>

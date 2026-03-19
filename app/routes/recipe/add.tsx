@@ -19,9 +19,10 @@ import { usePostRecipes } from "~/api/generated/endpoints/recipes/recipes"
 import type { PostRecipesBody } from "~/api/generated/model"
 import { recipeSchema } from "./validation"
 import type { AddRecipeFormValues } from "./validation"
-import MainTitle from "~/components/MainTitle"
 import { useIsSignedIn } from "~/components/auth/sign-in-hooks"
 import { useEffect } from "react"
+import Title from "~/components/Title"
+import Text from "~/components/Text"
 
 export default function AddRecipe() {
   const navigate = useNavigate()
@@ -81,17 +82,19 @@ export default function AddRecipe() {
     )
   }
 
-  return isSignedIn ? (
-    <div className="px-4 md:px-8 lg:px-20">
-      <MainTitle>ADD RECIPE</MainTitle>
+  if (!isSignedIn) return null
+
+  return (
+    <div>
+      <Title as={"h2"}>ADD RECIPE</Title>
       <form
         className="space-y-8 md:space-y-10 lg:grid lg:grid-cols-[minmax(0,1fr)_650px] lg:items-start lg:space-y-0 lg:gap-x-20 lg:gap-y-10"
         onSubmit={methods.handleSubmit(onSubmit)}
       >
-        <p className="text-sm font-medium text-light-dark lg:col-start-1 lg:row-start-1">
+        <Text className="lg:col-start-1 lg:row-start-1">
           Reveal your culinary art, share your favorite recipe and create
           gastronomic masterpieces with us.
-        </p>
+        </Text>
 
         <div className="lg:col-start-1 lg:row-start-2">
           <ImageInput control={methods.control} />
@@ -130,5 +133,5 @@ export default function AddRecipe() {
         </div>
       </form>
     </div>
-  ) : null
+  )
 }

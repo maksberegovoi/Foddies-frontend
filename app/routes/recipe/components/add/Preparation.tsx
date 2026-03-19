@@ -1,5 +1,7 @@
 import { useController, type Control } from "react-hook-form"
 import ControlledTextareaField from "./TextareaField"
+import Title from "~/components/Title"
+import Text from "~/components/Text"
 
 const PREPARATION_MAX = 1000
 
@@ -14,10 +16,8 @@ export default function Preparation({ control }: PreparationProps) {
   } = useController({ name: "preparation", control })
 
   return (
-    <section className="space-y-5">
-      <p className="text-base font-extrabold text-dark uppercase">
-        Recipe Preparation
-      </p>
+    <section className="space-y-8 md:space-y-10">
+      <Title as={"h4"}>Recipe Preparation</Title>
       <ControlledTextareaField
         field={preparationField}
         error={preparationError}
@@ -25,9 +25,11 @@ export default function Preparation({ control }: PreparationProps) {
         maxLength={PREPARATION_MAX}
         showCounter
       />
-      {preparationError ? (
-        <p className="text-sm text-destructive">{preparationError.message}</p>
-      ) : null}
+      {preparationError && (
+        <Text as={"span"} className="text-destructive">
+          {preparationError.message}
+        </Text>
+      )}
     </section>
   )
 }

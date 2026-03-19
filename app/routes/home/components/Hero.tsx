@@ -9,6 +9,7 @@ import { buttonVariants } from "~/components/ui/button"
 import HeroBig from "~/assets/images/hero_big.png"
 import HeroSmall from "~/assets/images/hero_small.png"
 import { useIsSignedIn } from "~/components/auth/sign-in-hooks"
+import Title from "~/components/Title"
 
 const HeroSection = () => {
   const isMobile = useMediaQuery("only screen and (max-width : 768px)")
@@ -16,10 +17,19 @@ const HeroSection = () => {
   const navigate = useNavigate()
   const isSignedIn = useIsSignedIn()
 
+  const handleAddRecipe = () => {
+    if (isSignedIn) {
+      navigate("/recipe/add")
+    } else {
+      openSignIn()
+    }
+  }
+
   return (
     <div
       className={cn(
-        "relative mx-2 mt-2 flex flex-col items-center rounded-4xl bg-foreground md:mx-4 md:mt-4 lg:mx-5 lg:mt-5"
+        "relative mt-2 flex flex-col items-center rounded-4xl bg-foreground md:mt-4 lg:mt-5",
+        "lg:-mx-[60px] lg:w-[calc(100%+120px)] lg:max-w-none"
       )}
     >
       <HeroLine className="left-4 md:left-8 lg:left-15" />
@@ -32,9 +42,9 @@ const HeroSection = () => {
       )}
 
       <div className="flex max-w-4xl flex-col items-center gap-10 px-4 pt-[194px] md:pt-[217px] lg:px-0 lg:pt-[154px]">
-        <h1 className="text-center text-[40px] leading-[40px] font-extrabold text-white uppercase md:text-[70px] md:leading-[70px] lg:text-[90px] lg:leading-[90px]">
+        <Title className="text-center text-white">
           Improve Your Culinary Talents
-        </h1>
+        </Title>
 
         <span className="max-w-xl px-4 text-center text-sm leading-[20px] font-light text-white sm:text-base sm:leading-6 md:px-0">
           Amazing recipes for beginners in the world of cooking, enveloping you
@@ -47,13 +57,7 @@ const HeroSection = () => {
             "px-8 text-base font-bold uppercase"
           )}
           type="button"
-          onClick={() => {
-            if (isSignedIn) {
-              navigate("/recipe/add")
-            } else {
-              openSignIn()
-            }
-          }}
+          onClick={handleAddRecipe}
         >
           Add recipe
         </button>

@@ -3,6 +3,8 @@ import CategoryItem from "./components/CategoryItem"
 import { categories } from "./mocks"
 import { useMemo } from "react"
 import { getCategoriesWidthByIdx } from "./categories.utils"
+import Title from "~/components/Title"
+import Text from "~/components/Text"
 
 const Categories = () => {
   const isMobile = useMediaQuery("only screen and (max-width : 768px)")
@@ -18,16 +20,14 @@ const Categories = () => {
   )
 
   return (
-    <section className="flex flex-col gap-8 px-4 md:gap-10 md:px-8 lg:px-20">
+    <section className="flex flex-col gap-8 md:gap-10">
       <div className="flex max-w-[532px] flex-col gap-4 md:gap-5">
-        <h2 className="text-[28px] leading-8 font-extrabold uppercase md:text-[40px] md:leading-11">
-          Categories
-        </h2>
-        <p className="text-sm text-gray md:text-base md:text-light-dark">
+        <Title as={"h2"}>Categories</Title>
+        <Text className="text-gray md:text-light-dark">
           Discover a limitless world of culinary possibilities and enjoy
           exquisite recipes that combine taste, style and the warm atmosphere of
           the kitchen.
-        </p>
+        </Text>
       </div>
 
       <div className="flex flex-wrap gap-4 sm:gap-5">

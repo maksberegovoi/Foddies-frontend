@@ -13,6 +13,8 @@ import { Input } from "~/components/ui/input"
 import VirtualizedComboboxList from "~/components/ui/VirtualizedComboboxList"
 
 import { useGetIngredients } from "~/api/generated/endpoints/ingredients/ingredients"
+import Title from "~/components/Title"
+import Text from "~/components/Text"
 
 type IngredientFormValue = {
   ingredientId: string
@@ -106,9 +108,7 @@ function Ingredients({ control }: IngredientsProps) {
 
   return (
     <section className="space-y-5">
-      <p className="text-base font-extrabold text-dark uppercase">
-        Ingredients
-      </p>
+      <Title as={"h4"}>Ingredients</Title>
 
       <div className="grid gap-4 md:grid-cols-[274px_250px] md:items-end md:justify-start">
         <Combobox
@@ -152,14 +152,18 @@ function Ingredients({ control }: IngredientsProps) {
         <FIcon iconName="plus" className="size-5" />
       </Button>
 
-      {localError ? (
-        <p className="text-sm text-destructive">{localError}</p>
-      ) : null}
-      {ingredientsError ? (
-        <p className="text-sm text-destructive">{ingredientsError}</p>
-      ) : null}
+      {localError && (
+        <Text as={"span"} className="text-destructive">
+          {localError}
+        </Text>
+      )}
+      {ingredientsError && (
+        <Text as={"span"} className="text-destructive">
+          {ingredientsError}
+        </Text>
+      )}
 
-      {fields.length > 0 ? (
+      {fields.length > 0 && (
         <ul className="grid grid-cols-2 gap-4 md:grid-cols-3">
           {fields.map((item, index) => (
             <li key={item.id}>
@@ -174,18 +178,16 @@ function Ingredients({ control }: IngredientsProps) {
                   </div>
 
                   <div className="min-w-0">
-                    <p
-                      className="text-sm font-medium text-dark md:text-base"
-                      title={item.name}
-                    >
+                    <Text as={"span"} title={item.name} className="text-dark">
                       {item.name}
-                    </p>
-                    <p
-                      className="text-sm font-medium text-gray md:text-base"
+                    </Text>
+                    <Text
+                      as={"span"}
+                      className="text-gray"
                       title={item.measure}
                     >
                       {item.measure}
-                    </p>
+                    </Text>
                   </div>
                 </div>
                 <Button
@@ -202,7 +204,7 @@ function Ingredients({ control }: IngredientsProps) {
             </li>
           ))}
         </ul>
-      ) : null}
+      )}
     </section>
   )
 }

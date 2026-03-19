@@ -8,6 +8,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "../ui/dropdown-menu"
+import Text from "~/components/Text"
 
 type UserBarProps = {
   variant?: "dark" | "light"
@@ -25,21 +26,31 @@ export default function UserBar({ variant = "dark" }: UserBarProps) {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="flex cursor-pointer items-center gap-2 rounded-full bg-light-dark px-2 py-1 text-white outline-none md:px-3 md:py-2">
+      <DropdownMenuTrigger
+        className={cn(
+          "flex cursor-pointer items-center overflow-hidden rounded-full",
+          variant === "dark" ? "bg-dark" : "bg-light-dark"
+        )}
+      >
         <img
           src={user.avatar || defaultAvatar}
           alt={user.name}
-          className="h-6 w-6 rounded-full object-cover md:h-8 md:w-8"
+          className="h-8 w-8 shrink-0 rounded-full object-cover md:h-12.5 md:w-12.5"
         />
 
-        <span className="text-[10px] font-semibold uppercase md:text-sm">
-          {user.name}
-        </span>
+        <div className="md:py-3.9 flex items-center gap-1 p-1.5 md:pr-3.5 md:pl-1.5">
+          <Text
+            as={"span"}
+            className="text-xs leading-4.5 font-bold tracking-[-0.24px] text-white uppercase"
+          >
+            {user.name}
+          </Text>
 
-        <FIcon
-          iconName="chevron-down"
-          className="h-3 w-3 transition-transform md:h-4 md:w-4"
-        />
+          <FIcon
+            iconName="chevron-down"
+            className="size-4.5 shrink-0 text-white transition-transform"
+          />
+        </div>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent
