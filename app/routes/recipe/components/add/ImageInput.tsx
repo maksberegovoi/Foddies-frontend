@@ -2,6 +2,7 @@ import { memo, useEffect, useState } from "react"
 import { useController, type Control } from "react-hook-form"
 
 import FIcon from "~/components/FIcon"
+import Text from "~/components/Text"
 
 type ImageInputProps = {
   control: Control<any>
@@ -61,27 +62,34 @@ function ImageInput({ control }: ImageInputProps) {
 
           <label
             htmlFor="recipe-image"
-            className="mx-auto block w-fit cursor-pointer text-center text-sm font-medium text-dark underline underline-offset-2"
+            className="mx-auto block w-fit cursor-pointer underline underline-offset-2 transition-opacity hover:opacity-70"
           >
-            Upload another photo
+            <Text as={"span"} className="text-dark">
+              Upload another photo
+            </Text>
           </label>
         </>
       ) : (
         <label
           htmlFor="recipe-image"
-          className="flex h-79.5 w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-[30px] border border-dashed border-gray px-6 text-center"
+          className="group flex h-79.5 w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-[30px] border border-dashed border-gray px-6 text-center underline underline-offset-2"
         >
           <FIcon iconName="camera" className="size-12.5 text-gray" />
 
-          <p className="text-sm font-medium text-dark underline underline-offset-2">
+          <Text
+            as={"span"}
+            className="text-dark transition-opacity group-hover:opacity-70"
+          >
             Upload a photo
-          </p>
+          </Text>
         </label>
       )}
 
-      {error ? (
-        <p className="text-sm text-destructive">{String(error.message)}</p>
-      ) : null}
+      {error && (
+        <Text as={"span"} className="text-destructive">
+          {error.message}
+        </Text>
+      )}
     </div>
   )
 }

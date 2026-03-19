@@ -6,6 +6,7 @@ import FavoriteRecipeToggle from "~/components/FavoriteRecipeToggle"
 import { Link } from "react-router"
 import { cn } from "~/lib/utils"
 import Title from "~/components/Title"
+import Text from "~/components/Text"
 
 type RecipeItemProps = {
   item: Recipe
@@ -24,7 +25,7 @@ const RecipeItem = ({ item }: RecipeItemProps) => {
         <Title as={"h4"} className={"line-clamp-1"}>
           {item.title}
         </Title>
-        <p className="line-clamp-2 h-13.5">{item.instructions}</p>
+        <Text className="line-clamp-2 h-13.5">{item.instructions}</Text>
       </div>
 
       <div className="flex justify-between">

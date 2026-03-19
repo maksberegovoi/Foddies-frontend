@@ -20,7 +20,7 @@ const socialLinks = [
 
 export default function NetworkLinks() {
   return (
-    <ul className="flex items-center gap-2">
+    <ul className="flex items-center gap-4">
       {socialLinks.map(({ href, icon, label }) => (
         <li key={icon}>
           <a
@@ -28,9 +28,12 @@ export default function NetworkLinks() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label={label}
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-border"
+            className="group flex items-center justify-center rounded-full border border-gray p-2 transition-colors duration-300 hover:bg-dark md:p-2.5"
           >
-            <FIcon iconName={icon} className="h-4 w-4" />
+            <FIcon
+              iconName={icon}
+              className="size-5 transition-colors duration-300 group-hover:text-white"
+            />
           </a>
         </li>
       ))}

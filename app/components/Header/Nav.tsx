@@ -13,14 +13,14 @@ const navLinks = [
 
 export default function Nav({ variant = "dark", className }: NavProps) {
   return (
-    <nav className={cn("items-center gap-6", className)}>
+    <nav className={cn("items-center gap-4", className)}>
       {navLinks.map(({ to, label }) => (
         <NavLink
           key={to}
           to={to}
           className={({ isActive }) =>
             cn(
-              "px-4 py-2",
+              "px-3.5 py-2",
               variant === "dark" ? "text-white" : "text-dark",
               isActive &&
                 cn(

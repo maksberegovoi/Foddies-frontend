@@ -2,13 +2,13 @@ import { useParams } from "react-router"
 import { cn } from "~/lib/utils"
 
 import PathInfo from "~/components/PathInfo"
-import MainTitle from "~/components/MainTitle"
-import Subtitle from "~/components/Subtitle"
 import { Tabs, TabsContent } from "~/components/ui/tabs"
 
 import UserInfo from "./components/UserInfo"
 import TabsList from "./components/TabsList"
 import ListItems from "./components/ListItems"
+import Text from "~/components/Text"
+import Title from "~/components/Title"
 
 export default function UserPage() {
   useParams()
@@ -20,11 +20,11 @@ export default function UserPage() {
         <div className="flex w-full flex-col items-start gap-10">
           <PathInfo currentPageName="profile" />
           <div className="flex flex-col items-start gap-5">
-            <MainTitle>Profile</MainTitle>
-            <Subtitle className="max-w-110.75">
+            <Title as={"h2"}>Profile</Title>
+            <Text className="max-w-110.75">
               Reveal your culinary art, share your favorite recipe and create
               gastronomic masterpieces with us.
-            </Subtitle>
+            </Text>
           </div>
         </div>
 

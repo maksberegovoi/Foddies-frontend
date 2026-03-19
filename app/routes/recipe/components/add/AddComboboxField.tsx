@@ -9,6 +9,8 @@ import {
   ComboboxItem,
   ComboboxList,
 } from "~/components/ui/combobox"
+import Title from "~/components/Title"
+import Text from "~/components/Text"
 
 type Options = {
   value: string
@@ -43,8 +45,8 @@ function AddComboboxField({
       : null
 
   return (
-    <div className="space-y-2">
-      <p className="text-base font-extrabold text-dark uppercase">{label}</p>
+    <div className="space-y-2 md:space-y-4">
+      <Title as={"h4"}>{label}</Title>
 
       <Combobox
         items={items}
@@ -68,9 +70,11 @@ function AddComboboxField({
         </ComboboxContent>
       </Combobox>
 
-      {error ? (
-        <p className="text-sm text-destructive">{error.message}</p>
-      ) : null}
+      {error && (
+        <Text as={"span"} className="text-destructive">
+          {error.message}
+        </Text>
+      )}
     </div>
   )
 }

@@ -1,23 +1,35 @@
 import type { HTMLAttributes } from "react"
 
 import { useMediaQuery } from "@uidotdev/usehooks"
+import { useNavigate } from "react-router"
 
 import { useModal } from "~/components/modals/modal-context"
 import { cn } from "~/lib/utils"
-import { Button } from "~/components/ui/button"
+import { buttonVariants } from "~/components/ui/button"
 import HeroBig from "~/assets/images/hero_big.png"
 import HeroSmall from "~/assets/images/hero_small.png"
+import { useIsSignedIn } from "~/components/auth/sign-in-hooks"
 import Title from "~/components/Title"
 
 const HeroSection = () => {
   const isMobile = useMediaQuery("only screen and (max-width : 768px)")
   const { openSignIn } = useModal()
+  const navigate = useNavigate()
+  const isSignedIn = useIsSignedIn()
+
+  const handleAddRecipe = () => {
+    if (isSignedIn) {
+      navigate("/recipe/add")
+    } else {
+      openSignIn()
+    }
+  }
 
   return (
     <div
-      className={cn(
+      className={
         "relative mx-2 mt-2 flex flex-col items-center rounded-4xl bg-foreground md:mx-4 md:mt-4 lg:mx-5 lg:mt-5"
-      )}
+      }
     >
       <HeroLine className="left-4 md:left-8 lg:left-15" />
       {!isMobile && (
@@ -29,20 +41,23 @@ const HeroSection = () => {
       )}
 
       <div className="flex max-w-4xl flex-col items-center gap-10 px-4 pt-[194px] md:pt-[217px] lg:px-0 lg:pt-[154px]">
-        <Title>Improve Tour Culinary Talents</Title>
+        <Title>Improve Your Culinary Talents</Title>
 
         <span className="max-w-xl px-4 text-center text-sm leading-[20px] font-light text-white sm:text-base sm:leading-6 md:px-0">
           Amazing recipes for beginners in the world of cooking, enveloping you
           in the aromas and tastes of various cuisines.
         </span>
 
-        <Button
-          variant="outlineWhite"
-          onClick={openSignIn}
-          className="px-8 text-base font-bold uppercase"
+        <button
+          className={cn(
+            buttonVariants({ variant: "outlineWhite" }),
+            "px-8 text-base font-bold uppercase"
+          )}
+          type="button"
+          onClick={handleAddRecipe}
         >
           Add recipe
-        </Button>
+        </button>
 
         <div className="flex gap-9 pt-17 pb-28">
           <img

@@ -7,6 +7,7 @@ import {
 
 import { Input } from "~/components/ui/input"
 import ControlledTextareaField from "./TextareaField"
+import Text from "~/components/Text"
 
 const DESCRIPTION_MAX = 200
 
@@ -46,9 +47,11 @@ function Details({ control }: DetailsProps) {
           className="h-auto rounded-none border-none bg-transparent p-0 text-lg font-bold text-dark uppercase shadow-none ring-0 outline-none placeholder:text-lg placeholder:font-bold placeholder:text-gray placeholder:uppercase focus-visible:ring-0"
           {...titleInputBindings}
         />
-        {titleError ? (
-          <p className="text-sm text-destructive">{titleError.message}</p>
-        ) : null}
+        {titleError && (
+          <Text as={"span"} className="text-destructive">
+            {titleError.message}
+          </Text>
+        )}
       </div>
 
       <ControlledTextareaField

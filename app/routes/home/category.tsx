@@ -23,6 +23,7 @@ import FIcon from "~/components/FIcon"
 import type { Route } from "./+types/category"
 import RecipeItem from "~/components/RecipeItem"
 import Title from "~/components/Title"
+import Text from "~/components/Text"
 
 const ITEMS_PER_PAGE = 6
 
@@ -67,9 +68,9 @@ const Category = ({ params }: Route.LoaderArgs) => {
         </NavLink>
 
         <Title as={"h2"}>{item?.name}</Title>
-        <p className="text-sm text-gray md:text-base md:text-light-dark">
+        <Text className="text-gray md:text-light-dark">
           {item?.description}
-        </p>
+        </Text>
       </div>
 
       <div className="flex flex-col gap-8 md:gap-10 lg:flex-row">

@@ -1,7 +1,7 @@
-import type { ReactNode } from "react"
+import type { ComponentPropsWithoutRef, ReactNode } from "react"
 import { cn } from "~/lib/utils"
 
-interface TitleProps {
+interface TitleProps extends ComponentPropsWithoutRef<"h1"> {
   as?: "h1" | "h2" | "h3" | "h4"
   children: ReactNode
   className?: string
@@ -11,7 +11,7 @@ const baseStyles = "uppercase text-dark font-extrabold"
 const styles = {
   h1: cn(
     // Mobile
-    "text-center text-[40px] leading-[40px] tracking-[-0.8px] text-white",
+    "text-[40px] leading-[40px] tracking-[-0.8px]",
     // Tablet
     "md:text-[70px] md:leading-[70px] md:tracking-[-1.4px]",
     // Desktop
@@ -41,9 +41,13 @@ export default function Title({
   as: Component = "h1",
   children,
   className,
+  ...props
 }: TitleProps) {
   return (
-    <Component className={cn(baseStyles, styles[Component], className)}>
+    <Component
+      {...props}
+      className={cn(baseStyles, styles[Component], className)}
+    >
       {children}
     </Component>
   )

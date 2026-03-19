@@ -3,6 +3,8 @@ import { useController, type Control } from "react-hook-form"
 
 import FIcon from "~/components/FIcon"
 import { Button } from "~/components/ui/button"
+import Text from "~/components/Text"
+import Title from "~/components/Title"
 
 const MIN_COOKING_TIME = 1
 const COOKING_TIME_STEP = 5
@@ -72,10 +74,8 @@ function CookingTime({ control }: CookingTimeProps) {
   }
 
   return (
-    <div className="space-y-2">
-      <p className="text-base font-extrabold text-dark uppercase">
-        Cooking time
-      </p>
+    <div className="space-y-2 md:space-y-4">
+      <Title as={"h4"}>Cooking time</Title>
 
       <div className="flex items-center gap-3">
         <Button
@@ -117,9 +117,7 @@ function CookingTime({ control }: CookingTimeProps) {
         </Button>
       </div>
 
-      {error ? (
-        <p className="text-sm text-destructive">{error.message}</p>
-      ) : null}
+      {error && <Text className="text-destructive">{error.message}</Text>}
     </div>
   )
 }

@@ -39,20 +39,18 @@ export default function Header({ isAuth = false }: HeaderProps) {
       <div
         className={cn(isHomePage ? "absolute inset-x-0 top-5 z-20" : "mt-5")}
       >
-        <div className="container mx-auto px-4 md:px-8">
+        <div className="mx-auto px-4 md:px-8">
           <header
             className={cn(
-              "w-full",
-              isHomePage
-                ? "px-5 py-4 text-white lg:px-[60px]"
-                : "rounded-[30px] px-5 py-3 md:py-4 lg:px-[60px]",
+              "lg:5 mt-6 w-full md:mt-9",
+              isHomePage ? "text-white" : "rounded-[30px]",
               !isHomePage &&
                 (variant === "dark"
                   ? "bg-dark text-white"
                   : "bg-white text-dark")
             )}
           >
-            <div className="relative flex items-center justify-between">
+            <div className="relative flex items-center justify-between gap-2">
               <Logo variant={variant === "dark" ? "white" : "black"} />
 
               {(isHomePage || isAuthHeader) && (
