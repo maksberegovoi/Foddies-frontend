@@ -117,7 +117,11 @@ function CookingTime({ control }: CookingTimeProps) {
         </Button>
       </div>
 
-      {error && <Text className="text-destructive">{error.message}</Text>}
+      {error && (
+        <Text as={"span"} className="text-destructive">
+          {error.message}
+        </Text>
+      )}
     </div>
   )
 }

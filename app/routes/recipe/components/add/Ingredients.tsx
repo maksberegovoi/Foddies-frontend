@@ -152,9 +152,15 @@ function Ingredients({ control }: IngredientsProps) {
         <FIcon iconName="plus" className="size-5" />
       </Button>
 
-      {localError && <Text className="text-destructive">{localError}</Text>}
+      {localError && (
+        <Text as={"span"} className="text-destructive">
+          {localError}
+        </Text>
+      )}
       {ingredientsError && (
-        <Text className="text-destructive">{ingredientsError}</Text>
+        <Text as={"span"} className="text-destructive">
+          {ingredientsError}
+        </Text>
       )}
 
       {fields.length > 0 && (

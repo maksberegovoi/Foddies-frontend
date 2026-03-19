@@ -41,7 +41,9 @@ const HeroSection = () => {
       )}
 
       <div className="flex max-w-4xl flex-col items-center gap-10 px-4 pt-[194px] md:pt-[217px] lg:px-0 lg:pt-[154px]">
-        <Title>Improve Your Culinary Talents</Title>
+        <Title className="text-center text-white">
+          Improve Your Culinary Talents
+        </Title>
 
         <span className="max-w-xl px-4 text-center text-sm leading-[20px] font-light text-white sm:text-base sm:leading-6 md:px-0">
           Amazing recipes for beginners in the world of cooking, enveloping you

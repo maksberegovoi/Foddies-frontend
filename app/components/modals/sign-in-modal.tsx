@@ -143,7 +143,7 @@ function SignInModal({
             </div>
 
             {errorMessage && (
-              <Text className="text-center text-destructive">
+              <Text as={"span"} className="text-center text-destructive">
                 {errorMessage}
               </Text>
             )}
