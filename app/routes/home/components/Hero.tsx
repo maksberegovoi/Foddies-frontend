@@ -1,8 +1,6 @@
 import type { HTMLAttributes } from "react"
 import { useNavigate } from "react-router"
 
-import { useMediaQuery } from "@uidotdev/usehooks"
-
 import { cn } from "~/lib/utils"
 import Text from "~/components/Text"
 import Title from "~/components/Title"
@@ -13,7 +11,6 @@ import { useModal } from "~/components/modals/modal-context"
 import { useIsSignedIn } from "~/components/auth/sign-in-hooks"
 
 const HeroSection = () => {
-  const isMobile = useMediaQuery("only screen and (max-width : 768px)")
   const { openSignIn } = useModal()
   const navigate = useNavigate()
   const isSignedIn = useIsSignedIn()
@@ -29,19 +26,10 @@ const HeroSection = () => {
   return (
     <div
       className={cn(
-        "relative mt-2 flex flex-col items-center rounded-4xl bg-foreground md:mt-4 lg:mt-5",
-        "lg:-mx-[60px] lg:w-[calc(100%+120px)] lg:max-w-none"
+        "relative mt-2 flex flex-col items-center rounded-[20px] bg-foreground md:mt-4 md:rounded-4xl lg:mt-5",
+        "-mx-[8px] w-[calc(100%+16px)] md:-mx-[16px] md:w-[calc(100%+32px)] lg:-mx-[60px] lg:w-[calc(100%+120px)]"
       )}
     >
-      <HeroLine className="left-4 md:left-8 lg:left-15" />
-      {!isMobile && (
-        <>
-          <HeroLine className="md:left-[229px] lg:left-[257px]" />
-          <HeroLine className="md:right-[229px] lg:right-[257px]" />
-          <HeroLine className="md:right-8 lg:right-15" />
-        </>
-      )}
-
       <div className="flex max-w-4xl flex-col items-center gap-10 px-4 pt-[194px] md:pt-[217px] lg:px-0 lg:pt-[154px]">
         <Title className="text-center text-white">
           Improve Your Culinary Talents
@@ -84,21 +72,5 @@ const HeroSection = () => {
 }
 
 type HeroLineProps = HTMLAttributes<HTMLDivElement>
-
-const HeroLine = ({ className, ...props }: HeroLineProps) => {
-  return (
-    <div
-      className={cn(
-        "absolute top-0 h-full border border-transparent bg-origin-border",
-        className
-      )}
-      style={{
-        background:
-          "linear-gradient(180deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.04) 100%) border-box",
-      }}
-      {...props}
-    />
-  )
-}
 
 export default HeroSection
