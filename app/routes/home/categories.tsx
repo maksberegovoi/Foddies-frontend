@@ -13,14 +13,17 @@ import {
 } from "~/api/generated/endpoints/categories/categories"
 import { getCategoriesWidthByIdx } from "./categories.utils"
 import type { HomeContextType } from "./home.types"
+import { withErrorHandling } from "~/lib/api-error-handler"
 
 export async function clientLoader() {
   const queryKey = getGetCategoriesQueryKey()
 
-  return await queryClient.ensureQueryData({
-    queryKey,
-    queryFn: () => getCategories(),
-  })
+  return await withErrorHandling(
+    queryClient.ensureQueryData({
+      queryKey,
+      queryFn: () => getCategories(),
+    })
+  )
 }
 
 const Categories = ({ loaderData }: Route.ComponentProps) => {

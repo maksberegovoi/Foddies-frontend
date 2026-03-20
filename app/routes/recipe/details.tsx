@@ -15,15 +15,18 @@ import {
 import FavoriteRecipeToggle from "~/components/FavoriteRecipeToggle"
 import { Button } from "~/components/ui/button"
 import Text from "~/components/Text"
+import { withErrorHandling } from "~/lib/api-error-handler"
 
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const recipeId = params.id
   const queryKey = getGetRecipesIdQueryKey(recipeId)
 
-  await queryClient.ensureQueryData({
-    queryKey,
-    queryFn: () => getRecipesId(recipeId),
-  })
+  await withErrorHandling(
+    queryClient.ensureQueryData({
+      queryKey,
+      queryFn: () => getRecipesId(recipeId),
+    })
+  )
 }
 
 export default function Details({ params }: Route.ComponentProps) {

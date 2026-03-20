@@ -11,6 +11,7 @@ import type {
   RecipeCardDto,
 } from "~/api/generated/model"
 import { queryClient } from "~/api/query-client"
+import { toast } from "sonner"
 
 const favoriteQueryKey = getGetRecipesFavoriteQueryKey()
 
@@ -134,6 +135,7 @@ export default function FavoriteRecipeToggle({
         {
           onError: () => {
             restoreFavoritesSnapshot(previousFavorites)
+            toast.error("Failed to remove from favorites.")
           },
         }
       )
@@ -147,6 +149,9 @@ export default function FavoriteRecipeToggle({
       {
         onError: () => {
           restoreFavoritesSnapshot(previousFavorites)
+          toast.error(
+            "Could not add to favorites. The recipe might have been removed."
+          )
         },
       }
     )
