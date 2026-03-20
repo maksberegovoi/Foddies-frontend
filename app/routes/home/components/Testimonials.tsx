@@ -16,8 +16,8 @@ interface TestimonialsProps {
 
 const Testimonials = ({ items }: TestimonialsProps) => {
   return (
-    <section className="mb-30 flex flex-col items-center">
-      <div className="relative mx-4 flex h-98.5 max-w-206 flex-col md:mx-8 md:h-108 lg:mx-0">
+    <section className="flex w-full flex-col items-center overflow-hidden">
+      <div className="relative flex h-98.5 w-full max-w-206 flex-col px-4 md:mx-8 md:h-108 lg:mx-0">
         <div className="flex flex-col items-center gap-4">
           <Text as="span" className="text-sm font-medium md:text-base">
             What our customer say

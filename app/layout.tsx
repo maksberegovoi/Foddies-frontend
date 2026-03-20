@@ -31,7 +31,7 @@ export default function Layout() {
         <div className="container">
           <Header />
 
-          <main>
+          <main className="mb-20 md:mb-25 lg:mb-30">
             <Outlet />
           </main>
 

@@ -14,7 +14,6 @@ import { QueryClientProvider } from "@tanstack/react-query"
 import { queryClient } from "~/api/query-client"
 import { Toaster } from "sonner"
 import NotFoundPage from "~/routes/not-found/route"
-import Text from "~/components/Text"
 import Title from "~/components/Title"
 
 export function Layout({ children }: { children: React.ReactNode }) {
