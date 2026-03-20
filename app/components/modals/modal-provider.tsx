@@ -118,7 +118,6 @@ function ModalHost() {
         }}
         onSubmit={async (values) => {
           await signUpMutation.mutateAsync({ data: values })
-          setSignedIn(true)
           modalStore.setModal(null)
         }}
         onSwitchToSignIn={() => modalStore.setModal("sign-in")}
