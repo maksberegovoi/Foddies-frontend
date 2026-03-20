@@ -10,20 +10,14 @@ function UserRecipePreviews({ userId, totalRecipes }: { userId: string; totalRec
     if (!totalRecipes || totalRecipes === 0) return;
     const controller = new AbortController();
 
-    fetch(`https://foddies-backend.onrender.com/api/v1/recipes?ownerId=${userId}&limit=4`, { 
+    fetch(`https://foddies-backend.onrender.com/api/v1/recipes?authorId=${userId}&limit=4`, { 
       signal: controller.signal,
       credentials: "include" 
     })
       .then((res) => res.json())
       .then((res) => {
         if (res.data && Array.isArray(res.data)) {
-          const images = res.data
-            .filter((recipe: any) => {
-              const remoteAuthorId = recipe.ownerId || (typeof recipe.author === 'object' ? recipe.author?._id : recipe.author);
-              return remoteAuthorId === userId;
-            })
-            .map((r: any) => r.image?.phone || r.image?.original);
-          
+          const images = res.data.map((r: any) => r.image?.phone || r.image?.original);
           setPreviews(images);
         }
       })
@@ -51,13 +45,21 @@ function UserRecipePreviews({ userId, totalRecipes }: { userId: string; totalRec
   );
 }
 
-export default function ListItems({ items, type, isOwnProfile, currentTab }: any) {
+export default function ListItems({ items, type, isOwnProfile, currentTab, myFollowingIds = [] }: any) {
   const navigate = useNavigate();
-  const [localItems, setLocalItems] = useState(items);
+  const [localItems, setLocalItems] = useState(() => 
+    items.map((item: any) => ({
+      ...item,
+      isFollowed: myFollowingIds.includes(item.id || item._id)
+    }))
+  );
 
   useEffect(() => {
-    setLocalItems(items);
-  }, [items]);
+    setLocalItems(items.map((item: any) => ({
+      ...item,
+      isFollowed: myFollowingIds.includes(item.id || item._id)
+    })));
+  }, [items, myFollowingIds]);
 
   const handleDeleteRecipe = async (recipeId: string) => {
     if (!confirm("Ви впевнені, що хочете видалити цей рецепт?")) return;
@@ -70,22 +72,21 @@ export default function ListItems({ items, type, isOwnProfile, currentTab }: any
 
       if (res.ok) {
         setLocalItems((prev: any[]) => prev.filter(item => (item.id !== recipeId && item._id !== recipeId)));
-      } else {
-        const errorData = await res.json();
-        alert(`Помилка видалення: ${errorData.message || res.status}`);
       }
     } catch (err) {
-      console.error("Помилка при видаленні:", err);
+      console.error(err);
     }
   };
 
   const handleFollowToggle = async (id: string, currentlyFollowing: boolean) => {
-    const method = currentlyFollowing ? 'DELETE' : 'POST';
+    const method = currentlyFollowing ? 'DELETE' : 'POST'; 
+    
     try {
-      const res = await fetch(`https://foddies-backend.onrender.com/api/v1/users/follow/${id}`, {
+      const res = await fetch(`https://foddies-backend.onrender.com/api/v1/users/${id}/follow`, {
         method,
         credentials: "include" 
       });
+
       if (res.ok) {
         setLocalItems((prev: any[]) => prev.map(item => 
           (item.id === id || item._id === id) ? { ...item, isFollowed: !currentlyFollowing } : item
@@ -125,7 +126,7 @@ export default function ListItems({ items, type, isOwnProfile, currentTab }: any
   }
 
   return (
-    <div className="flex w-full flex-col divide-y divide-[#BFBEBE]/20">
+    <div className="flex w-full flex-col divide-y divide-[#BFBEBE]">
       {localItems.map((item: any) => {
         const itemId = item.id || item._id;
         return (
@@ -141,15 +142,10 @@ export default function ListItems({ items, type, isOwnProfile, currentTab }: any
                     />
                   </div>
                   <div className="flex flex-col gap-1 lg:gap-2">
-                    <h4 className="text-[18px] md:text-[20px] font-bold uppercase tracking-tight text-black">
-                      {item.title}
-                    </h4>
-                    <p className="line-clamp-2 text-[14px] md:text-[16px] text-gray-500 leading-relaxed font-medium">
-                      {item.instructions}
-                    </p>
+                    <h4 className="text-[18px] md:text-[20px] font-bold uppercase tracking-tight text-black">{item.title}</h4>
+                    <p className="line-clamp-2 text-[14px] md:text-[16px] text-gray-500 leading-relaxed font-medium">{item.instructions}</p>
                   </div>
                 </div>
-                
                 <div className="flex gap-2 lg:gap-3 shrink-0 pt-1">
                   <Link 
                     to={`/recipe/${itemId}`} 
@@ -157,10 +153,9 @@ export default function ListItems({ items, type, isOwnProfile, currentTab }: any
                   >
                     <MoveUpRight className="h-5 w-5 lg:h-6 lg:w-6" />
                   </Link>
-
                   {isOwnProfile && currentTab === "my-recipes" && (
                     <Button 
-                      onClick={() => handleDeleteRecipe(itemId)}
+                      onClick={() => handleDeleteRecipe(itemId)} 
                       className="flex h-10 w-10 bg-transparent items-center justify-center rounded-full border border-[#BFBEBE] transition-all hover:bg-black hover:text-white lg:h-12 lg:w-12 group"
                     >
                       <Trash2 className="h-5 w-5 text-black group-hover:text-white lg:h-6 lg:w-6" />
@@ -169,18 +164,14 @@ export default function ListItems({ items, type, isOwnProfile, currentTab }: any
                 </div>
               </div>
             ) : (
-              <div className="flex flex-col gap-0 lg:flex-row lg:items-center lg:gap-6">
-                <div className="flex w-full items-start justify-between lg:flex-1 lg:items-center lg:gap-6">
-                  <div className="flex items-center gap-4 lg:gap-6">
+              <div className="flex flex-col gap-0 md:flex-row md:items-center md:gap-[60px] lg:gap-[75px]">
+                <div className="flex w-full items-start justify-between md:flex-1 md:items-center lg:gap-6">
+                  <div className="flex items-center gap-[16px]">
                     <div 
-                      className="h-20 w-20 shrink-0 overflow-hidden rounded-full lg:h-28 lg:w-28 cursor-pointer"
+                      className="h-[60px] w-[60px] md:h-[85px] md:w-[85px] shrink-0 overflow-hidden rounded-full cursor-pointer"
                       onClick={() => navigate(`/user/${itemId}`)}
                     >
-                      <img 
-                        src={item.avatarURL || "/fallback_ava.png"} 
-                        className="h-full w-full object-cover" 
-                        alt={item.name} 
-                      />
+                      <img src={item.avatarURL || "/fallback_ava.png"} className="h-full w-full object-cover" alt={item.name} />
                     </div>
                     <div className="flex flex-col">
                       <h4 
@@ -193,9 +184,8 @@ export default function ListItems({ items, type, isOwnProfile, currentTab }: any
                         Own recipes: <span className="text-dark">{item.totalRecipes || 0}</span>
                       </p>
                       <Button
-                        variant="outlineBlack"
-                        onClick={() => handleFollowToggle(itemId, item.isFollowed)}
-                        className="mt-2 h-auto w-fit rounded-full px-[24px] py-[10px] text-[14px] md:text-[16px] font-bold uppercase tracking-[-0.02em] border border-[#BFBEBE] hover:bg-black hover:text-white transition-colors"
+                        onClick={() => handleFollowToggle(itemId, !!item.isFollowed)}
+                        className={`mt-2 h-auto w-fit min-w-[130px] lg:min-w-[141px] rounded-full px-[24px] py-[10px] text-[14px] md:text-[16px] font-bold uppercase tracking-[-0.02em] border transition-colors bg-transparent border-[#BFBEBE] text-dark hover:bg-black hover:text-white`}
                       >
                         {item.isFollowed ? "Unfollow" : "Follow"}
                       </Button>
@@ -204,23 +194,19 @@ export default function ListItems({ items, type, isOwnProfile, currentTab }: any
 
                   <Link 
                     to={`/user/${itemId}`}
-                    className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 border-gray-200 transition-colors hover:bg-black hover:text-white lg:hidden"
+                    className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 border-gray-200 transition-colors hover:bg-black hover:text-white md:hidden"
                   >
                     <MoveUpRight className="h-6 w-6" />
                   </Link>
                 </div>
 
-                <div className="hidden items-center gap-4 md:flex lg:flex-[2] lg:gap-10">
-                  <UserRecipePreviews 
-                    userId={itemId} 
-                    totalRecipes={item.totalRecipes || 0} 
-                  />
-
+                <div className="hidden items-start md:flex md:flex-[2] md:gap-[60px] lg:gap-[75px]">
+                  <UserRecipePreviews userId={itemId} totalRecipes={item.totalRecipes || 0} />
                   <Link 
                     to={`/user/${itemId}`}
-                    className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 border-gray-200 transition-colors hover:bg-black hover:text-white lg:flex lg:h-14 lg:w-14"
+                    className="flex h-[36px] w-[36px] shrink-0 items-center justify-center rounded-full border-1 border-[#E8E8E8] transition-colors hover:bg-[#050505] hover:border-[#050505] hover:text-white lg:flex lg:h-[42px] lg:w-[42px]"
                   >
-                    <MoveUpRight className="h-6 w-6 lg:h-8 lg:w-8" />
+                    <MoveUpRight className="h-4 w-4 lg:h-5 lg:w-5" />
                   </Link>
                 </div>
               </div>

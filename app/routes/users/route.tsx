@@ -10,13 +10,13 @@ import ListItems from "./components/ListItems"
 
 const API_BASE_URL = "https://foddies-backend.onrender.com/api/v1";
 
-const apiFetch = async (endpoint: string, withCredentials = true) => {
+const apiFetch = async (endpoint: string) => {
   const res = await fetch(`${API_BASE_URL}${endpoint}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
     },
-    credentials: withCredentials ? "include" : "omit", 
+    credentials: "include", 
   });
 
   if (!res.ok) {
@@ -29,80 +29,61 @@ export async function clientLoader({ request, params }: Route.ClientLoaderArgs) 
   const url = new URL(request.url)
   const tab = url.searchParams.get("tab") || "my-recipes"
   const page = url.searchParams.get("page") || "1"
+  
   const userIdFromUrl = params.id;
 
   try {
-    const currentUserRes = await apiFetch('/users/current', true);
+    const currentUserRes = await apiFetch('/users/current');
     const currentUser = currentUserRes.data;
     const myId = currentUser.id || currentUser._id;
 
+    // ДОДАЄМО: Отримуємо список підписок поточного юзера
+    const myFollowingRes = await apiFetch(`/users/${myId}/following`);
+    const myFollowingIds = (myFollowingRes.data || []).map((u: any) => u.id || u._id);
+
     const isOwn = !userIdFromUrl || userIdFromUrl === "profile" || userIdFromUrl === myId;
 
-    let targetUser;
+    let targetUser = currentUser;
+    if (!isOwn) {
+      const targetUserRes = await apiFetch(`/users/${userIdFromUrl}`);
+      targetUser = targetUserRes.data;
+    }
+
+    // Оновлюємо статус підписки для цільового профілю
+    targetUser.isFollowed = myFollowingIds.includes(targetUser.id || targetUser._id);
+
+    const targetId = targetUser.id || targetUser._id;
     let itemsData;
     let type: "recipe" | "user" = "recipe";
 
-    if (isOwn) {
-      targetUser = currentUser;
-      
-      switch (tab) {
-        case "followers":
-          itemsData = await apiFetch(`/users/${myId}/followers?page=${page}`, true);
-          type = "user";
-          break;
-        case "following":
-          itemsData = await apiFetch(`/users/${myId}/following?page=${page}`, true);
-          type = "user";
-          break;
-        case "my-favorites":
-          itemsData = await apiFetch(`/recipes/favorite?page=${page}`, true);
-          type = "recipe";
-          break;
-        case "my-recipes":
-        default:
-          itemsData = await apiFetch(`/recipes/my?page=${page}`, true);
-          type = "recipe";
-      }
-    } else {
-      const targetUserRes = await apiFetch(`/users/${userIdFromUrl}`, false);
-      targetUser = targetUserRes.data;
-      const targetId = targetUser.id || targetUser._id;
-
-      switch (tab) {
-        case "followers":
-          itemsData = await apiFetch(`/users/${targetId}/followers?page=${page}`, false);
-          type = "user";
-          break;
-        case "my-recipes":
-        default:
-          itemsData = await apiFetch(`/recipes?ownerId=${targetId}&page=${page}`, false);
-          type = "recipe";
-      }
+    switch (tab) {
+      case "followers":
+        itemsData = await apiFetch(`/users/${targetId}/followers?page=${page}`);
+        type = "user";
+        break;
+      case "following":
+        itemsData = await apiFetch(`/users/${targetId}/following?page=${page}`);
+        type = "user";
+        break;
+      case "my-favorites":
+        itemsData = isOwn ? await apiFetch(`/recipes/favorite?page=${page}`) : { data: [] };
+        type = "recipe";
+        break;
+      case "my-recipes":
+      default:
+        itemsData = await apiFetch(isOwn ? `/recipes/my?page=${page}` : `/recipes?authorId=${targetId}&page=${page}`);
+        type = "recipe";
     }
 
     return { 
       user: targetUser, 
-      items: itemsData?.data || [], 
-      meta: itemsData?.meta, 
+      items: itemsData.data || [], 
       isOwn, 
-      type 
+      type,
+      myFollowingIds // ПЕРЕДАЄМО ДАЛІ
     };
   } catch (error) {
     console.error("Loader Error:", error);
-    if (userIdFromUrl && userIdFromUrl !== "profile") {
-        try {
-            const publicUserRes = await apiFetch(`/users/${userIdFromUrl}`, false);
-            const recipesRes = await apiFetch(`/recipes?ownerId=${userIdFromUrl}`, false);
-            return {
-                user: publicUserRes.data,
-                items: recipesRes.data || [],
-                isOwn: false,
-                type: "recipe"
-            };
-        } catch (e) {
-            return null;
-        }
-    }
     return null;
   }
 }
@@ -111,18 +92,24 @@ export default function UserProfilePage({ loaderData }: Route.ComponentProps) {
   const [searchParams, setSearchParams] = useSearchParams()
   const currentTab = searchParams.get("tab") || "my-recipes"
 
-  if (!loaderData) return <div className="py-20 text-center text-gray-400">Користувача не знайдено або помилка доступу.</div>;
+  if (!loaderData) {
+    return (
+      <div className="py-20 text-center text-gray-400">
+        Loading...
+      </div>
+    );
+  }
 
   const profileKey = loaderData.user.id || loaderData.user._id;
 
   return (
     <div key={profileKey} className="container mx-auto flex flex-col items-center gap-10 px-4 py-10 lg:gap-30 lg:py-42.5">
       <div className="flex w-full max-w-7xl flex-col items-start gap-10">
-        <PathInfo currentPageName={loaderData.isOwn ? "profile" : loaderData.user.name} />
+        <PathInfo currentPageName={"Profile"} />
         
         <div className="flex flex-col items-start gap-5">
           <MainTitle className="text-[28px] lg:text-[40px]">
-            {loaderData.isOwn ? "Profile" : "User Profile"}
+            Profile
           </MainTitle>
         </div>
 
@@ -140,7 +127,8 @@ export default function UserProfilePage({ loaderData }: Route.ComponentProps) {
                     items={loaderData.items} 
                     type={loaderData.type} 
                     isOwnProfile={loaderData.isOwn}
-                    currentTab={currentTab} 
+                    currentTab={currentTab}
+                    myFollowingIds={loaderData.myFollowingIds} // ДОДАНО СЮДИ
                   />
                 </TabsContent>
               </div>
