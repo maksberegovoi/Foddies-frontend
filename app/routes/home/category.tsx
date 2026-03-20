@@ -105,6 +105,9 @@ export default function Category({ params }: Route.ComponentProps) {
   const recipes = data?.data ?? []
   const meta = data?.meta
   const totalPages = meta ? Math.max(1, Math.ceil(meta.total / meta.limit)) : 1
+
+  if (!selectedCategory) return <Navigate to="/" />
+
   return (
     <section ref={sectionRef} className="flex flex-col gap-8 md:gap-10">
       <div className="flex max-w-[532px] flex-col items-start gap-4 md:gap-5">
