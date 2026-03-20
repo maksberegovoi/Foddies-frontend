@@ -28,8 +28,8 @@ export default function Header() {
   return (
     <>
       <header
-        className={cn("mt-6 md:mt-10 md:px-12!", {
-          "absolute inset-x-0 z-20 container": isPageHasHero,
+        className={cn("mt-6 md:mt-10", {
+          "absolute inset-x-0 z-20 container md:px-12!": isPageHasHero,
         })}
       >
         <div className="relative flex items-center justify-between gap-2">
