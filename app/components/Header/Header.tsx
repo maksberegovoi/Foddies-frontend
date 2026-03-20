@@ -28,7 +28,7 @@ export default function Header() {
   return (
     <>
       <header
-        className={cn("mt-6 md:mt-10", {
+        className={cn("mt-6 md:mt-10 md:px-12!", {
           "absolute inset-x-0 z-20 container": isPageHasHero,
         })}
       >
