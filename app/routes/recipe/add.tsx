@@ -23,6 +23,7 @@ import Text from "~/components/Text"
 import { toast } from "sonner"
 import type { AxiosError } from "axios"
 import type { ApiErrorHTTP } from "~/api/axios-instance"
+import PathInfo from "~/components/PathInfo"
 
 export default function AddRecipe() {
   const navigate = useNavigate()
@@ -120,8 +121,11 @@ export default function AddRecipe() {
   if (!isSignedIn) return null
 
   return (
-    <div className="mt-10">
-      <Title as={"h2"}>ADD RECIPE</Title>
+    <div className="mt-10 flex flex-col gap-10">
+      <div className="flex flex-col gap-10">
+        <PathInfo currentPageName="add recipe" />
+        <Title as={"h2"}>ADD RECIPE</Title>
+      </div>
       <form
         className="space-y-8 md:space-y-10 lg:grid lg:grid-cols-[minmax(0,1fr)_650px] lg:items-start lg:space-y-0 lg:gap-x-20 lg:gap-y-10"
         onSubmit={methods.handleSubmit(onSubmit)}
