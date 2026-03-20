@@ -33,7 +33,7 @@ export default function Header() {
         })}
       >
         <div className="relative flex items-center justify-between gap-2">
-          <Logo variant={variant} />
+          <Logo isDark={!isPageHasHero} />
 
           {isLoggedIn && (
             <Nav

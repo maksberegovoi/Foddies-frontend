@@ -20,7 +20,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
     <div className="fixed inset-0 z-50 bg-dark text-white">
       <div className="relative flex h-full flex-col px-4 pt-4 pb-6">
         <div className="flex items-center justify-between">
-          <Logo variant="light" />
+          <Logo />
 
           <button type="button" onClick={onClose} aria-label="Close menu">
             <FIcon iconName="close-x" className="h-6 w-6 text-white" />

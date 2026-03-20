@@ -7,7 +7,7 @@ export default function Footer() {
     <footer className="w-full bg-white">
       <div>
         <div className="flex items-center justify-between py-6">
-          <Logo variant="dark" />
+          <Logo isDark={true} />
           <NetworkLinks />
         </div>
       </div>
