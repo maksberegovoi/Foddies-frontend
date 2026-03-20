@@ -54,11 +54,12 @@ function Dialog({
   React.useEffect(() => {
     if (!open || typeof document === "undefined") return
 
-    const originalOverflow = document.body.style.overflow
     document.body.style.overflow = "hidden"
 
     return () => {
-      document.body.style.overflow = originalOverflow
+      document.body.style.overflow = ""
+      document.body.style.pointerEvents = ""
+      document.body.removeAttribute("data-scroll-locked")
     }
   }, [open])
 
@@ -112,7 +113,7 @@ function DialogOverlay({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="dialog-overlay"
       className={cn(
-        "fixed inset-0 w-1.5 animate-in bg-dark/45 backdrop-blur-[2px] duration-200 fade-in-0",
+        "absolute inset-0 animate-in bg-dark/45 backdrop-blur-[2px] duration-200 fade-in-0",
         className
       )}
       {...props}
@@ -158,7 +159,10 @@ function DialogContent({
 
   return (
     <DialogPortal>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
+      <div
+        onClick={() => setOpen(false)}
+        className="fixed inset-0 z-50 flex items-center justify-center p-6"
+      >
         <DialogOverlay onClick={() => setOpen(false)} />
         <div
           ref={contentRef}
