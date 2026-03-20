@@ -40,6 +40,7 @@ import {
 } from "~/api/generated/endpoints/ingredients/ingredients"
 import type { GetRecipesParams } from "~/api/generated/model"
 import { IngredientsCombobox } from "./components/IngredientsCombobox"
+import { withErrorHandling } from "~/lib/api-error-handler"
 
 const ITEMS_PER_PAGE = 12
 
@@ -50,20 +51,22 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
     page: 1,
     limit: ITEMS_PER_PAGE,
   } satisfies GetRecipesParams
-  await Promise.all([
-    queryClient.prefetchQuery({
-      queryKey: getGetIngredientsQueryKey(),
-      queryFn: () => getIngredients(),
-    }),
-    queryClient.prefetchQuery({
-      queryKey: getGetAreasQueryKey(),
-      queryFn: () => getAreas(),
-    }),
-    queryClient.prefetchQuery({
-      queryKey: getGetRecipesQueryKey(queryParams),
-      queryFn: () => getRecipes(queryParams),
-    }),
-  ])
+  await withErrorHandling(
+    Promise.all([
+      queryClient.fetchQuery({
+        queryKey: getGetIngredientsQueryKey(),
+        queryFn: () => getIngredients(),
+      }),
+      queryClient.fetchQuery({
+        queryKey: getGetAreasQueryKey(),
+        queryFn: () => getAreas(),
+      }),
+      queryClient.fetchQuery({
+        queryKey: getGetRecipesQueryKey(queryParams),
+        queryFn: () => getRecipes(queryParams),
+      }),
+    ])
+  )
 }
 
 export default function Category({ params }: Route.ComponentProps) {

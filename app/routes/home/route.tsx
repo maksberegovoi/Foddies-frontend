@@ -1,6 +1,5 @@
 import { useState } from "react"
 import { Outlet } from "react-router"
-
 import type { Route } from "./+types/route"
 import HeroSection from "./components/Hero"
 import { queryClient } from "~/api/query-client"
@@ -11,14 +10,17 @@ import {
   getTestimonials,
   getGetTestimonialsQueryKey,
 } from "~/api/generated/endpoints/testimonials/testimonials"
+import { withErrorHandling } from "~/lib/api-error-handler"
 
 export async function clientLoader() {
   const queryKey = getGetTestimonialsQueryKey()
 
-  return await queryClient.ensureQueryData({
-    queryKey,
-    queryFn: () => getTestimonials(),
-  })
+  return await withErrorHandling(
+    queryClient.ensureQueryData({
+      queryKey,
+      queryFn: () => getTestimonials(),
+    })
+  )
 }
 
 export default function Home({ loaderData }: Route.ComponentProps) {

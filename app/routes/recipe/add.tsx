@@ -1,7 +1,6 @@
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useNavigate } from "react-router"
-
 import { Button } from "~/components/ui/button"
 import {
   Area,
@@ -13,9 +12,7 @@ import {
   Preparation,
 } from "./components"
 import FIcon from "~/components/FIcon"
-
 import { usePostRecipes } from "~/api/generated/endpoints/recipes/recipes"
-
 import type { PostRecipesBody } from "~/api/generated/model"
 import { recipeSchema } from "./validation"
 import type { AddRecipeFormValues } from "./validation"
@@ -23,6 +20,9 @@ import { useIsSignedIn } from "~/components/auth/sign-in-hooks"
 import { useEffect } from "react"
 import Title from "~/components/Title"
 import Text from "~/components/Text"
+import { toast } from "sonner"
+import type { AxiosError } from "axios"
+import type { ApiErrorHTTP } from "~/api/axios-instance"
 
 export default function AddRecipe() {
   const navigate = useNavigate()
@@ -73,10 +73,45 @@ export default function AddRecipe() {
       {
         onSuccess: (response) => {
           const recipeId = response?.data?.id
-
           if (recipeId) {
             navigate(`/recipe/${recipeId}`)
           }
+        },
+        onError: (error) => {
+          const axiosError = error as AxiosError<ApiErrorHTTP>
+          const status = axiosError.response?.status
+          const errorData = axiosError.response?.data
+
+          if (status === 400) {
+            if (
+              errorData &&
+              "errors" in errorData &&
+              Array.isArray(errorData.errors)
+            ) {
+              errorData.errors.forEach((err) => {
+                methods.setError(err.path as keyof AddRecipeFormValues, {
+                  type: "server",
+                  message: err.message,
+                })
+              })
+              toast.error("Please check the highlighted fields.")
+            } else {
+              toast.error(errorData?.message || "Invalid data submitted.")
+            }
+            return
+          }
+          if (status === 404) {
+            toast.error(
+              errorData?.message ||
+                "Required resource not found (Category, Area, or Ingredient)."
+            )
+            return
+          }
+          if (status === 500) {
+            toast.error("Server error. Please try again later.")
+            return
+          }
+          toast.error("Something went wrong. Please try again.")
         },
       }
     )

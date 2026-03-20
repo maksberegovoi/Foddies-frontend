@@ -12,9 +12,10 @@ import type { Route } from "./+types/root"
 import "./app.css"
 import { QueryClientProvider } from "@tanstack/react-query"
 import { queryClient } from "~/api/query-client"
-import Title from "./components/Title"
-import Text from "~/components/Text"
 import { Toaster } from "sonner"
+import NotFoundPage from "~/routes/not-found/route"
+import Text from "~/components/Text"
+import Title from "~/components/Title"
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -56,30 +57,24 @@ export default function App() {
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-  let message = "Oops!"
-  let details = "An unexpected error occurred."
-  let stack: string | undefined
-
   if (isRouteErrorResponse(error)) {
-    message = error.status === 404 ? "404" : "Error"
-    details =
-      error.status === 404
-        ? "The requested page could not be found."
-        : error.statusText || details
-  } else if (import.meta.env.DEV && error && error instanceof Error) {
-    details = error.message
-    stack = error.stack
+    if (error.status === 404) {
+      return <NotFoundPage />
+    }
+    if (error.status === 500) {
+      return (
+        <main className="mx-auto flex h-screen flex-col items-center justify-center p-4 text-white">
+          <p className="mt-4 text-center text-2xl text-dark">
+            Server error. We are working on it...
+          </p>
+        </main>
+      )
+    }
   }
 
   return (
     <main className="mx-auto p-4 pt-16">
-      <Title className="text-center text-white">{message}</Title>
-      <Text className="text-white">{details}</Text>
-      {stack && (
-        <pre className="w-full overflow-x-auto p-4">
-          <code>{stack}</code>
-        </pre>
-      )}
+      <Title className="text-center text-destructive">Critical Error</Title>
     </main>
   )
 }
