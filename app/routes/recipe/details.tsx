@@ -44,32 +44,34 @@ export default function Details({ params }: Route.ComponentProps) {
   }
 
   return (
-    <div className="flex flex-col gap-10">
+    <>
       <PathInfo currentPageName="recipe" />
-      <div className="mt-10 flex flex-col gap-8 md:gap-10 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-start lg:gap-8">
-        <RecipeImage image={recipe.image} title={recipe.title} />
+      <div className="flex flex-col gap-10">
+        <div className="mt-8 flex flex-col gap-8 md:mt-10 md:gap-10 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-start lg:gap-8">
+          <RecipeImage image={recipe.image} title={recipe.title} />
 
-        <div className="flex flex-col gap-8 md:gap-10">
-          <RecipeSummarySection recipe={recipe} />
-          <RecipeIngredientsSection ingredients={recipe.ingredients} />
-          <RecipePreparationSection instructions={recipe.instructions} />
+          <div className="flex flex-col gap-8 md:gap-10">
+            <RecipeSummarySection recipe={recipe} />
+            <RecipeIngredientsSection ingredients={recipe.ingredients} />
+            <RecipePreparationSection instructions={recipe.instructions} />
 
-          <FavoriteRecipeToggle recipe={recipe}>
-            {({ isFavorite, isMutating, toggleFavorite }) => (
-              <Button
-                className="self-start"
-                variant={isFavorite ? "default" : "outlineGray"}
-                onClick={toggleFavorite}
-                disabled={isMutating}
-              >
-                {isFavorite ? "REMOVE FROM FAVORITES" : "ADD TO FAVORITES"}
-              </Button>
-            )}
-          </FavoriteRecipeToggle>
+            <FavoriteRecipeToggle recipe={recipe}>
+              {({ isFavorite, isMutating, toggleFavorite }) => (
+                <Button
+                  className="self-start"
+                  variant={isFavorite ? "default" : "outlineGray"}
+                  onClick={toggleFavorite}
+                  disabled={isMutating}
+                >
+                  {isFavorite ? "REMOVE FROM FAVORITES" : "ADD TO FAVORITES"}
+                </Button>
+              )}
+            </FavoriteRecipeToggle>
+          </div>
+
+          <PopularRecipesSection />
         </div>
-
-        <PopularRecipesSection />
       </div>
-    </div>
+    </>
   )
 }

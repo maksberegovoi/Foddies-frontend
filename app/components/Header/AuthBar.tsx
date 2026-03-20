@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { useParams } from "react-router"
 import { Button } from "../ui/button"
 import { cn } from "../../lib/utils"
 import { useModal } from "../modals/modal-context"
@@ -13,6 +14,9 @@ const tabs: { value: ActiveAuthTab; label: string }[] = [
 export default function AuthBar() {
   const [activeTab, setActiveTab] = useState<ActiveAuthTab>("signin")
   const { openSignIn, openSignUp } = useModal()
+  const params = useParams()
+
+  const isHomePage = Object.keys(params).length === 0
 
   const handleClick = (value: ActiveAuthTab) => {
     setActiveTab(value)
@@ -25,7 +29,12 @@ export default function AuthBar() {
   }
 
   return (
-    <div className="flex items-center gap-[2px] rounded-[30px] border border-white bg-white p-[2px]">
+    <div
+      className={cn(
+        "flex items-center gap-[2px] rounded-[30px] border bg-white p-[2px]",
+        isHomePage ? "border-white" : "border-gray"
+      )}
+    >
       {tabs.map(({ value, label }) => (
         <Button
           key={value}
