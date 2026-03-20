@@ -15,7 +15,7 @@ const styles = {
     // Tablet
     "md:text-[70px] md:leading-[70px] md:tracking-[-1.4px]",
     // Desktop
-    "xl:text-[90px] xl:leading-[90px] xl:tracking-[-1.8px]"
+    "lg:text-[90px] lg:leading-[90px] lg:tracking-[-1.8px]"
   ),
   h2: cn(
     // Mobile
