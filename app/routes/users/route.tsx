@@ -67,7 +67,11 @@ export default function UserProfilePage({ params }: Route.ComponentProps) {
   });
 
   if (isMeLoading || (isTargetLoading && !isOwn)) {
-    return <div className="py-20 text-center text-gray-400">Loading...</div>;
+    return (
+      <div className="py-20 text-center text-muted-foreground">
+        Loading...
+      </div>
+    );
   }
 
   if (!activeUser) return null;
@@ -95,11 +99,13 @@ export default function UserProfilePage({ params }: Route.ComponentProps) {
   }
 
   return (
-    <div key={activeUser.id}>
+    <div key={activeUser.id} className="bg-background text-foreground">
       <div className="flex w-full max-w-7xl flex-col items-start gap-10">
         <PathInfo currentPageName={"Profile"} />
         
-        <Title as="h2" className="text-[28px] lg:text-[40px]">Profile</Title>
+        <Title as="h2" className="text-[28px] lg:text-[40px] text-foreground">
+          Profile
+        </Title>
 
         <div className="flex w-full flex-col items-start gap-10 lg:flex-row">
           <aside className="w-full mx-auto lg:mx-0 md:w-auto max-w-[394px]">
@@ -118,7 +124,7 @@ export default function UserProfilePage({ params }: Route.ComponentProps) {
             <Tabs value={currentTab} onValueChange={(v) => setSearchParams({ tab: v })} className="w-full">
               <TabsList isOwnProfile={isOwn} />
               <div className="mt-10">
-                <TabsContent value={currentTab} className="p-0 outline-none">
+                <TabsContent value={currentTab} className="p-0 outline-none border-none">
                   <ListItems 
                     items={items} 
                     type={type} 
