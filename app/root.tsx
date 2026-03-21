@@ -30,7 +30,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Toaster
           position="top-right"
           toastOptions={{
-            duration: 2000,
             unstyled: true,
             classNames: {
               toast: "notification",
@@ -55,6 +54,8 @@ export default function App() {
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
+  if (import.meta.env.DEV) console.log(error)
+
   if (isRouteErrorResponse(error)) {
     if (error.status === 404) {
       return <NotFoundPage />

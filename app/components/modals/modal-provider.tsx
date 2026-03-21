@@ -56,21 +56,22 @@ function createModalStore(initialState: ModalType = null): ModalStore {
 const modalStore = createModalStore()
 
 export function getErrorMessage(error: unknown): string | null {
+  if (import.meta.env.DEV) console.log(error)
+
   if (axios.isAxiosError<ApiErrorHTTP>(error)) {
+    const status = error.response?.status
     const errorData = error.response?.data
 
-    if (errorData) {
-      if (
-        "errors" in errorData &&
-        Array.isArray(errorData.errors) &&
-        errorData.errors.length > 0
-      ) {
-        return errorData.errors.map((err) => err.message).join(", ")
-      }
+    if (status === 400) {
+      return "Please check the form for errors."
+    }
 
-      if (errorData.message) {
-        return errorData.message
-      }
+    if (status === 409) {
+      return "User with this email already exists."
+    }
+
+    if (errorData?.message) {
+      return errorData.message
     }
   }
 
