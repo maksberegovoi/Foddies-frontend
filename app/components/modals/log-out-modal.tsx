@@ -28,7 +28,6 @@ function LogOutModal({
       <DialogContent>
         <DialogClose className="absolute top-5 right-5">
           <button
-            data-slot="dialog-close"
             aria-label="Close log out modal"
             className="inline-flex size-6 items-center justify-center text-dark transition-opacity hover:opacity-70"
             type="button"
