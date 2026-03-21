@@ -150,13 +150,11 @@
   }
   @media (width >= 48rem /* 768px */) {
     max-width: 48rem /* 768px */;
-    padding-left: 2rem;
-    padding-right: 2rem;
+    padding-inline: 2rem;
   }
 
   @media (width >= 90rem /* 1440px */) {
-    padding-left: 5rem;
-    padding-right: 5rem;
+    padding-inline: 5rem;
     max-width: 90rem /* 1440px */;
   }
 }
