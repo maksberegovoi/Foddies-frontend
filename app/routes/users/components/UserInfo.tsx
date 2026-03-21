@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import type { UserProfileDto } from "~/api/generated/models/userProfileDto";
 import type { UserProfilePublicDto } from "~/api/generated/models/userProfilePublicDto";
 import { Button } from "~/components/ui/button";
@@ -24,11 +24,6 @@ export default function UserInfo({ user, isOwnProfile }: UserInfoProps) {
   const updateAvatar = usePatchUsersAvatar();
   const followMutation = usePostUsersIdFollow();
   const unfollowMutation = useDeleteUsersIdFollow();
-
-  useEffect(() => {
-    setIsFollowed(user.isFollowed);
-    setFollowersCount(user.totalFollowers || 0);
-  }, [user.isFollowed, user.totalFollowers]);
 
   const stats = [
     { label: "Email:", value: user.email },

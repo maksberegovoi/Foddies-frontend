@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { Button } from "~/components/ui/button";
 import FIcon from "~/components/FIcon";
@@ -34,20 +34,22 @@ function UserRecipePreviews({ userId, totalRecipes }: { userId: string; totalRec
 
 export default function ListItems({ items, type, isOwnProfile, currentTab, myFollowingIds = [], myId }: any) {
   const navigate = useNavigate();
-  const [localItems, setLocalItems] = useState<any[]>([]);
+  const [deletedIds, setDeletedIds] = useState<string[]>([]);
+
+  const localItems = useMemo(() => {
+    if (!items) return [];
+    return items
+      .filter((item: any) => !deletedIds.includes(item.id || item._id))
+      .map((item: any) => ({
+        ...item,
+        isFollowed: myFollowingIds.includes(item.id || item._id)
+      }));
+  }, [items, myFollowingIds, deletedIds]);
+
   const deleteRecipe = useDeleteRecipesId();
   const removeFavorite = useDeleteRecipesIdFavorite();
   const followMutation = usePostUsersIdFollow();
   const unfollowMutation = useDeleteUsersIdFollow();
-
-  useEffect(() => {
-    if (items) {
-      setLocalItems(items.map((item: any) => ({
-        ...item,
-        isFollowed: myFollowingIds.includes(item.id || item._id)
-      })));
-    }
-  }, [items, myFollowingIds]);
 
   const handleDeleteItem = async (itemId: string) => {
     const isFavoriteTab = currentTab === "my-favorites";
@@ -60,7 +62,7 @@ export default function ListItems({ items, type, isOwnProfile, currentTab, myFol
     if (isFavoriteTab) {
       removeFavorite.mutate({ id: itemId }, {
         onSuccess: () => {
-          setLocalItems((prev) => prev.filter(item => (item.id !== itemId && item._id !== itemId)));
+          setDeletedIds(prev => [...prev, itemId]);
           toast.success("Removed from favorites");
         },
         onError: () => toast.error("Failed to remove")
@@ -68,7 +70,7 @@ export default function ListItems({ items, type, isOwnProfile, currentTab, myFol
     } else {
       deleteRecipe.mutate({ id: itemId }, {
         onSuccess: () => {
-          setLocalItems((prev) => prev.filter(item => (item.id !== itemId && item._id !== itemId)));
+          setDeletedIds(prev => [...prev, itemId]);
           toast.success("Recipe deleted");
         },
         onError: () => toast.error("Failed to delete")
@@ -78,21 +80,9 @@ export default function ListItems({ items, type, isOwnProfile, currentTab, myFol
 
   const handleFollowToggle = async (id: string, currentlyFollowing: boolean) => {
     if (currentlyFollowing) {
-      unfollowMutation.mutate({ id }, {
-        onSuccess: () => {
-          setLocalItems((prev) => prev.map(item => 
-            (item.id === id || item._id === id) ? { ...item, isFollowed: false } : item
-          ));
-        }
-      });
+      unfollowMutation.mutate({ id });
     } else {
-      followMutation.mutate({ id }, {
-        onSuccess: () => {
-          setLocalItems((prev) => prev.map(item => 
-            (item.id === id || item._id === id) ? { ...item, isFollowed: true } : item
-          ));
-        }
-      });
+      followMutation.mutate({ id });
     }
   };
 
@@ -101,7 +91,7 @@ export default function ListItems({ items, type, isOwnProfile, currentTab, myFol
     switch (currentTab) {
       case "my-recipes":
       case "my-favorites":
-        emptyMessage = "Nothing has been added to your list yet. Please browse our recipes and add your favorites for easy access in the future.";
+        emptyMessage = "Nothing has been added to your list yet.";
         break;
       case "followers":
         emptyMessage = "There are currently no followers on your account.";
@@ -113,9 +103,7 @@ export default function ListItems({ items, type, isOwnProfile, currentTab, myFol
 
     return (
       <div className="py-20 text-center max-w-[600px] mx-auto">
-        <Text className="text-muted-foreground">
-          {emptyMessage}
-        </Text>
+        <Text className="text-muted-foreground">{emptyMessage}</Text>
       </div>
     );
   }
@@ -137,12 +125,8 @@ export default function ListItems({ items, type, isOwnProfile, currentTab, myFol
                     />
                   </div>
                   <div className="flex flex-col gap-1 lg:gap-2">
-                    <Title as="h4" className="text-foreground">
-                      {item.title}
-                    </Title>
-                    <Text className="line-clamp-2 text-muted-foreground">
-                      {item.instructions}
-                    </Text>
+                    <Title as="h4" className="text-foreground">{item.title}</Title>
+                    <Text className="line-clamp-2 text-muted-foreground">{item.instructions}</Text>
                   </div>
                 </div>
                 
@@ -180,13 +164,7 @@ export default function ListItems({ items, type, isOwnProfile, currentTab, myFol
                     <img src={item.avatarURL || "/fallback_ava.png"} className="h-full w-full object-cover" alt={item.name} />
                   </div>
                   <div className="flex flex-col">
-                    <Title 
-                      as="h4"
-                      className="cursor-pointer text-foreground"
-                      onClick={() => navigate(`/user/${itemId}`)}
-                    >
-                      {item.name}
-                    </Title>
+                    <Title as="h4" className="cursor-pointer text-foreground" onClick={() => navigate(`/user/${itemId}`)}>{item.name}</Title>
                     <Text className="text-muted-foreground">
                       Own recipes: <Text as="span" className="text-foreground font-bold">{item.totalRecipes || 0}</Text>
                     </Text>
@@ -201,12 +179,7 @@ export default function ListItems({ items, type, isOwnProfile, currentTab, myFol
                     )}
                   </div>
                 </div>
-
-                <Link to={`/user/${itemId}`} className="group flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-border transition-all hover:bg-dark md:hidden ml-auto">
-                  <FIcon iconName="arrow-up-right" className="size-6 text-foreground transition-colors group-hover:text-white" />
-                </Link>
               </div>
-
               <div className="hidden items-start md:flex md:flex-[3] md:gap-[60px] lg:gap-[75px]">
                 <UserRecipePreviews userId={itemId} totalRecipes={item.totalRecipes || 0} />
                 <Link to={`/user/${itemId}`} className="group flex h-[36px] w-[36px] items-center justify-center rounded-full border border-border transition-all hover:bg-dark lg:h-[42px] lg:w-[42px]">
