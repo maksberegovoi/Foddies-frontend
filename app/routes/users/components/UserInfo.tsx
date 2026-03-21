@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
 import { Button } from "~/components/ui/button";
-import FIcon from "~/components/FIcon"; 
+import FIcon from "~/components/FIcon";
+import Title from "~/components/Title";
+import Text from "~/components/Text";
+import { usePatchUsersAvatar, usePostUsersIdFollow, useDeleteUsersIdFollow } from "~/api/generated/endpoints/user/user";
+import { toast } from "sonner";
 
 interface UserInfoProps {
   user: {
@@ -21,6 +25,9 @@ interface UserInfoProps {
 export default function UserInfo({ user, isOwnProfile }: UserInfoProps) {
   const [isFollowed, setIsFollowed] = useState(user.isFollowed);
   const [followersCount, setFollowersCount] = useState(user.totalFollowers || 0);
+  const updateAvatar = usePatchUsersAvatar();
+  const followMutation = usePostUsersIdFollow();
+  const unfollowMutation = useDeleteUsersIdFollow();
 
   useEffect(() => {
     setIsFollowed(user.isFollowed);
@@ -36,21 +43,24 @@ export default function UserInfo({ user, isOwnProfile }: UserInfoProps) {
   ];
 
   const handleFollowToggle = async () => {
-    const targetId = user.id || user._id;
-    const method = isFollowed ? 'DELETE' : 'POST'; 
+    const targetId = user.id || user._id || "";
     
-    try {
-      const res = await fetch(`https://foddies-backend.onrender.com/api/v1/users/${targetId}/follow`, {
-        method,
-        credentials: "include" 
+    if (isFollowed) {
+      unfollowMutation.mutate({ id: targetId }, {
+        onSuccess: () => {
+          setIsFollowed(false);
+          setFollowersCount(prev => prev - 1);
+        },
+        onError: () => toast.error("Failed to unfollow")
       });
-
-      if (res.ok) {
-        setIsFollowed(!isFollowed);
-        setFollowersCount(prev => isFollowed ? prev - 1 : prev + 1);
-      }
-    } catch (err) {
-      console.error("Follow toggle failed:", err);
+    } else {
+      followMutation.mutate({ id: targetId }, {
+        onSuccess: () => {
+          setIsFollowed(true);
+          setFollowersCount(prev => prev + 1);
+        },
+        onError: () => toast.error("Failed to follow")
+      });
     }
   };
 
@@ -58,24 +68,21 @@ export default function UserInfo({ user, isOwnProfile }: UserInfoProps) {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const formData = new FormData();
-    formData.append('avatar', file);
-
-    try {
-      await fetch('https://foddies-backend.onrender.com/api/v1/users/avatar', {
-        method: 'PATCH',
-        body: formData,
-        credentials: "include"
-      });
-      window.location.reload(); 
-    } catch (err) {
-      console.error("Avatar upload failed:", err);
-    }
+    updateAvatar.mutate(
+      { data: { avatar: file } },
+      {
+        onSuccess: () => {
+          toast.success("Avatar updated!");
+          window.location.reload();
+        },
+        onError: () => toast.error("Failed to update avatar")
+      }
+    );
   };
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="mx-auto flex w-full max-w-[343px] md:max-w-[394px] flex-col items-center gap-4 rounded-[30px] bg-white py-[30px] shadow-sm border border-[#BFBEBE]">
+      <div className="mx-auto flex w-full max-w-[343px] md:max-w-[394px] flex-col items-center gap-[16px] rounded-[30px] bg-white py-[30px] shadow-sm border border-[#BFBEBE] md:gap-[20px]">
         <div className="relative group">
           <div className="h-20 w-20 overflow-hidden rounded-full border-2 border-gray/10 md:h-28 md:w-28">
             <img src={user.avatarURL || "/fallback_ava.png"} className="h-full w-full object-cover" alt={user.name} />
@@ -88,17 +95,17 @@ export default function UserInfo({ user, isOwnProfile }: UserInfoProps) {
           )}
         </div>
 
-        <h3 className="text-[18px] md:text-[20px] font-extrabold tracking-[-0.4px] text-dark uppercase text-center">
+        <Title as="h3" className="text-[18px] md:text-[20px] font-extrabold tracking-[-0.4px] text-dark uppercase text-center">
           {user.name}
-        </h3>
+        </Title>
 
         <div className="flex w-full flex-col gap-2">
           {stats.map((item) => (
             <div key={item.label} className="flex items-center gap-[6px] last:border-none px-[69px] md:px-[80px] ">
-              <span className="text-sm font-medium tracking-tight text-gray">{item.label}</span>
-              <span className="text-sm font-bold tracking-tight text-dark truncate max-w-[180px]">
+              <Text as="span" className="text-sm font-medium tracking-tight text-gray">{item.label}</Text>
+              <Text as="span" className="text-sm font-bold tracking-tight text-dark truncate max-w-[180px]">
                 {item.value}
-              </span>
+              </Text>
             </div>
           ))}
         </div>
@@ -117,6 +124,7 @@ export default function UserInfo({ user, isOwnProfile }: UserInfoProps) {
           className={`w-full rounded-[30px] py-4 uppercase font-bold transition-colors ${
             isFollowed ? "bg-gray-200 text-black hover:bg-gray-300" : "bg-dark text-white hover:bg-black"
           }`}
+          disabled={followMutation.isPending || unfollowMutation.isPending}
         >
           {isFollowed ? "Unfollow" : "Follow"} 
         </Button>

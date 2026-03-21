@@ -3,132 +3,129 @@ import type { Route } from "./+types/route"
 import { Tabs, TabsContent } from "~/components/ui/tabs"
 
 import PathInfo from "~/components/PathInfo"
-import MainTitle from "~/components/MainTitle"
 import UserInfo from "./components/UserInfo"
 import TabsList from "./components/TabsList"
 import ListItems from "./components/ListItems"
-import Text from "~/components/Text"
 import Title from "~/components/Title"
 
-const API_BASE_URL = "https://foddies-backend.onrender.com/api/v1";
+import { 
+  useGetUsersCurrent, 
+  useGetUsersId, 
+  useGetUsersIdFollowers, 
+  useGetUsersIdFollowing 
+} from "~/api/generated/endpoints/user/user"
 
-const apiFetch = async (endpoint: string) => {
-  const res = await fetch(`${API_BASE_URL}${endpoint}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include", 
-  });
+import { 
+  useGetRecipesMy, 
+  useGetRecipesFavorite,
+  useGetRecipes
+} from "~/api/generated/endpoints/recipes/recipes"
 
-  if (!res.ok) {
-    throw new Error(`Помилка API: ${res.status}`);
-  }
-  return res.json();
-};
-
-export async function clientLoader({ request, params }: Route.ClientLoaderArgs) {
-  const url = new URL(request.url)
-  const tab = url.searchParams.get("tab") || "my-recipes"
-  const page = url.searchParams.get("page") || "1"
+export default function UserProfilePage({ params }: Route.ComponentProps) {
+  const [searchParams, setSearchParams] = useSearchParams()
+  const currentTab = searchParams.get("tab") || "my-recipes"
+  const page = Number(searchParams.get("page") || "1")
   
   const userIdFromUrl = params.id;
 
-  try {
-    const currentUserRes = await apiFetch('/users/current');
-    const currentUser = currentUserRes.data;
-    const myId = currentUser.id || currentUser._id;
-    const myFollowingRes = await apiFetch(`/users/${myId}/following`);
-    const myFollowingIds = (myFollowingRes.data || []).map((u: any) => u.id || u._id);
-    const isOwn = !userIdFromUrl || userIdFromUrl === "profile" || userIdFromUrl === myId;
+  const { data: currentUserRes, isLoading: isMeLoading } = useGetUsersCurrent();
+  const currentUser = currentUserRes?.data; 
+  const myId = currentUser?.id || (currentUser as any)?._id;
 
-    let targetUser = currentUser;
-    if (!isOwn) {
-      const targetUserRes = await apiFetch(`/users/${userIdFromUrl}`);
-      targetUser = targetUserRes.data;
-    }
+  const isOwn = !userIdFromUrl || userIdFromUrl === "profile" || userIdFromUrl === myId;
+  const targetId = isOwn ? myId : userIdFromUrl;
 
-    targetUser.isFollowed = myFollowingIds.includes(targetUser.id || targetUser._id);
+  const { data: targetUserRes, isLoading: isTargetLoading } = useGetUsersId(targetId as string, {
+    query: { enabled: !!targetId && !isOwn }
+  });
 
-    const targetId = targetUser.id || targetUser._id;
-    let itemsData;
-    let type: "recipe" | "user" = "recipe";
+  const activeUser = isOwn ? currentUser : targetUserRes?.data;
 
-    switch (tab) {
-      case "followers":
-        itemsData = await apiFetch(`/users/${targetId}/followers?page=${page}`);
-        type = "user";
-        break;
-      case "following":
-        itemsData = await apiFetch(`/users/${targetId}/following?page=${page}`);
-        type = "user";
-        break;
-      case "my-favorites":
-        itemsData = isOwn ? await apiFetch(`/recipes/favorite?page=${page}`) : { data: [] };
-        type = "recipe";
-        break;
-      case "my-recipes":
-      default:
-        itemsData = await apiFetch(isOwn ? `/recipes/my?page=${page}` : `/recipes?authorId=${targetId}&page=${page}`);
-        type = "recipe";
-    }
+  const { data: myFollowingRes } = useGetUsersIdFollowing(myId as string, {}, {
+    query: { enabled: !!myId }
+  });
+  const myFollowingIds = (myFollowingRes?.data || []).map((u: any) => u.id || u._id);
 
-    return { 
-      user: targetUser, 
-      items: itemsData.data || [], 
-      isOwn, 
-      type,
-      myFollowingIds,
-      myId
-    };
-  } catch (error) {
-    console.error("Loader Error:", error);
-    return null;
-  }
-}
+  const { data: myRecipesRes } = useGetRecipesMy({ page }, {
+    query: { enabled: isOwn && currentTab === "my-recipes" }
+  });
+  
+  const { data: targetRecipesRes } = useGetRecipes({ authorId: targetId, page }, {
+    query: { enabled: !isOwn && currentTab === "my-recipes" && !!targetId }
+  });
 
-export default function UserProfilePage({ loaderData }: Route.ComponentProps) {
-  const [searchParams, setSearchParams] = useSearchParams()
-  const currentTab = searchParams.get("tab") || "my-recipes"
+  const { data: favoriteRecipesRes } = useGetRecipesFavorite({ page }, {
+    query: { enabled: isOwn && currentTab === "my-favorites" }
+  });
 
-  if (!loaderData) {
-    return (
-      <div className="py-20 text-center text-gray-400">
-        Loading...
-      </div>
-    );
+  const { data: followersRes } = useGetUsersIdFollowers(targetId as string, { page }, {
+    query: { enabled: currentTab === "followers" && !!targetId }
+  });
+
+  const { data: followingRes } = useGetUsersIdFollowing(targetId as string, { page }, {
+    query: { enabled: currentTab === "following" && !!targetId }
+  });
+
+  if (isMeLoading || (isTargetLoading && !isOwn)) {
+    return <div className="py-20 text-center text-gray-400">Loading...</div>;
   }
 
-  const profileKey = loaderData.user.id || loaderData.user._id;
+  if (!activeUser) return null;
+
+  let items: any[] = [];
+  let type: "recipe" | "user" = "recipe";
+
+  switch (currentTab) {
+    case "followers":
+      items = followersRes?.data || [];
+      type = "user";
+      break;
+    case "following":
+      items = followingRes?.data || [];
+      type = "user";
+      break;
+    case "my-favorites":
+      items = isOwn ? (favoriteRecipesRes?.data || []) : [];
+      type = "recipe";
+      break;
+    case "my-recipes":
+    default:
+      items = isOwn ? (myRecipesRes?.data || []) : (targetRecipesRes?.data || []);
+      type = "recipe";
+  }
 
   return (
-    <div key={profileKey} className="container mx-auto flex flex-col items-center gap-10 px-4 py-10 lg:gap-30 lg:py-42.5">
+    <div key={activeUser.id}>
       <div className="flex w-full max-w-7xl flex-col items-start gap-10">
         <PathInfo currentPageName={"Profile"} />
         
-        <div className="flex flex-col items-start gap-5">
-          <MainTitle className="text-[28px] lg:text-[40px]">
-            Profile
-          </MainTitle>
-        </div>
+        <Title as="h2" className="text-[28px] lg:text-[40px]">Profile</Title>
 
         <div className="flex w-full flex-col items-start gap-10 lg:flex-row">
           <aside className="w-full mx-auto lg:mx-0 md:w-auto max-w-[394px]">
-            <UserInfo user={loaderData.user} isOwnProfile={loaderData.isOwn} />
+            <UserInfo 
+              user={{
+                ...activeUser,
+                totalFavoriteRecipes: (activeUser as any).totalFavoriteRecipes ?? 0,
+                totalFollowing: (activeUser as any).totalFollowing ?? 0,
+                isFollowed: myFollowingIds.includes(activeUser.id || (activeUser as any)._id)
+              }} 
+              isOwnProfile={isOwn} 
+            />
           </aside>
 
           <main className="flex w-full flex-1 flex-col gap-10">
             <Tabs value={currentTab} onValueChange={(v) => setSearchParams({ tab: v })} className="w-full">
-              <TabsList isOwnProfile={loaderData.isOwn} />
+              <TabsList isOwnProfile={isOwn} />
               <div className="mt-10">
                 <TabsContent value={currentTab} className="p-0 outline-none">
                   <ListItems 
-                    items={loaderData.items} 
-                    type={loaderData.type} 
-                    isOwnProfile={loaderData.isOwn}
+                    items={items} 
+                    type={type} 
+                    isOwnProfile={isOwn}
                     currentTab={currentTab}
-                    myFollowingIds={loaderData.myFollowingIds}
-                    myId={loaderData.myId}
+                    myFollowingIds={myFollowingIds}
+                    myId={myId}
                   />
                 </TabsContent>
               </div>

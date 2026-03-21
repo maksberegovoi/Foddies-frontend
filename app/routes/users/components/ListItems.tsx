@@ -1,32 +1,21 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { Button } from "~/components/ui/button";
-import FIcon from "~/components/FIcon"; 
+import FIcon from "~/components/FIcon";
+import Title from "~/components/Title";
+import Text from "~/components/Text";
+import { toast } from "sonner";
+
+import { usePostUsersIdFollow, useDeleteUsersIdFollow } from "~/api/generated/endpoints/user/user";
+import { useGetRecipes, useDeleteRecipesId, useDeleteRecipesIdFavorite } from "~/api/generated/endpoints/recipes/recipes";
 
 function UserRecipePreviews({ userId, totalRecipes }: { userId: string; totalRecipes: number }) {
-  const [previews, setPreviews] = useState<string[]>([]);
+  const { data: recipesData } = useGetRecipes(
+    { authorId: userId, limit: 4 },
+    { query: { enabled: totalRecipes > 0 } }
+  );
 
-  useEffect(() => {
-    if (!totalRecipes || totalRecipes === 0) return;
-    const controller = new AbortController();
-
-    fetch(`https://foddies-backend.onrender.com/api/v1/recipes?authorId=${userId}&limit=4`, { 
-      signal: controller.signal,
-      credentials: "include" 
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.data && Array.isArray(res.data)) {
-          const images = res.data.map((r: any) => r.image?.phone || r.image?.original);
-          setPreviews(images);
-        }
-      })
-      .catch((err) => {
-        if (err.name !== 'AbortError') console.error(err);
-      });
-
-    return () => controller.abort();
-  }, [userId, totalRecipes]);
+  const previews = recipesData?.data?.map((r: any) => r.image?.phone || r.image?.original) || [];
 
   return (
     <div className="hidden md:grid flex-1 grid-cols-4 gap-2 lg:gap-4">
@@ -35,8 +24,8 @@ function UserRecipePreviews({ userId, totalRecipes }: { userId: string; totalRec
           {previews[i] ? (
             <img src={previews[i]} className="h-full w-full object-cover" alt="" />
           ) : (
-            <div className="flex h-full w-full items-center justify-center border-2 border-dashed border-gray-100 text-gray-200">
-              <span className="text-xs uppercase font-bold tracking-tighter">Empty</span>
+            <div className="flex h-full w-full items-center justify-center border-2 border-dashed border-gray-100">
+              <Text as="span" className="text-xs uppercase font-bold tracking-tighter text-gray-200">Empty</Text>
             </div>
           )}
         </div>
@@ -48,6 +37,10 @@ function UserRecipePreviews({ userId, totalRecipes }: { userId: string; totalRec
 export default function ListItems({ items, type, isOwnProfile, currentTab, myFollowingIds = [], myId }: any) {
   const navigate = useNavigate();
   const [localItems, setLocalItems] = useState<any[]>([]);
+  const deleteRecipe = useDeleteRecipesId();
+  const removeFavorite = useDeleteRecipesIdFavorite();
+  const followMutation = usePostUsersIdFollow();
+  const unfollowMutation = useDeleteUsersIdFollow();
 
   useEffect(() => {
     if (items) {
@@ -66,39 +59,42 @@ export default function ListItems({ items, type, isOwnProfile, currentTab, myFol
 
     if (!confirm(confirmMsg)) return;
 
-    try {
-      const url = isFavoriteTab 
-        ? `https://foddies-backend.onrender.com/api/v1/recipes/${itemId}/favorite` 
-        : `https://foddies-backend.onrender.com/api/v1/recipes/${itemId}`;
-
-      const res = await fetch(url, {
-        method: 'DELETE',
-        credentials: "include"
+    if (isFavoriteTab) {
+      removeFavorite.mutate({ id: itemId }, {
+        onSuccess: () => {
+          setLocalItems((prev) => prev.filter(item => (item.id !== itemId && item._id !== itemId)));
+          toast.success("Видалено з обраного");
+        },
+        onError: () => toast.error("Помилка видалення")
       });
-
-      if (res.ok) {
-        setLocalItems((prev) => prev.filter(item => (item.id !== itemId && item._id !== itemId)));
-      }
-    } catch (err) {
-      console.error("Помилка при видаленні:", err);
+    } else {
+      deleteRecipe.mutate({ id: itemId }, {
+        onSuccess: () => {
+          setLocalItems((prev) => prev.filter(item => (item.id !== itemId && item._id !== itemId)));
+          toast.success("Рецепт видалено");
+        },
+        onError: () => toast.error("Помилка видалення")
+      });
     }
   };
 
   const handleFollowToggle = async (id: string, currentlyFollowing: boolean) => {
-    const method = currentlyFollowing ? 'DELETE' : 'POST'; 
-    try {
-      const res = await fetch(`https://foddies-backend.onrender.com/api/v1/users/${id}/follow`, {
-        method,
-        credentials: "include" 
+    if (currentlyFollowing) {
+      unfollowMutation.mutate({ id }, {
+        onSuccess: () => {
+          setLocalItems((prev) => prev.map(item => 
+            (item.id === id || item._id === id) ? { ...item, isFollowed: false } : item
+          ));
+        }
       });
-
-      if (res.ok) {
-        setLocalItems((prev) => prev.map(item => 
-          (item.id === id || item._id === id) ? { ...item, isFollowed: !currentlyFollowing } : item
-        ));
-      }
-    } catch (err) {
-      console.error(err);
+    } else {
+      followMutation.mutate({ id }, {
+        onSuccess: () => {
+          setLocalItems((prev) => prev.map(item => 
+            (item.id === id || item._id === id) ? { ...item, isFollowed: true } : item
+          ));
+        }
+      });
     }
   };
 
@@ -106,10 +102,8 @@ export default function ListItems({ items, type, isOwnProfile, currentTab, myFol
     let emptyMessage = "Nothing found here yet.";
     switch (currentTab) {
       case "my-recipes":
-        emptyMessage = "Nothing has been added to your recipes list yet. Please browse our recipes and add your favorites for easy access in the future.";
-        break;
       case "my-favorites":
-        emptyMessage = "Nothing has been added to your favorite recipes list yet. Please browse our recipes and add your favorites for easy access in the future.";
+        emptyMessage = "Nothing has been added to your list yet. Please browse our recipes and add your favorites for easy access in the future.";
         break;
       case "followers":
         emptyMessage = "There are currently no followers on your account.";
@@ -121,9 +115,9 @@ export default function ListItems({ items, type, isOwnProfile, currentTab, myFol
 
     return (
       <div className="py-20 text-center max-w-[600px] mx-auto">
-        <p className="text-[#BFBEBE] text-[14px] leading-[20px] md:text-[#1A1A1A] md:text-[16px]">
+        <Text className="text-[#BFBEBE] md:text-[#1A1A1A]">
           {emptyMessage}
-        </p>
+        </Text>
       </div>
     );
   }
@@ -145,12 +139,12 @@ export default function ListItems({ items, type, isOwnProfile, currentTab, myFol
                     />
                   </div>
                   <div className="flex flex-col gap-1 lg:gap-2">
-                    <h4 className="text-[18px] md:text-[20px] font-bold uppercase tracking-tight text-black">
+                    <Title as="h4">
                       {item.title}
-                    </h4>
-                    <p className="line-clamp-2 text-[14px] md:text-[16px] text-gray-500 leading-relaxed font-medium">
+                    </Title>
+                    <Text className="line-clamp-2">
                       {item.instructions}
-                    </p>
+                    </Text>
                   </div>
                 </div>
                 
@@ -164,9 +158,10 @@ export default function ListItems({ items, type, isOwnProfile, currentTab, myFol
                   {isOwnProfile && (currentTab === "my-recipes" || currentTab === "my-favorites") && (
                     <Button 
                       onClick={() => handleDeleteItem(itemId)} 
+                      disabled={deleteRecipe.isPending || removeFavorite.isPending}
                       className="group flex h-[36px] w-[36px] p-0 bg-transparent items-center justify-center rounded-full border border-[#BFBEBE] transition-all hover:bg-black lg:h-[42px] lg:w-[42px]"
                     >
-                      <FIcon iconName="trash" className="size-[36px] text-[#050505] transition-colors group-hover:text-white lg:size-[42px]" />
+                      <FIcon iconName="trash" className="size-[18px] text-[#050505] transition-colors group-hover:text-white" />
                     </Button>
                   )}
                 </div>
@@ -187,18 +182,20 @@ export default function ListItems({ items, type, isOwnProfile, currentTab, myFol
                     <img src={item.avatarURL || "/fallback_ava.png"} className="h-full w-full object-cover" alt={item.name} />
                   </div>
                   <div className="flex flex-col">
-                    <h4 
-                      className="text-[16px] md:text-[20px] font-extrabold uppercase tracking-tight text-black cursor-pointer"
+                    <Title 
+                      as="h4"
+                      className="cursor-pointer"
                       onClick={() => navigate(`/user/${itemId}`)}
                     >
                       {item.name}
-                    </h4>
-                    <p className="text-[12px] md:text-[14px] font-medium leading-[20px] text-[#BFBEBE]">
-                      Own recipes: <span className="text-dark">{item.totalRecipes || 0}</span>
-                    </p>
+                    </Title>
+                    <Text className="text-[#BFBEBE]">
+                      Own recipes: <Text as="span" className="text-dark font-bold">{item.totalRecipes || 0}</Text>
+                    </Text>
                     {itemId !== myId && (
                       <Button
                         onClick={() => handleFollowToggle(itemId, !!item.isFollowed)}
+                        disabled={followMutation.isPending || unfollowMutation.isPending}
                         className="mt-2 h-auto w-fit min-w-[130px] rounded-full px-[24px] py-[10px] text-[14px] border transition-colors bg-transparent border-[#BFBEBE] text-dark hover:bg-black hover:text-white"
                       >
                         {item.isFollowed ? "Unfollow" : "Follow"}
@@ -207,7 +204,7 @@ export default function ListItems({ items, type, isOwnProfile, currentTab, myFol
                   </div>
                 </div>
 
-                <Link to={`/user/${itemId}`} className="group flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 border-gray-200 transition-all hover:bg-black md:hidden">
+                <Link to={`/user/${itemId}`} className="group flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 border-gray-200 transition-all hover:bg-black md:hidden ml-auto">
                   <FIcon iconName="arrow-up-right" className="size-6 text-[#050505] transition-colors group-hover:text-white" />
                 </Link>
               </div>
