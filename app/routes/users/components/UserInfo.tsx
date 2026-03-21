@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "~/components/ui/button";
+import FIcon from "~/components/FIcon"; 
 
 interface UserInfoProps {
   user: {
@@ -21,7 +22,6 @@ export default function UserInfo({ user, isOwnProfile }: UserInfoProps) {
   const [isFollowed, setIsFollowed] = useState(user.isFollowed);
   const [followersCount, setFollowersCount] = useState(user.totalFollowers || 0);
 
-  // Оновлюємо локальний стан, якщо дані в пропсах змінилися (наприклад, при зміні URL)
   useEffect(() => {
     setIsFollowed(user.isFollowed);
     setFollowersCount(user.totalFollowers || 0);
