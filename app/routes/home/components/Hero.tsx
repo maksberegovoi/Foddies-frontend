@@ -16,7 +16,7 @@ const HeroSection = () => {
   const { openSignIn } = useModal()
   const isSignedIn = useIsSignedIn()
 
-  const isMobile = useMediaQuery("only screen and (max-width : 768px)")
+  const isMobile = useMediaQuery("only screen and (max-width : 767px)")
 
   const handleAddRecipe = () => {
     if (isSignedIn) {

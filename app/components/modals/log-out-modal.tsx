@@ -22,7 +22,7 @@ function LogOutModal({
   onOpenChange,
   open = false,
 }: LogOutModalProps) {
-  const isMobile = useMediaQuery("only screen and (max-width : 768px)")
+  const isMobile = useMediaQuery("only screen and (max-width : 767px)")
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>
       <DialogContent>
