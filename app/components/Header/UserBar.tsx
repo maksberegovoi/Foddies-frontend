@@ -29,7 +29,7 @@ export default function UserBar({ variant = "dark" }: UserBarProps) {
         )}
       >
         <img
-          src={user?.avatarURL || "/fallback_ava.png"}
+          src={user?.avatarURL || "/fallback_ava.webp"}
           alt={user?.name}
           className="h-8 w-8 shrink-0 rounded-full object-cover md:h-12.5 md:w-12.5"
         />
@@ -63,7 +63,7 @@ export default function UserBar({ variant = "dark" }: UserBarProps) {
         <div className="flex h-full flex-col gap-4">
           <DropdownMenuItem className="p-0">
             <Link
-              to="/user/1"
+              to={`/user/${user?.id}`}
               className={cn(
                 "inline-block cursor-pointer text-[12px] leading-[1.2] font-medium uppercase md:text-sm",
                 variant === "dark" ? "text-white" : "text-dark"

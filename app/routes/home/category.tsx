@@ -161,7 +161,7 @@ export default function Category({ params }: Route.ComponentProps) {
           </Select>
         </div>
 
-        <div className="flex flex-col gap-8 md:gap-15">
+        <div className="flex w-full flex-col items-center gap-8 md:gap-15">
           {isError && (
             <p className="text-destructive">Could not load recipes.</p>
           )}

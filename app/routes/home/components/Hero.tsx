@@ -67,11 +67,11 @@ const HeroSection = () => {
           Add recipe
         </button>
 
-        <div className="flex gap-9 pt-17 pb-28">
+        <div className="flex items-center gap-9 pt-17 pb-28">
           <img
             src={HeroSmall}
             alt=""
-            className="mt-32 h-[70px] w-[77px] rotate-12 md:h-[116px] md:w-32"
+            className="mt-16 h-[70px] w-[77px] rotate-12 md:mt-32 md:h-[116px] md:w-32"
           />
           <img
             src={HeroBig}

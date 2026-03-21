@@ -43,7 +43,7 @@ export default function AuthBar() {
           className={cn(
             "h-[38px] min-w-[80px] rounded-[30px] px-4 py-[10px] text-[12px] leading-none font-medium uppercase transition-colors md:h-auto md:min-w-0 md:px-6 md:py-3 md:text-sm",
             activeTab === value
-              ? "bg-dark text-white hover:bg-dark"
+              ? "light-dark text-white hover:bg-light-dark"
               : "bg-transparent text-dark hover:bg-transparent"
           )}
         >
