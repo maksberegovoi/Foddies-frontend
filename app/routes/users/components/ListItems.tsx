@@ -45,9 +45,8 @@ function UserRecipePreviews({ userId, totalRecipes }: { userId: string; totalRec
   );
 }
 
-export default function ListItems({ items, type, isOwnProfile, currentTab, myFollowingIds = [] }: any) {
+export default function ListItems({ items, type, isOwnProfile, currentTab, myFollowingIds = [], myId }: any) {
   const navigate = useNavigate();
-  
   const [localItems, setLocalItems] = useState<any[]>([]);
 
   useEffect(() => {
@@ -160,14 +159,14 @@ export default function ListItems({ items, type, isOwnProfile, currentTab, myFol
                     to={`/recipe/${itemId}`} 
                     className="group flex h-[36px] w-[36px] bg-transparent items-center justify-center rounded-full border border-[#BFBEBE] transition-all hover:bg-black lg:h-[42px] lg:w-[42px]"
                   >
-                    <FIcon iconName="arrow-up-right" className="size-[16px] text-[#050505] transition-colors group-hover:text-white lg:size-[18px]" />
+                    <FIcon iconName="arrow-up-right" className="size-[16px] stroke-black transition-colors group-hover:stroke-white lg:size-[18px]" />
                   </Link>
                   {isOwnProfile && (currentTab === "my-recipes" || currentTab === "my-favorites") && (
                     <Button 
                       onClick={() => handleDeleteItem(itemId)} 
-                      className="group flex h-[36px] w-[36px] bg-transparent items-center justify-center rounded-full border border-[#BFBEBE] transition-all hover:bg-black hover:text-white lg:h-[42px] lg:w-[42px] group"
+                      className="group flex h-[36px] w-[36px] bg-transparent items-center justify-center rounded-full border border-[#BFBEBE] transition-all hover:bg-black lg:h-[42px] lg:w-[42px]"
                     >
-                      <FIcon iconName="trash" className="size-[42px] text-[#1A1A1A] transition-colors group-hover:text-white" />
+                      <FIcon iconName="trash" className="size-[18px] stroke-black transition-colors group-hover:stroke-white lg:size-[20px]" />
                     </Button>
                   )}
                 </div>
@@ -197,24 +196,26 @@ export default function ListItems({ items, type, isOwnProfile, currentTab, myFol
                     <p className="text-[12px] md:text-[14px] font-medium leading-[20px] text-[#BFBEBE]">
                       Own recipes: <span className="text-dark">{item.totalRecipes || 0}</span>
                     </p>
-                    <Button
-                      onClick={() => handleFollowToggle(itemId, !!item.isFollowed)}
-                      className="mt-2 h-auto w-fit min-w-[130px] rounded-full px-[24px] py-[10px] text-[14px] border transition-colors bg-transparent border-[#BFBEBE] text-dark hover:bg-black hover:text-white"
-                    >
-                      {item.isFollowed ? "Unfollow" : "Follow"}
-                    </Button>
+                    {itemId !== myId && (
+                      <Button
+                        onClick={() => handleFollowToggle(itemId, !!item.isFollowed)}
+                        className="mt-2 h-auto w-fit min-w-[130px] rounded-full px-[24px] py-[10px] text-[14px] border transition-colors bg-transparent border-[#BFBEBE] text-dark hover:bg-black hover:text-white"
+                      >
+                        {item.isFollowed ? "Unfollow" : "Follow"}
+                      </Button>
+                    )}
                   </div>
                 </div>
 
-                <Link to={`/user/${itemId}`} className="group flex h-[36px] w-[36px] shrink-0 items-center justify-center rounded-full border-2 border-gray-200 md:hidden">
-                  <FIcon iconName="arrow-up-right" className="size-[16px] text-[#050505] transition-colors group-hover:text-white lg:size-[18px]" />
+                <Link to={`/user/${itemId}`} className="group flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 border-gray-200 transition-all hover:bg-black md:hidden">
+                  <FIcon iconName="arrow-up-right" className="size-6 stroke-black transition-colors group-hover:stroke-white" />
                 </Link>
               </div>
 
               <div className="hidden items-start md:flex md:flex-[2] md:gap-[60px] lg:gap-[75px]">
                 <UserRecipePreviews userId={itemId} totalRecipes={item.totalRecipes || 0} />
-                <Link to={`/user/${itemId}`} className="group flex h-[36px] w-[36px] items-center justify-center rounded-full border border-[#E8E8E8] hover:bg-black hover:text-white lg:h-[42px] lg:w-[42px]">
-                  <FIcon iconName="arrow-up-right" className="size-[16px] text-[#050505] transition-colors group-hover:text-white lg:size-[18px]" />
+                <Link to={`/user/${itemId}`} className="group flex h-[36px] w-[36px] items-center justify-center rounded-full border border-[#E8E8E8] transition-all hover:bg-black lg:h-[42px] lg:w-[42px]">
+                  <FIcon iconName="arrow-up-right" className="size-[16px] stroke-black transition-colors group-hover:stroke-white lg:size-[18px]" />
                 </Link>
               </div>
             </div>

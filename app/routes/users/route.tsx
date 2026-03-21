@@ -1,4 +1,4 @@
-import { useLoaderData, useSearchParams } from "react-router"
+import { useSearchParams } from "react-router"
 import type { Route } from "./+types/route"
 import { Tabs, TabsContent } from "~/components/ui/tabs"
 
@@ -38,7 +38,6 @@ export async function clientLoader({ request, params }: Route.ClientLoaderArgs) 
     const myId = currentUser.id || currentUser._id;
     const myFollowingRes = await apiFetch(`/users/${myId}/following`);
     const myFollowingIds = (myFollowingRes.data || []).map((u: any) => u.id || u._id);
-
     const isOwn = !userIdFromUrl || userIdFromUrl === "profile" || userIdFromUrl === myId;
 
     let targetUser = currentUser;
@@ -77,7 +76,8 @@ export async function clientLoader({ request, params }: Route.ClientLoaderArgs) 
       items: itemsData.data || [], 
       isOwn, 
       type,
-      myFollowingIds
+      myFollowingIds,
+      myId
     };
   } catch (error) {
     console.error("Loader Error:", error);
@@ -126,6 +126,7 @@ export default function UserProfilePage({ loaderData }: Route.ComponentProps) {
                     isOwnProfile={loaderData.isOwn}
                     currentTab={currentTab}
                     myFollowingIds={loaderData.myFollowingIds}
+                    myId={loaderData.myId}
                   />
                 </TabsContent>
               </div>
