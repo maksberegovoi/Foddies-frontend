@@ -7,6 +7,8 @@ import MainTitle from "~/components/MainTitle"
 import UserInfo from "./components/UserInfo"
 import TabsList from "./components/TabsList"
 import ListItems from "./components/ListItems"
+import Text from "~/components/Text"
+import Title from "~/components/Title"
 
 const API_BASE_URL = "https://foddies-backend.onrender.com/api/v1";
 

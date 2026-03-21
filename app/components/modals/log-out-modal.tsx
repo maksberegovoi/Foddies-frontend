@@ -7,6 +7,7 @@ import {
   DialogDescription,
   DialogTitle,
 } from "~/components/ui/dialog"
+import { useMediaQuery } from "@uidotdev/usehooks"
 
 type LogOutModalProps = {
   isLoading?: boolean
@@ -21,22 +22,23 @@ function LogOutModal({
   onOpenChange,
   open = false,
 }: LogOutModalProps) {
+  const isMobile = useMediaQuery("only screen and (max-width : 767px)")
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>
-      <DialogContent className="gap-8">
-        <DialogClose>
+      <DialogContent>
+        <DialogClose className="absolute top-5 right-5">
           <button
             aria-label="Close log out modal"
-            className="absolute top-5 right-5 inline-flex size-6 items-center justify-center text-dark transition-opacity hover:opacity-70"
+            className="inline-flex size-6 items-center justify-center text-dark transition-opacity hover:opacity-70"
             type="button"
           >
             <FIcon className="size-6" iconName="close-x" />
           </button>
         </DialogClose>
 
-        <div className="flex flex-col gap-5 pt-[60px]">
-          <DialogTitle className="text-center">
-            ARE YOU LOGGING OUT?
+        <div className="flex flex-col gap-5 pt-[60px] text-center">
+          <DialogTitle>
+            {isMobile ? "LOG OUT" : "ARE YOU LOGGING OUT?"}
           </DialogTitle>
           <DialogDescription className="text-base leading-6 text-light-dark">
             You can always log back in at my time.
@@ -55,7 +57,7 @@ function LogOutModal({
 
           <DialogClose>
             <Button
-              className="h-14 rounded-[30px] border-dark bg-white text-base leading-6 font-bold tracking-[-0.02em] text-dark hover:bg-muted"
+              className="h-14 w-full rounded-[30px] border-dark bg-white text-base leading-6 font-bold tracking-[-0.02em] text-dark hover:bg-muted"
               type="button"
               variant="outlineBlack"
             >
