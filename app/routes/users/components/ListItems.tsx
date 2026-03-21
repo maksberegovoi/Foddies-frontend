@@ -136,10 +136,10 @@ export default function ListItems({ items, type, isOwnProfile, currentTab, myFol
           return (
             <div key={itemId} className="py-[20px] first:pt-0 last:border-none">
               <div className="flex items-start justify-between gap-4">
-                <div className="flex gap-4 lg:gap-6">
-                  <div className="h-24 w-24 shrink-0 overflow-hidden rounded-[20px] md:h-30 md:w-30 lg:h-30 lg:w-30">
+                <div className="flex gap-4 lg:gap-[16px]">
+                  <div className="h-[100px] lg:w-[100px] shrink-0 overflow-hidden rounded-[20px]">
                     <img 
-                      src={item.image?.phone || item.image?.original || "/fallback_recipe.png"} 
+                      src={item.image?.phone || item.image?.original} 
                       className="h-full w-full object-cover" 
                       alt={item.title} 
                     />
@@ -159,14 +159,14 @@ export default function ListItems({ items, type, isOwnProfile, currentTab, myFol
                     to={`/recipe/${itemId}`} 
                     className="group flex h-[36px] w-[36px] bg-transparent items-center justify-center rounded-full border border-[#BFBEBE] transition-all hover:bg-black lg:h-[42px] lg:w-[42px]"
                   >
-                    <FIcon iconName="arrow-up-right" className="size-[16px] stroke-black transition-colors group-hover:stroke-white lg:size-[18px]" />
+                    <FIcon iconName="arrow-up-right" className="size-[16px] text-[#050505] transition-colors group-hover:text-white lg:size-[18px]" />
                   </Link>
                   {isOwnProfile && (currentTab === "my-recipes" || currentTab === "my-favorites") && (
                     <Button 
                       onClick={() => handleDeleteItem(itemId)} 
-                      className="group flex h-[36px] w-[36px] bg-transparent items-center justify-center rounded-full border border-[#BFBEBE] transition-all hover:bg-black lg:h-[42px] lg:w-[42px]"
+                      className="group flex h-[36px] w-[36px] p-0 bg-transparent items-center justify-center rounded-full border border-[#BFBEBE] transition-all hover:bg-black lg:h-[42px] lg:w-[42px]"
                     >
-                      <FIcon iconName="trash" className="size-[18px] stroke-black transition-colors group-hover:stroke-white lg:size-[20px]" />
+                      <FIcon iconName="trash" className="size-[36px] text-[#050505] transition-colors group-hover:text-white lg:size-[42px]" />
                     </Button>
                   )}
                 </div>
@@ -178,7 +178,7 @@ export default function ListItems({ items, type, isOwnProfile, currentTab, myFol
         return (
           <div key={itemId} className="py-[20px] first:pt-0 last:border-none">
             <div className="flex flex-col gap-0 md:flex-row md:items-center md:gap-[60px] lg:gap-[75px]">
-              <div className="flex w-full items-start justify-between md:flex-1 md:items-center lg:gap-6">
+              <div className="flex w-full items-start justify-start md:flex-1 md:items-center">
                 <div className="flex items-center gap-[16px]">
                   <div 
                     className="h-[60px] w-[60px] md:h-[85px] md:w-[85px] shrink-0 overflow-hidden rounded-full cursor-pointer"
@@ -208,14 +208,14 @@ export default function ListItems({ items, type, isOwnProfile, currentTab, myFol
                 </div>
 
                 <Link to={`/user/${itemId}`} className="group flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 border-gray-200 transition-all hover:bg-black md:hidden">
-                  <FIcon iconName="arrow-up-right" className="size-6 stroke-black transition-colors group-hover:stroke-white" />
+                  <FIcon iconName="arrow-up-right" className="size-6 text-[#050505] transition-colors group-hover:text-white" />
                 </Link>
               </div>
 
-              <div className="hidden items-start md:flex md:flex-[2] md:gap-[60px] lg:gap-[75px]">
+              <div className="hidden items-start md:flex md:flex-[3] md:gap-[60px] lg:gap-[75px]">
                 <UserRecipePreviews userId={itemId} totalRecipes={item.totalRecipes || 0} />
                 <Link to={`/user/${itemId}`} className="group flex h-[36px] w-[36px] items-center justify-center rounded-full border border-[#E8E8E8] transition-all hover:bg-black lg:h-[42px] lg:w-[42px]">
-                  <FIcon iconName="arrow-up-right" className="size-[16px] stroke-black transition-colors group-hover:stroke-white lg:size-[18px]" />
+                  <FIcon iconName="arrow-up-right" className="size-[16px] text-[#050505] transition-colors group-hover:text-white lg:size-[18px]" />
                 </Link>
               </div>
             </div>

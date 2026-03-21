@@ -111,7 +111,7 @@ export default function UserProfilePage({ loaderData }: Route.ComponentProps) {
         </div>
 
         <div className="flex w-full flex-col items-start gap-10 lg:flex-row">
-          <aside className="w-full lg:w-auto lg:min-w-110">
+          <aside className="w-full mx-auto lg:mx-0 md:w-auto max-w-[394px]">
             <UserInfo user={loaderData.user} isOwnProfile={loaderData.isOwn} />
           </aside>
 
