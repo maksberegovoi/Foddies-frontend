@@ -30,7 +30,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Toaster
           position="top-right"
           toastOptions={{
-            duration: 1000,
+            duration: 2000,
             unstyled: true,
             classNames: {
               toast: "notification",
