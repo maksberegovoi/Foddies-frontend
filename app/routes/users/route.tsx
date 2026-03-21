@@ -120,7 +120,7 @@ export default function UserProfilePage({ params }: Route.ComponentProps) {
             />
           </aside>
 
-          <main className="flex w-full flex-1 flex-col gap-10">
+          <div className="flex w-full flex-1 flex-col gap-10">
             <Tabs value={currentTab} onValueChange={(v) => setSearchParams({ tab: v })} className="w-full">
               <TabsList isOwnProfile={isOwn} />
               <div className="mt-10">
@@ -136,7 +136,7 @@ export default function UserProfilePage({ params }: Route.ComponentProps) {
                 </TabsContent>
               </div>
             </Tabs>
-          </main>
+          </div>
         </div>
       </div>
     </div>

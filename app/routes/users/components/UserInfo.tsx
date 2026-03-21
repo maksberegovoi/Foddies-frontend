@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import type { UserProfileDto } from "~/api/generated/models/userProfileDto";
+import type { UserProfilePublicDto } from "~/api/generated/models/userProfilePublicDto";
 import { Button } from "~/components/ui/button";
 import FIcon from "~/components/FIcon";
 import Title from "~/components/Title";
@@ -7,17 +9,10 @@ import { usePatchUsersAvatar, usePostUsersIdFollow, useDeleteUsersIdFollow } fro
 import { toast } from "sonner";
 
 interface UserInfoProps {
-  user: {
-    id: string;
-    _id?: string;
-    name: string;
-    email: string;
-    avatarURL: string | null;
-    totalRecipes: number;
-    totalFavoriteRecipes: number;
-    totalFollowers: number;
-    totalFollowing: number;
+  user: (UserProfileDto | UserProfilePublicDto) & { 
     isFollowed?: boolean;
+    totalFollowing?: number;
+    totalFavoriteRecipes?: number;
   };
   isOwnProfile: boolean;
 }
@@ -25,6 +20,7 @@ interface UserInfoProps {
 export default function UserInfo({ user, isOwnProfile }: UserInfoProps) {
   const [isFollowed, setIsFollowed] = useState(user.isFollowed);
   const [followersCount, setFollowersCount] = useState(user.totalFollowers || 0);
+  
   const updateAvatar = usePatchUsersAvatar();
   const followMutation = usePostUsersIdFollow();
   const unfollowMutation = useDeleteUsersIdFollow();
@@ -43,7 +39,7 @@ export default function UserInfo({ user, isOwnProfile }: UserInfoProps) {
   ];
 
   const handleFollowToggle = async () => {
-    const targetId = user.id || user._id || "";
+    const targetId = user.id;
     
     if (isFollowed) {
       unfollowMutation.mutate({ id: targetId }, {
