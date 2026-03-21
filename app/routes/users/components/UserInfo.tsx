@@ -83,7 +83,7 @@ export default function UserInfo({ user, isOwnProfile }: UserInfoProps) {
           {isOwnProfile && (
             <label className="absolute bot-0 left-1/2 flex -translate-x-1/2 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-dark p-2.5 hover:bg-black transition-colors">
               <input type="file" className="hidden" onChange={handleAvatarChange} accept="image/*" />
-              <div className="flex size-4.5 items-center justify-center rounded-full bg-white text-[10px] font-bold">+</div>
+              <FIcon iconName="plus" className="size-[18px] text-[#FFFFFF]" />
             </label>
           )}
         </div>

@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
-import { MoveUpRight, Trash2 } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import FIcon from "~/components/FIcon"; 
 
@@ -159,18 +158,16 @@ export default function ListItems({ items, type, isOwnProfile, currentTab, myFol
                 <div className="flex gap-2 lg:gap-3 shrink-0 pt-1">
                   <Link 
                     to={`/recipe/${itemId}`} 
-                    className="flex h-10 w-10 items-center justify-center rounded-full border border-[#BFBEBE] transition-all hover:bg-black hover:text-white lg:h-12 lg:w-12"
+                    className="group flex h-[36px] w-[36px] bg-transparent items-center justify-center rounded-full border border-[#BFBEBE] transition-all hover:bg-black lg:h-[42px] lg:w-[42px]"
                   >
-                    <MoveUpRight className="h-5 w-5 lg:h-6 lg:w-6" />
+                    <FIcon iconName="arrow-up-right" className="size-[16px] text-[#050505] transition-colors group-hover:text-white lg:size-[18px]" />
                   </Link>
-                  
-                  {/* Кнопка видалення для власних рецептів АБО для обраних */}
                   {isOwnProfile && (currentTab === "my-recipes" || currentTab === "my-favorites") && (
                     <Button 
                       onClick={() => handleDeleteItem(itemId)} 
-                      className="flex h-10 w-10 bg-transparent items-center justify-center rounded-full border border-[#BFBEBE] transition-all hover:bg-black hover:text-white lg:h-12 lg:w-12 group"
+                      className="group flex h-[36px] w-[36px] bg-transparent items-center justify-center rounded-full border border-[#BFBEBE] transition-all hover:bg-black hover:text-white lg:h-[42px] lg:w-[42px] group"
                     >
-                      <Trash2 className="h-5 w-5 text-black group-hover:text-white lg:h-6 lg:w-6" />
+                      <FIcon iconName="trash" className="size-[42px] text-[#1A1A1A] transition-colors group-hover:text-white" />
                     </Button>
                   )}
                 </div>
@@ -209,15 +206,15 @@ export default function ListItems({ items, type, isOwnProfile, currentTab, myFol
                   </div>
                 </div>
 
-                <Link to={`/user/${itemId}`} className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 border-gray-200 md:hidden">
-                  <MoveUpRight className="h-6 w-6" />
+                <Link to={`/user/${itemId}`} className="group flex h-[36px] w-[36px] shrink-0 items-center justify-center rounded-full border-2 border-gray-200 md:hidden">
+                  <FIcon iconName="arrow-up-right" className="size-[16px] text-[#050505] transition-colors group-hover:text-white lg:size-[18px]" />
                 </Link>
               </div>
 
               <div className="hidden items-start md:flex md:flex-[2] md:gap-[60px] lg:gap-[75px]">
                 <UserRecipePreviews userId={itemId} totalRecipes={item.totalRecipes || 0} />
-                <Link to={`/user/${itemId}`} className="flex h-[36px] w-[36px] items-center justify-center rounded-full border border-[#E8E8E8] hover:bg-black hover:text-white lg:h-[42px] lg:w-[42px]">
-                  <MoveUpRight className="h-4 w-4 lg:h-5 lg:w-5" />
+                <Link to={`/user/${itemId}`} className="group flex h-[36px] w-[36px] items-center justify-center rounded-full border border-[#E8E8E8] hover:bg-black hover:text-white lg:h-[42px] lg:w-[42px]">
+                  <FIcon iconName="arrow-up-right" className="size-[16px] text-[#050505] transition-colors group-hover:text-white lg:size-[18px]" />
                 </Link>
               </div>
             </div>

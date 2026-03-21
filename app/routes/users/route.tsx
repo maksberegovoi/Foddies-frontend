@@ -36,8 +36,6 @@ export async function clientLoader({ request, params }: Route.ClientLoaderArgs) 
     const currentUserRes = await apiFetch('/users/current');
     const currentUser = currentUserRes.data;
     const myId = currentUser.id || currentUser._id;
-
-    // ДОДАЄМО: Отримуємо список підписок поточного юзера
     const myFollowingRes = await apiFetch(`/users/${myId}/following`);
     const myFollowingIds = (myFollowingRes.data || []).map((u: any) => u.id || u._id);
 
@@ -49,7 +47,6 @@ export async function clientLoader({ request, params }: Route.ClientLoaderArgs) 
       targetUser = targetUserRes.data;
     }
 
-    // Оновлюємо статус підписки для цільового профілю
     targetUser.isFollowed = myFollowingIds.includes(targetUser.id || targetUser._id);
 
     const targetId = targetUser.id || targetUser._id;
@@ -80,7 +77,7 @@ export async function clientLoader({ request, params }: Route.ClientLoaderArgs) 
       items: itemsData.data || [], 
       isOwn, 
       type,
-      myFollowingIds // ПЕРЕДАЄМО ДАЛІ
+      myFollowingIds
     };
   } catch (error) {
     console.error("Loader Error:", error);
@@ -128,7 +125,7 @@ export default function UserProfilePage({ loaderData }: Route.ComponentProps) {
                     type={loaderData.type} 
                     isOwnProfile={loaderData.isOwn}
                     currentTab={currentTab}
-                    myFollowingIds={loaderData.myFollowingIds} // ДОДАНО СЮДИ
+                    myFollowingIds={loaderData.myFollowingIds}
                   />
                 </TabsContent>
               </div>
