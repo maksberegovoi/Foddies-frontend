@@ -13,6 +13,10 @@ import {
   usePostAuthSignup,
   usePostAuthSignout,
 } from "~/api/generated/endpoints/auth/auth"
+import { toast } from "sonner"
+import type { SignInDto, SignUpDto } from "~/api/generated/model"
+import type { ApiErrorHTTP } from "~/api/axios-instance"
+import axios from "axios"
 
 type ModalType = "log-out" | "sign-in" | "sign-up" | null
 
@@ -51,25 +55,28 @@ function createModalStore(initialState: ModalType = null): ModalStore {
 
 const modalStore = createModalStore()
 
-function getErrorMessage(error: unknown) {
-  if (
-    typeof error === "object" &&
-    error !== null &&
-    "response" in error &&
-    typeof (error as { response?: unknown }).response === "object" &&
-    (error as { response?: unknown }).response !== null
-  ) {
-    const response = (error as { response?: { data?: unknown } }).response
+export function getErrorMessage(error: unknown): string | null {
+  if (import.meta.env.DEV) console.log(error)
 
-    if (
-      response &&
-      typeof response.data === "object" &&
-      response.data !== null &&
-      "message" in response.data &&
-      typeof (response.data as { message?: unknown }).message === "string"
-    ) {
-      return (response.data as { message: string }).message
+  if (axios.isAxiosError<ApiErrorHTTP>(error)) {
+    const status = error.response?.status
+    const errorData = error.response?.data
+
+    if (status === 400) {
+      return "Please check the form for errors."
     }
+
+    if (status === 409) {
+      return "User with this email already exists."
+    }
+
+    if (errorData?.message) {
+      return errorData.message
+    }
+  }
+
+  if (error instanceof Error) {
+    return error.message
   }
 
   return null
@@ -87,39 +94,69 @@ function ModalHost() {
     modalStore.getSnapshot
   )
 
+  const onSubmitSignIn = (values: SignInDto) => {
+    signInMutation.mutate(
+      { data: values },
+      {
+        onSuccess: () => {
+          setSignedIn(true)
+          modalStore.setModal(null)
+          toast.success("Successfully signed in!")
+        },
+        onError: (error) => {
+          const message =
+            getErrorMessage(error) ||
+            "Failed to sign in, please try again later"
+          toast.error(message)
+        },
+      }
+    )
+  }
+
+  const onSubmitSignUp = (values: SignUpDto) => {
+    signUpMutation.mutate(
+      { data: values },
+      {
+        onSuccess: () => {
+          toast.success("Registration successful! Please sign in.")
+          modalStore.setModal("sign-in")
+        },
+        onError: (error) => {
+          const message = getErrorMessage(error) || "Registration failed"
+          toast.error(message)
+        },
+      }
+    )
+  }
+
   return (
     <>
       <SignInModal
-        errorMessage={getErrorMessage(signInMutation.error)}
         isLoading={signInMutation.isPending}
+        isError={signInMutation.isError}
+        onResetError={() => signInMutation.reset()}
         onOpenChange={(open) => {
           if (!open) {
             signInMutation.reset()
             modalStore.setModal(null)
           }
         }}
-        onSubmit={async (values) => {
-          await signInMutation.mutateAsync({ data: values })
-          setSignedIn(true)
-          modalStore.setModal(null)
-        }}
+        onSubmit={onSubmitSignIn}
         onSwitchToSignUp={() => modalStore.setModal("sign-up")}
         open={activeModal === "sign-in"}
       />
 
       <SignUpModal
-        errorMessage={getErrorMessage(signUpMutation.error)}
         isLoading={signUpMutation.isPending}
+        isError={signUpMutation.isError}
+        onResetError={() => signUpMutation.reset()}
         onOpenChange={(open) => {
           if (!open) {
             signUpMutation.reset()
             modalStore.setModal(null)
           }
         }}
-        onSubmit={async (values) => {
-          await signUpMutation.mutateAsync({ data: values })
-          modalStore.setModal(null)
-        }}
+        onSubmit={onSubmitSignUp}
         onSwitchToSignIn={() => modalStore.setModal("sign-in")}
         open={activeModal === "sign-up"}
       />

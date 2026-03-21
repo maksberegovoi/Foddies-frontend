@@ -1,6 +1,7 @@
 import { useState } from "react"
-import { useFormik } from "formik"
-
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import * as z from "zod"
 import FIcon from "~/components/FIcon"
 import { Button } from "~/components/ui/button"
 import {
@@ -10,19 +11,20 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog"
 import { Input } from "~/components/ui/input"
-import Text from "~/components/Text"
+import type { SignUpDto } from "~/api/generated/model"
 
-type SignUpValues = {
-  email: string
-  name: string
-  password: string
-}
+const signUpSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.email("Invalid email format"),
+  password: z.string().min(2, "Password must be at least 2 characters"),
+})
 
 type SignUpModalProps = {
-  errorMessage?: string | null
   isLoading?: boolean
+  isError?: boolean
+  onResetError?: () => void
   onOpenChange?: (open: boolean) => void
-  onSubmit?: (values: SignUpValues) => void | Promise<void>
+  onSubmit?: (values: SignUpDto) => void | Promise<void>
   onSwitchToSignIn?: () => void
   open?: boolean
 }
@@ -31,97 +33,117 @@ const inputClassName =
   "h-14 rounded-[30px] border-gray px-[18px] py-4 text-base leading-6 tracking-[-0.02em] placeholder:text-gray focus-visible:border-dark focus-visible:ring-0 md:text-base"
 
 function SignUpModal({
-  errorMessage,
   isLoading = false,
+  isError = false,
+  onResetError,
   onOpenChange,
   onSubmit,
   onSwitchToSignIn,
   open = false,
 }: SignUpModalProps) {
   const [showPassword, setShowPassword] = useState(false)
-  const formik = useFormik<SignUpValues>({
-    initialValues: {
-      email: "",
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isValid },
+  } = useForm<SignUpDto>({
+    resolver: zodResolver(signUpSchema),
+    mode: "onChange",
+    defaultValues: {
       name: "",
+      email: "",
       password: "",
     },
-    onSubmit: async (values) => {
-      await onSubmit?.(values)
-    },
   })
-  const { handleBlur, handleChange, handleSubmit, resetForm, values } = formik
 
-  const isFilled =
-    values.name.trim() !== "" &&
-    values.email.trim() !== "" &&
-    values.password.trim() !== ""
   const handleOpenChange = (nextOpen: boolean) => {
     if (!nextOpen) {
-      resetForm()
+      reset()
+      onResetError?.()
       setShowPassword(false)
     }
-
     onOpenChange?.(nextOpen)
   }
 
+  const onFormSubmit = (data: SignUpDto) => {
+    onSubmit?.(data)
+  }
+
+  const isButtonDisabled = isLoading || !isValid || isError
+
   return (
     <Dialog onOpenChange={handleOpenChange} open={open}>
-      <DialogContent className="gap-10">
-        <DialogClose>
+      <DialogContent>
+        <DialogClose className="absolute top-5 right-5">
           <button
             aria-label="Close sign up modal"
-            className="absolute top-5 right-5 inline-flex size-6 items-center justify-center text-dark transition-opacity hover:opacity-70"
+            className="inline-flex size-6 cursor-pointer items-center justify-center text-dark transition-opacity hover:opacity-70"
             type="button"
           >
             <FIcon className="size-6" iconName="close-x" />
           </button>
         </DialogClose>
 
-        <form className="flex flex-col gap-10" onSubmit={handleSubmit}>
+        <form
+          className="flex flex-col gap-10"
+          onSubmit={handleSubmit(onFormSubmit)}
+          onChange={() => {
+            if (isError) {
+              onResetError?.()
+            }
+          }}
+        >
           <div className="flex flex-col gap-10">
             <DialogTitle>SIGN UP</DialogTitle>
 
             <div className="flex flex-col gap-[14px]">
-              <Input
-                aria-label="Name"
-                className={inputClassName}
-                name="name"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                placeholder="Name*"
-                type="text"
-                value={values.name}
-              />
-
-              <Input
-                aria-label="Email"
-                className={inputClassName}
-                name="email"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                placeholder="Email*"
-                type="email"
-                value={values.email}
-              />
-
-              <div className="relative">
+              <div className="flex flex-col gap-1">
                 <Input
-                  aria-label="Password"
-                  className={`${inputClassName} pr-12`}
-                  name="password"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  placeholder="Password"
-                  type={showPassword ? "text" : "password"}
-                  value={values.password}
+                  {...register("name")}
+                  aria-label="Name"
+                  className={inputClassName}
+                  placeholder="Name*"
+                  type="text"
                 />
-                {values.password && (
+                {errors.name && (
+                  <span className="px-4 text-xs text-destructive">
+                    {errors.name.message}
+                  </span>
+                )}
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <Input
+                  {...register("email")}
+                  aria-label="Email"
+                  className={inputClassName}
+                  placeholder="Email*"
+                  type="text"
+                />
+                {errors.email && (
+                  <span className="px-4 text-xs text-destructive">
+                    {errors.email.message}
+                  </span>
+                )}
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <div className="relative">
+                  <Input
+                    {...register("password")}
+                    aria-label="Password"
+                    className={`${inputClassName} peer pr-12`}
+                    placeholder="Password*"
+                    type={showPassword ? "text" : "password"}
+                  />
                   <button
                     aria-label={
                       showPassword ? "Hide password" : "Show password"
                     }
-                    className="absolute top-1/2 right-4 inline-flex -translate-y-1/2 items-center justify-center text-dark transition-opacity hover:opacity-70"
-                    onClick={() => setShowPassword((current) => !current)}
+                    className="absolute top-1/2 right-4 inline-flex -translate-y-1/2 cursor-pointer items-center justify-center text-dark transition-opacity peer-placeholder-shown:hidden hover:opacity-70"
+                    onClick={() => setShowPassword((prev) => !prev)}
                     type="button"
                   >
                     <FIcon
@@ -129,6 +151,11 @@ function SignUpModal({
                       iconName={showPassword ? "eye" : "eye-off"}
                     />
                   </button>
+                </div>
+                {errors.password && (
+                  <span className="px-4 text-xs text-destructive">
+                    {errors.password.message}
+                  </span>
                 )}
               </div>
             </div>
@@ -137,11 +164,9 @@ function SignUpModal({
           <div className="flex flex-col gap-5">
             <Button
               className={`h-14 rounded-[30px] text-base leading-6 font-bold tracking-[-0.02em] text-white ${
-                isFilled
-                  ? "bg-dark hover:bg-light-dark"
-                  : "bg-gray hover:bg-gray"
-              } disabled:bg-gray`}
-              disabled={isLoading || !isFilled}
+                isValid ? "bg-dark hover:bg-light-dark" : "bg-gray"
+              }`}
+              disabled={isButtonDisabled}
               type="submit"
             >
               {isLoading ? "CREATING..." : "CREATE"}
@@ -157,12 +182,6 @@ function SignUpModal({
                 Sign in
               </button>
             </div>
-
-            {errorMessage && (
-              <Text as={"span"} className="text-center text-destructive">
-                {errorMessage}
-              </Text>
-            )}
           </div>
         </form>
       </DialogContent>

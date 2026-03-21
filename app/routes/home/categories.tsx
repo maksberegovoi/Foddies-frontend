@@ -27,9 +27,9 @@ export async function clientLoader() {
 }
 
 const Categories = ({ loaderData }: Route.ComponentProps) => {
-  const isMobile = useMediaQuery("only screen and (max-width : 768px)")
+  const isMobile = useMediaQuery("only screen and (max-width : 767px)")
   const isTablet = useMediaQuery(
-    "only screen and (min-width : 769px) and (max-width : 1280px)"
+    "only screen and (min-width : 768px) and (max-width : 1440px)"
   )
 
   const { handleSelectCategory } = useOutletContext<HomeContextType>()

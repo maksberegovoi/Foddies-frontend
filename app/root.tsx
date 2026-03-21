@@ -14,7 +14,6 @@ import { QueryClientProvider } from "@tanstack/react-query"
 import { queryClient } from "~/api/query-client"
 import { Toaster } from "sonner"
 import NotFoundPage from "~/routes/not-found/route"
-import Text from "~/components/Text"
 import Title from "~/components/Title"
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -30,15 +29,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
         {children}
         <Toaster
           position="top-right"
-          richColors
-          closeButton
           toastOptions={{
-            style: {
-              background: "var(--popover)",
-              color: "var(--popover-foreground)",
-              borderRadius: "var(--radius)",
+            unstyled: true,
+            classNames: {
+              toast: "notification",
+              success: "notification-success",
+              error: "notification-error",
             },
-            className: "my-custom-toast",
           }}
         />
         <ScrollRestoration />
@@ -57,6 +54,8 @@ export default function App() {
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
+  if (import.meta.env.DEV) console.log(error)
+
   if (isRouteErrorResponse(error)) {
     if (error.status === 404) {
       return <NotFoundPage />
