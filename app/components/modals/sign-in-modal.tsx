@@ -73,11 +73,11 @@ function SignInModal({
 
   return (
     <Dialog onOpenChange={handleOpenChange} open={open}>
-      <DialogContent className="gap-10">
-        <DialogClose>
+      <DialogContent>
+        <DialogClose className="absolute top-5 right-5">
           <button
             aria-label="Close sign in modal"
-            className="absolute top-5 right-5 inline-flex size-6 cursor-pointer items-center justify-center text-dark transition-opacity hover:opacity-70"
+            className="inline-flex size-6 cursor-pointer items-center justify-center text-dark transition-opacity hover:opacity-70"
             type="button"
           >
             <FIcon className="size-6" iconName="close-x" />
