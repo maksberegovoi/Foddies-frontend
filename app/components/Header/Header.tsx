@@ -35,15 +35,13 @@ export default function Header() {
         <div className="relative flex items-center justify-between gap-2">
           <Logo isDark={!isPageHasHero} />
 
-          {isLoggedIn && (
-            <Nav
-              variant={variant}
-              className={cn(
-                "absolute left-1/2 -translate-x-1/2",
-                "hidden md:flex"
-              )}
-            />
-          )}
+          <Nav
+            variant={variant}
+            className={cn(
+              "absolute left-1/2 -translate-x-1/2",
+              "hidden md:flex"
+            )}
+          />
 
           <div className="flex items-center gap-3">
             {isLoggedIn ? <UserBar variant={variant} /> : <AuthBar />}

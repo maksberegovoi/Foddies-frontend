@@ -26,8 +26,10 @@ import { withErrorHandling } from "~/lib/api-error-handler"
 import { queryClient } from "~/api/query-client"
 import {
   getGetUsersCurrentQueryKey,
+  getGetUsersIdQueryKey,
   getUsersCurrent,
 } from "~/api/generated/endpoints/user/user"
+import type { GetUsersCurrent200 } from "~/api/generated/model"
 import type { Route } from "../../../.react-router/types/app/routes/users/+types/route"
 
 export async function clientLoader({ request }: Route.ClientLoaderArgs) {
@@ -42,11 +44,13 @@ export async function clientLoader({ request }: Route.ClientLoaderArgs) {
     const destinationUrl = new URL(request.url)
 
     const currentUrl = new URL(window.location.href)
+    const scrollY = String(window.scrollY)
     if (currentUrl.pathname === destinationUrl.pathname) {
-      throw redirect("/?modal=sign-in")
+      throw redirect(`/?modal=sign-in&scrollY=${scrollY}`)
     }
 
     currentUrl.searchParams.set("modal", "sign-in")
+    currentUrl.searchParams.set("scrollY", scrollY)
     throw redirect(currentUrl.pathname + currentUrl.search)
   }
 }
@@ -54,6 +58,34 @@ export async function clientLoader({ request }: Route.ClientLoaderArgs) {
 export default function AddRecipe() {
   const navigate = useNavigate()
   const { mutate: postRecipes } = usePostRecipes()
+
+  const invalidateOwnProfileCaches = () => {
+    const currentUserData = queryClient.getQueryData<GetUsersCurrent200>(
+      getGetUsersCurrentQueryKey()
+    )
+    const currentUserId = currentUserData?.data?.id
+
+    queryClient.invalidateQueries({ queryKey: getGetUsersCurrentQueryKey() })
+
+    if (currentUserId) {
+      queryClient.invalidateQueries({
+        queryKey: getGetUsersIdQueryKey(currentUserId),
+      })
+    }
+
+    queryClient.invalidateQueries({
+      predicate: (query) => {
+        const key = query.queryKey
+
+        if (!Array.isArray(key) || key[0] !== "/recipes") {
+          return false
+        }
+
+        const params = key[1] as { authorId?: string } | undefined
+        return !!currentUserId && params?.authorId === currentUserId
+      },
+    })
+  }
 
   const methods = useForm<AddRecipeFormValues>({
     resolver: zodResolver(recipeSchema),
@@ -91,6 +123,8 @@ export default function AddRecipe() {
       },
       {
         onSuccess: (response) => {
+          invalidateOwnProfileCaches()
+
           const recipeId = response?.data?.id
           if (recipeId) {
             navigate(`/recipe/${recipeId}`)

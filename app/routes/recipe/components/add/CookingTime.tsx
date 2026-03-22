@@ -16,7 +16,7 @@ type CookingTimeProps = {
 function CookingTime({ control }: CookingTimeProps) {
   const {
     field,
-    fieldState: { error },
+    fieldState: { error, isTouched },
   } = useController({ name: "cookingTime", control })
 
   const currentValue =
@@ -26,6 +26,8 @@ function CookingTime({ control }: CookingTimeProps) {
   const inputValue = isEditing ? draftValue : String(currentValue)
 
   const decrease = () => {
+    field.onBlur()
+
     if (currentValue <= COOKING_TIME_STEP) {
       field.onChange(MIN_COOKING_TIME)
       return
@@ -35,6 +37,8 @@ function CookingTime({ control }: CookingTimeProps) {
   }
 
   const increase = () => {
+    field.onBlur()
+
     if (currentValue < COOKING_TIME_STEP) {
       field.onChange(COOKING_TIME_STEP)
       return
@@ -44,6 +48,8 @@ function CookingTime({ control }: CookingTimeProps) {
   }
 
   const onInputChange = (value: string) => {
+    field.onBlur()
+
     if (value === "") {
       setDraftValue("")
       return
@@ -58,6 +64,8 @@ function CookingTime({ control }: CookingTimeProps) {
   }
 
   const onInputBlur = () => {
+    field.onBlur()
+
     const parsedValue = Number.parseInt(draftValue, 10)
     const nextValue = Number.isFinite(parsedValue)
       ? Math.max(MIN_COOKING_TIME, parsedValue)
@@ -89,7 +97,9 @@ function CookingTime({ control }: CookingTimeProps) {
           <FIcon iconName="minus" className="size-4 text-dark" />
         </Button>
 
-        <div className="flex items-baseline text-sm font-medium text-gray">
+        <div
+          className={`flex items-baseline text-sm font-medium ${isTouched ? "text-dark" : "text-gray"}`}
+        >
           <input
             type="text"
             inputMode="numeric"
@@ -100,7 +110,7 @@ function CookingTime({ control }: CookingTimeProps) {
             onBlur={onInputBlur}
             onChange={(event) => onInputChange(event.target.value)}
             style={{ width: `${Math.max(inputValue.length, 1)}ch` }}
-            className="bg-transparent p-0 text-right text-sm font-medium text-gray outline-none"
+            className={`bg-transparent p-0 text-right text-sm font-medium outline-none`}
           />
           <span className="ml-1">min</span>
         </div>
