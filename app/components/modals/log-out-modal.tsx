@@ -26,7 +26,6 @@ function LogOutModal({
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>
       <DialogContent>
-        type="button"
         <DialogClose
           aria-label="Close log out modal"
           className="absolute top-5 right-5 inline-flex size-6 items-center justify-center text-dark transition-opacity hover:opacity-70"

@@ -1,11 +1,14 @@
-import { redirect, useNavigate, useSearchParams } from "react-router"
+import { redirect, useNavigate } from "react-router"
 import type { Route } from "./+types/route"
 import { Tabs, TabsContent } from "~/components/ui/tabs"
 
 import PathInfo from "~/components/PathInfo"
 import UserInfo from "./components/UserInfo"
 import TabsList from "./components/TabsList"
-import ListItems from "./components/ListItems"
+import MyRecipesTab from "./components/tabs/MyRecipesTab"
+import MyFavoritesTab from "./components/tabs/MyFavoritesTab"
+import FollowersTab from "./components/tabs/FollowersTab"
+import FollowingTab from "./components/tabs/FollowingTab"
 import Title from "~/components/Title"
 
 import {
@@ -17,15 +20,14 @@ import {
   getUsersId,
   getUsersIdFollowers,
   getUsersIdFollowing,
+  useGetUsersCurrent,
+  useGetUsersId,
 } from "~/api/generated/endpoints/user/user"
 
 import { queryClient } from "~/api/query-client"
 import type {
-  GetRecipes200,
-  GetRecipesFavorite200,
   GetRecipesParams,
-  GetUsersIdFollowers200,
-  GetUsersIdFollowing200,
+  GetUsersIdFollowersParams,
   UserProfileDto,
   UserProfilePublicDto,
 } from "~/api/generated/model"
@@ -37,29 +39,24 @@ import {
   getRecipesFavorite,
 } from "~/api/generated/endpoints/recipes/recipes"
 import { useIsSignedIn } from "~/components/auth/sign-in-hooks"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 
-export type LoaderResult =
-  | {
-      isOwnProfile: true
-      user: UserProfileDto
-      favoriteRecipes: GetRecipesFavorite200
-      following: GetUsersIdFollowing200
-      recipes: GetRecipes200
-      followers: GetUsersIdFollowers200
-    }
-  | {
-      isOwnProfile: false
-      user: UserProfilePublicDto
-      recipes: GetRecipes200
-      followers: GetUsersIdFollowers200
-    }
+const RECIPE_ITEMS_PER_PAGE = 9
+const USERS_ITEMS_PER_PAGE = 5
 
 export async function clientLoader({
   request,
   params,
-}: Route.ClientLoaderArgs): Promise<LoaderResult> {
-  const paramsUserId = params.id
+}: Route.ClientLoaderArgs): Promise<void> {
+  const profileId = params.id
+  const recipesPageParams = {
+    page: 1,
+    limit: RECIPE_ITEMS_PER_PAGE,
+  } satisfies Pick<GetRecipesParams, "page" | "limit">
+  const usersPageParams = {
+    page: 1,
+    limit: USERS_ITEMS_PER_PAGE,
+  } satisfies Pick<GetUsersIdFollowersParams, "page" | "limit">
 
   try {
     const currentUserData = await withErrorHandling(
@@ -69,111 +66,105 @@ export async function clientLoader({
       })
     )
     const currentUser = currentUserData.data
-    const isOwnProfile = currentUser.id === paramsUserId
+    const isOwnProfile = currentUser.id === profileId
 
     const recipesQuery = queryClient.ensureQueryData({
-      queryKey: getGetRecipesQueryKey(),
+      queryKey: getGetRecipesQueryKey({
+        authorId: profileId,
+        ...recipesPageParams,
+      }),
       queryFn: () =>
-        getRecipes({ authorId: paramsUserId } satisfies GetRecipesParams),
+        getRecipes({
+          authorId: profileId,
+          ...recipesPageParams,
+        } satisfies GetRecipesParams),
     })
 
     const followersQuery = queryClient.ensureQueryData({
-      queryKey: getGetUsersIdFollowersQueryKey(),
-      queryFn: () => getUsersIdFollowers(paramsUserId),
+      queryKey: getGetUsersIdFollowersQueryKey(profileId, usersPageParams),
+      queryFn: () => getUsersIdFollowers(profileId, usersPageParams),
     })
 
     if (isOwnProfile) {
-      const [recipes, followers, favoriteRecipes, following] =
-        await withErrorHandling(
-          Promise.all([
-            recipesQuery,
-            followersQuery,
-            queryClient.ensureQueryData({
-              queryKey: getGetRecipesFavoriteQueryKey(),
-              queryFn: () => getRecipesFavorite(),
-            }),
-            queryClient.ensureQueryData({
-              queryKey: getGetUsersIdFollowingQueryKey(),
-              queryFn: () => getUsersIdFollowing(paramsUserId),
-            }),
-          ])
-        )
+      await withErrorHandling(
+        Promise.all([
+          recipesQuery,
+          followersQuery,
+          queryClient.ensureQueryData({
+            queryKey: getGetRecipesFavoriteQueryKey(recipesPageParams),
+            queryFn: () => getRecipesFavorite(recipesPageParams),
+          }),
+          queryClient.ensureQueryData({
+            queryKey: getGetUsersIdFollowingQueryKey(
+              profileId,
+              usersPageParams
+            ),
+            queryFn: () => getUsersIdFollowing(profileId, usersPageParams),
+          }),
+        ])
+      )
 
-      return {
-        isOwnProfile: true,
-        user: currentUser as UserProfileDto,
-        recipes,
-        favoriteRecipes,
-        followers,
-        following,
-      }
+      return
     }
 
-    const [recipes, followers, publicUser] = await withErrorHandling(
+    await withErrorHandling(
       Promise.all([
         recipesQuery,
         followersQuery,
         queryClient.ensureQueryData({
-          queryKey: getGetUsersIdQueryKey(),
-          queryFn: () => getUsersId(paramsUserId),
+          queryKey: getGetUsersIdQueryKey(profileId),
+          queryFn: () => getUsersId(profileId),
+        }),
+        queryClient.ensureQueryData({
+          queryKey: getGetUsersIdFollowingQueryKey(currentUser.id),
+          queryFn: () => getUsersIdFollowing(currentUser.id),
         }),
       ])
     )
 
-    return {
-      isOwnProfile: false,
-      user: publicUser.data as UserProfilePublicDto,
-      recipes,
-      followers,
-    }
+    return
   } catch {
     const destinationUrl = new URL(request.url)
 
     const currentUrl = new URL(window.location.href)
+    const scrollY = String(window.scrollY)
     if (currentUrl.pathname === destinationUrl.pathname) {
-      throw redirect("/?modal=sign-in")
+      throw redirect(`/?modal=sign-in&scrollY=${scrollY}`)
     }
 
     currentUrl.searchParams.set("modal", "sign-in")
+    currentUrl.searchParams.set("scrollY", scrollY)
     throw redirect(currentUrl.pathname + currentUrl.search)
   }
 }
 
-export default function UserProfilePage({ loaderData }: Route.ComponentProps) {
+export default function UserProfilePage({ params }: Route.ComponentProps) {
   const navigate = useNavigate()
-  const data = loaderData as LoaderResult
+  const profileId = params.id
 
-  const favoriteRecipes = data.isOwnProfile ? data.favoriteRecipes : undefined
-  const following = data.isOwnProfile ? data.following : undefined
-  const { isOwnProfile, user, recipes, followers } = data
+  const { data: currentUserResponse } = useGetUsersCurrent()
+  const currentUser = currentUserResponse?.data as UserProfileDto | undefined
+  const currentUserId = currentUser?.id ?? null
+  const isOwnProfile = currentUser?.id === profileId
 
-  const [searchParams, setSearchParams] = useSearchParams()
-  const currentTab = searchParams.get("tab") || "my-recipes"
-  // const page = Number(searchParams.get("page") || "1")
+  const { data: publicUserResponse } = useGetUsersId(profileId, {
+    query: {
+      enabled: !!currentUser && !isOwnProfile,
+    },
+  })
 
-  let items: any[] = []
-  let type: "recipe" | "user" = "recipe"
+  const user = isOwnProfile
+    ? currentUser
+    : (publicUserResponse?.data as UserProfilePublicDto | undefined)
 
-  switch (currentTab) {
-    case "followers":
-      items = followers?.data || []
-      type = "user"
-      break
-    case "following":
-      items = following?.data || []
-      type = "user"
-      break
-    case "my-favorites":
-      items = isOwnProfile ? favoriteRecipes?.data || [] : []
-      type = "recipe"
-      break
-    case "my-recipes":
-    default:
-      items = recipes?.data || []
-      type = "recipe"
-  }
+  const availableTabs = isOwnProfile
+    ? ["my-recipes", "my-favorites", "followers", "following"]
+    : ["my-recipes", "followers"]
 
-  const followingIds = following?.data.map((i) => i.id)
+  const [currentTab, setCurrentTab] = useState<string>("my-recipes")
+  const activeTab = availableTabs.includes(currentTab)
+    ? currentTab
+    : "my-recipes"
 
   const isSignedIn = useIsSignedIn()
 
@@ -181,7 +172,11 @@ export default function UserProfilePage({ loaderData }: Route.ComponentProps) {
     if (!isSignedIn) {
       navigate("/?modal=sign-in")
     }
-  }, [isSignedIn])
+  }, [isSignedIn, navigate])
+
+  if (!user) {
+    return null
+  }
 
   return (
     <div className="bg-background text-foreground">
@@ -211,24 +206,36 @@ export default function UserProfilePage({ loaderData }: Route.ComponentProps) {
 
           <div className="flex w-full flex-1 flex-col gap-10">
             <Tabs
-              value={currentTab}
-              onValueChange={(v) => setSearchParams({ tab: v })}
+              value={activeTab}
+              onValueChange={(v) => {
+                setCurrentTab(v)
+              }}
               className="w-full"
             >
               <TabsList isOwnProfile={isOwnProfile} />
               <div className="mt-10">
                 <TabsContent
-                  value={currentTab}
+                  value={activeTab}
                   className="border-none p-0 outline-none"
                 >
-                  <ListItems
-                    items={items}
-                    type={type}
-                    isOwnProfile={isOwnProfile}
-                    currentTab={currentTab}
-                    myFollowingIds={followingIds}
-                    myId={isOwnProfile ? user.id : null}
-                  />
+                  {activeTab === "my-recipes" && (
+                    <MyRecipesTab
+                      profileId={profileId}
+                      isOwnProfile={isOwnProfile}
+                    />
+                  )}
+
+                  {activeTab === "my-favorites" && isOwnProfile && (
+                    <MyFavoritesTab isOwnProfile={isOwnProfile} />
+                  )}
+
+                  {activeTab === "followers" && (
+                    <FollowersTab profileId={profileId} myId={currentUserId} />
+                  )}
+
+                  {activeTab === "following" && isOwnProfile && (
+                    <FollowingTab profileId={profileId} myId={currentUserId} />
+                  )}
                 </TabsContent>
               </div>
             </Tabs>
