@@ -161,5 +161,5 @@ export default function UserInfo({ user, isOwnProfile }: UserInfoProps) {
         </Button>
       )}
     </div>
-  )
+  );
 }
