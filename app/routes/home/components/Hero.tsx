@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router"
+import { NavLink } from "react-router"
 import type { HTMLAttributes } from "react"
 import { useMediaQuery } from "@uidotdev/usehooks"
 
@@ -8,23 +8,9 @@ import Title from "~/components/Title"
 import HeroBig from "~/assets/images/hero_big.png"
 import HeroSmall from "~/assets/images/hero_small.png"
 import { buttonVariants } from "~/components/ui/button"
-import { useModal } from "~/components/modals/modal-context"
-import { useIsSignedIn } from "~/components/auth/sign-in-hooks"
 
 const HeroSection = () => {
-  const navigate = useNavigate()
-  const { openSignIn } = useModal()
-  const isSignedIn = useIsSignedIn()
-
   const isMobile = useMediaQuery("only screen and (max-width : 767px)")
-
-  const handleAddRecipe = () => {
-    if (isSignedIn) {
-      navigate("/recipe/add")
-    } else {
-      openSignIn()
-    }
-  }
 
   return (
     <div
@@ -56,16 +42,15 @@ const HeroSection = () => {
           in the aromas and tastes of various cuisines.
         </Text>
 
-        <button
+        <NavLink
+          to={"/recipe/add"}
           className={cn(
             buttonVariants({ variant: "outlineWhite" }),
             "px-8 text-base font-bold uppercase"
           )}
-          type="button"
-          onClick={handleAddRecipe}
         >
           Add recipe
-        </button>
+        </NavLink>
 
         <div className="flex items-center gap-9 pt-17 pb-28">
           <img

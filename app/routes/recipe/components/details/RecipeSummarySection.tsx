@@ -2,6 +2,7 @@ import type { RecipeDto } from "~/api/generated/model"
 import { Badge } from "~/components/ui/badge"
 import Title from "~/components/Title"
 import Text from "~/components/Text"
+import { NavLink } from "react-router"
 
 type RecipeSummarySectionProps = {
   recipe: RecipeDto
@@ -25,7 +26,10 @@ export default function RecipeSummarySection({
 
       <Text>{recipe.description}</Text>
 
-      <div className="flex items-center gap-3">
+      <NavLink
+        to={`/user/${recipe.ownerId}`}
+        className="flex items-center gap-3"
+      >
         <img
           className="size-8 rounded-full md:size-12.5"
           src={recipe.ownerAvatarURL || "/fallback_ava.webp"}
@@ -42,7 +46,7 @@ export default function RecipeSummarySection({
             {recipe.ownerName}
           </Text>
         </div>
-      </div>
+      </NavLink>
     </section>
   )
 }

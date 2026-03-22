@@ -1,4 +1,4 @@
-import { useSearchParams } from "react-router"
+import { redirect, useNavigate, useSearchParams } from "react-router"
 import type { Route } from "./+types/route"
 import { Tabs, TabsContent } from "~/components/ui/tabs"
 
@@ -9,122 +9,182 @@ import ListItems from "./components/ListItems"
 import Title from "~/components/Title"
 
 import {
-  useGetUsersCurrent,
-  useGetUsersId,
-  useGetUsersIdFollowers,
-  useGetUsersIdFollowing,
+  getGetUsersCurrentQueryKey,
+  getGetUsersIdFollowersQueryKey,
+  getGetUsersIdFollowingQueryKey,
+  getGetUsersIdQueryKey,
+  getUsersCurrent,
+  getUsersId,
+  getUsersIdFollowers,
+  getUsersIdFollowing,
 } from "~/api/generated/endpoints/user/user"
 
+import { queryClient } from "~/api/query-client"
+import type {
+  GetRecipes200,
+  GetRecipesFavorite200,
+  GetRecipesParams,
+  GetUsersIdFollowers200,
+  GetUsersIdFollowing200,
+  UserProfileDto,
+  UserProfilePublicDto,
+} from "~/api/generated/model"
+import { withErrorHandling } from "~/lib/api-error-handler"
 import {
-  useGetRecipesMy,
-  useGetRecipesFavorite,
-  useGetRecipes,
+  getGetRecipesFavoriteQueryKey,
+  getGetRecipesQueryKey,
+  getRecipes,
+  getRecipesFavorite,
 } from "~/api/generated/endpoints/recipes/recipes"
+import { useIsSignedIn } from "~/components/auth/sign-in-hooks"
+import { useEffect } from "react"
 
-export default function UserProfilePage({ params }: Route.ComponentProps) {
+export type LoaderResult =
+  | {
+      isOwnProfile: true
+      user: UserProfileDto
+      favoriteRecipes: GetRecipesFavorite200
+      following: GetUsersIdFollowing200
+      recipes: GetRecipes200
+      followers: GetUsersIdFollowers200
+    }
+  | {
+      isOwnProfile: false
+      user: UserProfilePublicDto
+      recipes: GetRecipes200
+      followers: GetUsersIdFollowers200
+    }
+
+export async function clientLoader({
+  request,
+  params,
+}: Route.ClientLoaderArgs): Promise<LoaderResult> {
+  const paramsUserId = params.id
+
+  try {
+    const currentUserData = await withErrorHandling(
+      queryClient.ensureQueryData({
+        queryKey: getGetUsersCurrentQueryKey(),
+        queryFn: () => getUsersCurrent(),
+      })
+    )
+    const currentUser = currentUserData.data
+    const isOwnProfile = currentUser.id === paramsUserId
+
+    const recipesQuery = queryClient.ensureQueryData({
+      queryKey: getGetRecipesQueryKey(),
+      queryFn: () =>
+        getRecipes({ authorId: paramsUserId } satisfies GetRecipesParams),
+    })
+
+    const followersQuery = queryClient.ensureQueryData({
+      queryKey: getGetUsersIdFollowersQueryKey(),
+      queryFn: () => getUsersIdFollowers(paramsUserId),
+    })
+
+    if (isOwnProfile) {
+      const [recipes, followers, favoriteRecipes, following] =
+        await withErrorHandling(
+          Promise.all([
+            recipesQuery,
+            followersQuery,
+            queryClient.ensureQueryData({
+              queryKey: getGetRecipesFavoriteQueryKey(),
+              queryFn: () => getRecipesFavorite(),
+            }),
+            queryClient.ensureQueryData({
+              queryKey: getGetUsersIdFollowingQueryKey(),
+              queryFn: () => getUsersIdFollowing(paramsUserId),
+            }),
+          ])
+        )
+
+      return {
+        isOwnProfile: true,
+        user: currentUser as UserProfileDto,
+        recipes,
+        favoriteRecipes,
+        followers,
+        following,
+      }
+    }
+
+    const [recipes, followers, publicUser] = await withErrorHandling(
+      Promise.all([
+        recipesQuery,
+        followersQuery,
+        queryClient.ensureQueryData({
+          queryKey: getGetUsersIdQueryKey(),
+          queryFn: () => getUsersId(paramsUserId),
+        }),
+      ])
+    )
+
+    return {
+      isOwnProfile: false,
+      user: publicUser.data as UserProfilePublicDto,
+      recipes,
+      followers,
+    }
+  } catch {
+    const destinationUrl = new URL(request.url)
+
+    const currentUrl = new URL(window.location.href)
+    if (currentUrl.pathname === destinationUrl.pathname) {
+      throw redirect("/?modal=sign-in")
+    }
+
+    currentUrl.searchParams.set("modal", "sign-in")
+    throw redirect(currentUrl.pathname + currentUrl.search)
+  }
+}
+
+export default function UserProfilePage({ loaderData }: Route.ComponentProps) {
+  const navigate = useNavigate()
+  const data = loaderData as LoaderResult
+
+  const favoriteRecipes = data.isOwnProfile ? data.favoriteRecipes : undefined
+  const following = data.isOwnProfile ? data.following : undefined
+  const { isOwnProfile, user, recipes, followers } = data
+
   const [searchParams, setSearchParams] = useSearchParams()
   const currentTab = searchParams.get("tab") || "my-recipes"
-  const page = Number(searchParams.get("page") || "1")
-
-  const userIdFromUrl = params.id
-
-  const { data: currentUserRes, isLoading: isMeLoading } = useGetUsersCurrent()
-  const currentUser = currentUserRes?.data
-  const myId = currentUser?.id || (currentUser as any)?._id
-
-  const isOwn =
-    !userIdFromUrl || userIdFromUrl === "profile" || userIdFromUrl === myId
-  const targetId = isOwn ? myId : userIdFromUrl
-
-  const { data: targetUserRes, isLoading: isTargetLoading } = useGetUsersId(
-    targetId as string,
-    {
-      query: { enabled: !!targetId && !isOwn },
-    }
-  )
-
-  const activeUser = isOwn ? currentUser : targetUserRes?.data
-
-  const { data: myFollowingRes } = useGetUsersIdFollowing(
-    myId as string,
-    {},
-    {
-      query: { enabled: !!myId },
-    }
-  )
-  const myFollowingIds = (myFollowingRes?.data || []).map(
-    (u: any) => u.id || u._id
-  )
-
-  const { data: myRecipesRes } = useGetRecipesMy(
-    { page },
-    {
-      query: { enabled: isOwn && currentTab === "my-recipes" },
-    }
-  )
-
-  const { data: targetRecipesRes } = useGetRecipes(
-    { authorId: targetId, page },
-    {
-      query: { enabled: !isOwn && currentTab === "my-recipes" && !!targetId },
-    }
-  )
-
-  const { data: favoriteRecipesRes } = useGetRecipesFavorite(
-    { page },
-    {
-      query: { enabled: isOwn && currentTab === "my-favorites" },
-    }
-  )
-
-  const { data: followersRes } = useGetUsersIdFollowers(
-    targetId as string,
-    { page },
-    {
-      query: { enabled: currentTab === "followers" && !!targetId },
-    }
-  )
-
-  const { data: followingRes } = useGetUsersIdFollowing(
-    targetId as string,
-    { page },
-    {
-      query: { enabled: currentTab === "following" && !!targetId },
-    }
-  )
-
-  if (isMeLoading || (isTargetLoading && !isOwn)) {
-    return (
-      <div className="py-20 text-center text-muted-foreground">Loading...</div>
-    )
-  }
-
-  if (!activeUser) return null
+  // const page = Number(searchParams.get("page") || "1")
 
   let items: any[] = []
   let type: "recipe" | "user" = "recipe"
 
   switch (currentTab) {
     case "followers":
-      items = followersRes?.data || []
+      items = followers?.data || []
       type = "user"
       break
     case "following":
-      items = followingRes?.data || []
+      items = following?.data || []
       type = "user"
       break
     case "my-favorites":
-      items = isOwn ? favoriteRecipesRes?.data || [] : []
+      items = isOwnProfile ? favoriteRecipes?.data || [] : []
       type = "recipe"
       break
     case "my-recipes":
     default:
-      items = isOwn ? myRecipesRes?.data || [] : targetRecipesRes?.data || []
+      items = recipes?.data || []
       type = "recipe"
   }
 
+  const followingIds = following?.data.map((i) => i.id)
+
+  const isSignedIn = useIsSignedIn()
+
+  useEffect(() => {
+    if (!isSignedIn) {
+      navigate("/?modal=sign-in")
+    }
+  }, [isSignedIn])
+
   return (
-    <div key={activeUser.id} className="bg-background text-foreground">
+    <div className="bg-background text-foreground">
       <div className="flex w-full max-w-7xl flex-col items-start gap-10">
         <PathInfo currentPageName={"Profile"} />
 
@@ -134,18 +194,19 @@ export default function UserProfilePage({ params }: Route.ComponentProps) {
 
         <div className="flex w-full flex-col items-start gap-10 lg:flex-row">
           <aside className="mx-auto w-full max-w-[394px] md:w-auto lg:mx-0">
-            <UserInfo
-              user={{
-                ...activeUser,
-                totalFavoriteRecipes:
-                  (activeUser as any).totalFavoriteRecipes ?? 0,
-                totalFollowing: (activeUser as any).totalFollowing ?? 0,
-                isFollowed: myFollowingIds.includes(
-                  activeUser.id || (activeUser as any)._id
-                ),
-              }}
-              isOwnProfile={isOwn}
-            />
+            {isOwnProfile ? (
+              <UserInfo
+                key={user.id}
+                isOwnProfile={true}
+                user={user as UserProfileDto}
+              />
+            ) : (
+              <UserInfo
+                key={user.id}
+                isOwnProfile={false}
+                user={user as UserProfilePublicDto}
+              />
+            )}
           </aside>
 
           <div className="flex w-full flex-1 flex-col gap-10">
@@ -154,7 +215,7 @@ export default function UserProfilePage({ params }: Route.ComponentProps) {
               onValueChange={(v) => setSearchParams({ tab: v })}
               className="w-full"
             >
-              <TabsList isOwnProfile={isOwn} />
+              <TabsList isOwnProfile={isOwnProfile} />
               <div className="mt-10">
                 <TabsContent
                   value={currentTab}
@@ -163,10 +224,10 @@ export default function UserProfilePage({ params }: Route.ComponentProps) {
                   <ListItems
                     items={items}
                     type={type}
-                    isOwnProfile={isOwn}
+                    isOwnProfile={isOwnProfile}
                     currentTab={currentTab}
-                    myFollowingIds={myFollowingIds}
-                    myId={myId}
+                    myFollowingIds={followingIds}
+                    myId={isOwnProfile ? user.id : null}
                   />
                 </TabsContent>
               </div>

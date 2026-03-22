@@ -1,6 +1,4 @@
 import { useState } from "react"
-import type { UserProfileDto } from "~/api/generated/model/userProfileDto"
-import type { UserProfilePublicDto } from "~/api/generated/model/userProfilePublicDto"
 import { Button } from "~/components/ui/button"
 import FIcon from "~/components/FIcon"
 import Title from "~/components/Title"
@@ -9,62 +7,71 @@ import {
   usePatchUsersAvatar,
   usePostUsersIdFollow,
   useDeleteUsersIdFollow,
+  getGetUsersIdQueryKey,
+  getGetUsersIdFollowersQueryKey,
 } from "~/api/generated/endpoints/user/user"
 import { toast } from "sonner"
+import { useModal } from "~/components/modals/modal-context"
+import { queryClient } from "~/api/query-client"
+import type {
+  UserProfileDto,
+  UserProfilePublicDto,
+} from "~/api/generated/model"
 
-interface UserInfoProps {
-  user: (UserProfileDto | UserProfilePublicDto) & {
-    isFollowed?: boolean
-    totalFollowing?: number
-    totalFavoriteRecipes?: number
-  }
-  isOwnProfile: boolean
-}
+// values from type LoaderResult
+type UserInfoProps =
+  | { isOwnProfile: true; user: UserProfileDto }
+  | { isOwnProfile: false; user: UserProfilePublicDto }
 
 export default function UserInfo({ user, isOwnProfile }: UserInfoProps) {
-  const [isFollowed, setIsFollowed] = useState(user.isFollowed)
-  const [followersCount, setFollowersCount] = useState(user.totalFollowers || 0)
+  const { openLogOut } = useModal()
 
   const updateAvatar = usePatchUsersAvatar()
   const followMutation = usePostUsersIdFollow()
   const unfollowMutation = useDeleteUsersIdFollow()
 
+  const initialIsFollowed = !isOwnProfile ? user.isFollowing : false
+  const [isFollowed, setIsFollowed] = useState(initialIsFollowed)
+  const [followersCount, setFollowersCount] = useState(user.totalFollowers)
+
   const stats = [
     { label: "Email:", value: user.email },
-    { label: "Added recipes:", value: user.totalRecipes || 0 },
+    { label: "Added recipes:", value: user.totalRecipes },
     ...(isOwnProfile
-      ? [{ label: "Favorites:", value: user.totalFavoriteRecipes || 0 }]
+      ? [{ label: "Favorites:", value: user.totalFavoriteRecipes }]
       : []),
     { label: "Followers:", value: followersCount },
-    { label: "Following:", value: user.totalFollowing || 0 },
-  ]
+    ...(isOwnProfile
+      ? [{ label: "Following:", value: user.totalFollowing }]
+      : []),
+  ].filter(Boolean)
 
-  const handleFollowToggle = async () => {
-    const targetId = user.id
+  const handleFollowToggle = () => {
+    const mutation = isFollowed ? unfollowMutation : followMutation
 
-    if (isFollowed) {
-      unfollowMutation.mutate(
-        { id: targetId },
-        {
-          onSuccess: () => {
-            setIsFollowed(false)
-            setFollowersCount((prev) => prev - 1)
-          },
-          onError: () => toast.error("Failed to unfollow"),
-        }
-      )
-    } else {
-      followMutation.mutate(
-        { id: targetId },
-        {
-          onSuccess: () => {
-            setIsFollowed(true)
-            setFollowersCount((prev) => prev + 1)
-          },
-          onError: () => toast.error("Failed to follow"),
-        }
-      )
-    }
+    mutation.mutate(
+      { id: user.id },
+      {
+        onSuccess: () => {
+          const nextState = !isFollowed
+          setIsFollowed(nextState)
+          setFollowersCount((prev) => (nextState ? prev + 1 : prev - 1))
+
+          toast.success(nextState ? "Subscribed!" : "Unsubscribed!")
+
+          queryClient.invalidateQueries({
+            queryKey: getGetUsersIdQueryKey(user.id),
+          })
+          queryClient.invalidateQueries({
+            queryKey: getGetUsersIdFollowersQueryKey(user.id),
+          })
+        },
+        onError: (err) => {
+          toast.error("Action failed")
+          console.error(err)
+        },
+      }
+    )
   }
 
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -89,7 +96,7 @@ export default function UserInfo({ user, isOwnProfile }: UserInfoProps) {
         <div className="group relative">
           <div className="h-20 w-20 overflow-hidden rounded-full border-2 border-gray/10 md:h-28 md:w-28">
             <img
-              src={user.avatarURL || "/fallback_ava.webp"}
+              src={user.avatarURL || "/fallback_ava.png"}
               className="h-full w-full object-cover"
               alt={user.name}
             />
@@ -139,10 +146,7 @@ export default function UserInfo({ user, isOwnProfile }: UserInfoProps) {
 
       {isOwnProfile ? (
         <Button
-          onClick={() => {
-            localStorage.clear()
-            window.location.href = "/"
-          }}
+          onClick={openLogOut}
           className="w-full rounded-[30px] bg-primary py-4 font-bold text-primary-foreground uppercase hover:opacity-90"
         >
           Log Out
@@ -150,11 +154,7 @@ export default function UserInfo({ user, isOwnProfile }: UserInfoProps) {
       ) : (
         <Button
           onClick={handleFollowToggle}
-          className={`w-full rounded-[30px] py-4 font-bold uppercase transition-colors ${
-            isFollowed
-              ? "bg-secondary text-secondary-foreground hover:bg-secondary/80"
-              : "bg-primary text-primary-foreground hover:bg-primary/90"
-          }`}
+          variant={isFollowed ? "outlineBlack" : "outlineWhite"}
           disabled={followMutation.isPending || unfollowMutation.isPending}
         >
           {isFollowed ? "Unfollow" : "Follow"}

@@ -1,4 +1,4 @@
-import { Link } from "react-router"
+import { Link, NavLink } from "react-router"
 
 import { cn } from "~/lib/utils"
 import Title from "~/components/Title"
@@ -29,7 +29,10 @@ const RecipeItem = ({ item }: RecipeItemProps) => {
       </div>
 
       <div className="flex justify-between">
-        <div className="flex items-center gap-2">
+        <NavLink
+          to={`/user/${item.ownerId}`}
+          className="flex items-center gap-2"
+        >
           <img
             src={item.ownerAvatarURL || "/fallback_ava.webp"}
             alt="Owner Avatar"
@@ -38,7 +41,7 @@ const RecipeItem = ({ item }: RecipeItemProps) => {
           <Text as="span" className="font-semibold">
             {item.ownerName}
           </Text>
-        </div>
+        </NavLink>
 
         <div className="flex gap-1">
           <FavoriteRecipeToggle recipe={item}>
