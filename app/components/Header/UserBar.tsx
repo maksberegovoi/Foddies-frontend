@@ -63,7 +63,7 @@ export default function UserBar({ variant = "dark" }: UserBarProps) {
         <div className="flex h-full flex-col gap-4">
           <DropdownMenuItem className="p-0">
             <Link
-              to="/user/1"
+              to={`/user/${user?.id}`}
               className={cn(
                 "inline-block cursor-pointer text-[12px] leading-[1.2] font-medium uppercase md:text-sm",
                 variant === "dark" ? "text-white" : "text-dark"

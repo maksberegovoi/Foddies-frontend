@@ -26,16 +26,13 @@ function LogOutModal({
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>
       <DialogContent>
-        <DialogClose className="absolute top-5 right-5">
-          <button
-            aria-label="Close log out modal"
-            className="inline-flex size-6 items-center justify-center text-dark transition-opacity hover:opacity-70"
-            type="button"
-          >
-            <FIcon className="size-6" iconName="close-x" />
-          </button>
+        type="button"
+        <DialogClose
+          aria-label="Close log out modal"
+          className="absolute top-5 right-5 inline-flex size-6 items-center justify-center text-dark transition-opacity hover:opacity-70"
+        >
+          <FIcon className="size-6" iconName="close-x" />
         </DialogClose>
-
         <div className="flex flex-col gap-5 pt-[60px] text-center">
           <DialogTitle>
             {isMobile ? "LOG OUT" : "ARE YOU LOGGING OUT?"}
@@ -44,7 +41,6 @@ function LogOutModal({
             You can always log back in at my time.
           </DialogDescription>
         </div>
-
         <div className="flex flex-col gap-4">
           <Button
             className="h-14 rounded-[30px] bg-dark text-base leading-6 font-bold tracking-[-0.02em] text-white hover:bg-light-dark disabled:bg-dark"

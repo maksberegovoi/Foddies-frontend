@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useNavigate } from "react-router"
+import { redirect, useNavigate } from "react-router"
 import { Button } from "~/components/ui/button"
 import {
   Area,
@@ -16,26 +16,44 @@ import { usePostRecipes } from "~/api/generated/endpoints/recipes/recipes"
 import type { PostRecipesBody } from "~/api/generated/model"
 import { recipeSchema } from "./validation"
 import type { AddRecipeFormValues } from "./validation"
-import { useIsSignedIn } from "~/components/auth/sign-in-hooks"
-import { useEffect } from "react"
 import Title from "~/components/Title"
 import Text from "~/components/Text"
 import { toast } from "sonner"
 import type { AxiosError } from "axios"
 import type { ApiErrorHTTP } from "~/api/axios-instance"
 import PathInfo from "~/components/PathInfo"
+import { withErrorHandling } from "~/lib/api-error-handler"
+import { queryClient } from "~/api/query-client"
+import {
+  getGetUsersCurrentQueryKey,
+  getUsersCurrent,
+} from "~/api/generated/endpoints/user/user"
+import type { Route } from "../../../.react-router/types/app/routes/users/+types/route"
+
+export async function clientLoader({ request }: Route.ClientLoaderArgs) {
+  try {
+    await withErrorHandling(
+      queryClient.ensureQueryData({
+        queryKey: getGetUsersCurrentQueryKey(),
+        queryFn: () => getUsersCurrent(),
+      })
+    )
+  } catch {
+    const destinationUrl = new URL(request.url)
+
+    const currentUrl = new URL(window.location.href)
+    if (currentUrl.pathname === destinationUrl.pathname) {
+      throw redirect("/?modal=sign-in")
+    }
+
+    currentUrl.searchParams.set("modal", "sign-in")
+    throw redirect(currentUrl.pathname + currentUrl.search)
+  }
+}
 
 export default function AddRecipe() {
   const navigate = useNavigate()
   const { mutate: postRecipes } = usePostRecipes()
-
-  const isSignedIn = useIsSignedIn()
-
-  useEffect(() => {
-    if (!isSignedIn) {
-      navigate("/?modal=sign-in")
-    }
-  }, [isSignedIn])
 
   const methods = useForm<AddRecipeFormValues>({
     resolver: zodResolver(recipeSchema),
@@ -117,8 +135,6 @@ export default function AddRecipe() {
       }
     )
   }
-
-  if (!isSignedIn) return null
 
   return (
     <div className="mt-10 flex flex-col gap-10">
