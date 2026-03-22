@@ -123,9 +123,6 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
-  --container-mobile: 23.4375rem;
-  --container-tablet: 48rem;
-  --container-desktop: 90rem;
 }
 
 @layer base {
@@ -139,4 +136,69 @@
   html {
     @apply font-sans;
   }
+}
+
+.container {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+
+  @media (width >= 23.438rem /* 375px */) {
+    max-width: 23.438rem /* 375px */;
+  }
+  @media (width >= 48rem /* 768px */) {
+    max-width: 48rem /* 768px */;
+    padding-inline: 2rem;
+  }
+
+  @media (width >= 90rem /* 1440px */) {
+    padding-inline: 5rem;
+    max-width: 90rem /* 1440px */;
+  }
+}
+
+.notification {
+    z-index: 9999;
+    background-color: var(--light-dark);
+    color: var(--white);
+    font-weight: 600;
+    border-radius: var(--radius);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s ease-in-out;
+
+    width: calc(100vw - 32px);
+    max-width: 320px;
+    padding: 1rem;
+    font-size: 14px;
+
+    @media (min-width: 768px) {
+        max-width: 400px;
+        padding: 1.25rem;
+        font-size: 15px;
+        gap: 1.25rem;
+    }
+
+    @media (min-width: 1440px) {
+        max-width: 480px;
+        padding: 1.5rem;
+        font-size: 16px;
+        gap: 1.5rem;
+        border-width: 2px;
+    }
+}
+
+.notification-success {
+    color: #065f46;
+    border-color: #059669;
+}
+
+.notification-error {
+    color: #991b1b;
+    border-color: #dc2626;
 }

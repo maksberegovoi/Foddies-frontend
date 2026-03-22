@@ -1,6 +1,7 @@
 import { useState } from "react"
-import { useFormik } from "formik"
-
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import * as z from "zod"
 import FIcon from "~/components/FIcon"
 import { Button } from "~/components/ui/button"
 import {
@@ -10,101 +11,120 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog"
 import { Input } from "~/components/ui/input"
+import type { SignInDto } from "~/api/generated/model"
 
-type SignInValues = {
-  email: string
-  password: string
-}
+const signInSchema = z.object({
+  email: z.email("Invalid email format"),
+  password: z.string().min(2, "Password must be at least 2 characters"),
+})
 
 type SignInModalProps = {
-  errorMessage?: string | null
   isLoading?: boolean
+  isError?: boolean
+  onResetError?: () => void
   onOpenChange?: (open: boolean) => void
-  onSubmit?: (values: SignInValues) => void | Promise<void>
+  onSubmit?: (values: SignInDto) => void | Promise<void>
   onSwitchToSignUp?: () => void
   open?: boolean
 }
 
 const inputClassName =
-  "h-14 rounded-[30px] border-gray px-[18px] py-4 text-base leading-6 tracking-[-0.02em] placeholder:text-gray focus-visible:border-dark focus-visible:ring-0 md:text-base"
+  "h-14 rounded-[30px] bg-white border-gray px-[18px] py-4 text-base leading-6 tracking-[-0.02em] placeholder:text-gray focus-visible:border-dark focus-visible:ring-0 md:text-base"
 
 function SignInModal({
-  errorMessage,
   isLoading = false,
+  isError = false,
+  onResetError,
   onOpenChange,
   onSubmit,
   onSwitchToSignUp,
   open = false,
 }: SignInModalProps) {
   const [showPassword, setShowPassword] = useState(false)
-  const formik = useFormik<SignInValues>({
-    initialValues: {
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isValid },
+  } = useForm<SignInDto>({
+    resolver: zodResolver(signInSchema),
+    mode: "onChange",
+    defaultValues: {
       email: "",
       password: "",
     },
-    onSubmit: async (values) => {
-      await onSubmit?.(values)
-    },
   })
-  const { handleBlur, handleChange, handleSubmit, resetForm, values } = formik
 
-  const isFilled = values.email.trim() !== "" && values.password.trim() !== ""
   const handleOpenChange = (nextOpen: boolean) => {
     if (!nextOpen) {
-      resetForm()
+      reset()
+      onResetError?.()
       setShowPassword(false)
     }
-
     onOpenChange?.(nextOpen)
   }
 
+  const onFormSubmit = (data: SignInDto) => {
+    onSubmit?.(data)
+  }
+
+  const isButtonDisabled = isLoading || !isValid || isError
+
   return (
     <Dialog onOpenChange={handleOpenChange} open={open}>
-      <DialogContent className="gap-10">
-        <DialogClose>
-          <button
-            aria-label="Close sign in modal"
-            className="absolute top-5 right-5 inline-flex size-6 items-center justify-center text-dark transition-opacity hover:opacity-70"
-            type="button"
-          >
-            <FIcon className="size-6" iconName="close-x" />
-          </button>
+      <DialogContent>
+        <DialogClose
+          type="button"
+          aria-label="Close sign in modal"
+          className="absolute top-5 right-5 inline-flex size-6 cursor-pointer items-center justify-center text-dark transition-opacity hover:opacity-70"
+        >
+          <FIcon className="size-6" iconName="close-x" />
         </DialogClose>
 
-        <form className="flex flex-col gap-10" onSubmit={handleSubmit}>
-          <div className="flex flex-col gap-10">
+        <form
+          className="flex flex-col gap-8 md:gap-10"
+          onSubmit={handleSubmit(onFormSubmit)}
+          onChange={() => {
+            if (isError) {
+              onResetError?.()
+            }
+          }}
+        >
+          <div className="flex flex-col gap-8 md:gap-10">
             <DialogTitle>SIGN IN</DialogTitle>
 
-            <div className="flex flex-col gap-[14px]">
-              <Input
-                aria-label="Email"
-                className={inputClassName}
-                name="email"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                placeholder="Email*"
-                type="email"
-                value={values.email}
-              />
-
-              <div className="relative">
+            <div className="flex flex-col gap-3.5">
+              <div className="flex flex-col gap-1">
                 <Input
-                  aria-label="Password"
-                  className={`${inputClassName} pr-12`}
-                  name="password"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  placeholder="Password"
-                  type={showPassword ? "text" : "password"}
-                  value={values.password}
+                  {...register("email")}
+                  aria-label="Email"
+                  className={inputClassName}
+                  placeholder="Email*"
+                  type="text"
                 />
-                {values.password ? (
+                {errors.email && (
+                  <span className="px-4 text-xs text-destructive">
+                    {errors.email.message}
+                  </span>
+                )}
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <div className="relative">
+                  <Input
+                    {...register("password")}
+                    aria-label="Password"
+                    className={`${inputClassName} peer pr-12`}
+                    placeholder="Password*"
+                    type={showPassword ? "text" : "password"}
+                  />
                   <button
                     aria-label={
                       showPassword ? "Hide password" : "Show password"
                     }
-                    className="absolute top-1/2 right-4 inline-flex -translate-y-1/2 items-center justify-center text-dark transition-opacity hover:opacity-70"
-                    onClick={() => setShowPassword((current) => !current)}
+                    className="absolute top-1/2 right-4 inline-flex -translate-y-1/2 cursor-pointer items-center justify-center text-dark transition-opacity peer-placeholder-shown:hidden hover:opacity-70"
+                    onClick={() => setShowPassword((prev) => !prev)}
                     type="button"
                   >
                     <FIcon
@@ -112,7 +132,12 @@ function SignInModal({
                       iconName={showPassword ? "eye" : "eye-off"}
                     />
                   </button>
-                ) : null}
+                </div>
+                {errors.password && (
+                  <span className="px-4 text-xs text-destructive">
+                    {errors.password.message}
+                  </span>
+                )}
               </div>
             </div>
           </div>
@@ -120,17 +145,15 @@ function SignInModal({
           <div className="flex flex-col gap-5">
             <Button
               className={`h-14 rounded-[30px] text-base leading-6 font-bold tracking-[-0.02em] text-white ${
-                isFilled
-                  ? "bg-dark hover:bg-light-dark"
-                  : "bg-gray hover:bg-gray"
-              } disabled:bg-gray`}
-              disabled={isLoading || !isFilled}
+                isValid ? "bg-dark hover:bg-light-dark" : "bg-gray"
+              }`}
+              disabled={isButtonDisabled}
               type="submit"
             >
               {isLoading ? "SIGNING IN..." : "SIGN IN"}
             </Button>
 
-            <div className="flex items-center justify-center gap-2 text-center text-sm leading-[18px] font-medium tracking-[-0.02em]">
+            <div className="flex items-center justify-center text-center text-sm leading-[18px] font-medium tracking-[-0.02em] md:gap-2">
               <span className="text-gray">Don&apos;t have an account?</span>
               <button
                 className="text-dark transition-opacity hover:opacity-70"
@@ -140,12 +163,6 @@ function SignInModal({
                 Create an account
               </button>
             </div>
-
-            {errorMessage ? (
-              <p className="text-center text-sm text-destructive">
-                {errorMessage}
-              </p>
-            ) : null}
           </div>
         </form>
       </DialogContent>
