@@ -178,14 +178,10 @@ function Ingredients({ control }: IngredientsProps) {
                   </div>
 
                   <div className="min-w-0">
-                    <Text as={"span"} title={item.name} className="text-dark">
+                    <Text title={item.name} className="text-dark">
                       {item.name}
                     </Text>
-                    <Text
-                      as={"span"}
-                      className="text-gray"
-                      title={item.measure}
-                    >
+                    <Text className="text-gray" title={item.measure}>
                       {item.measure}
                     </Text>
                   </div>

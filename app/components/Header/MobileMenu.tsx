@@ -2,6 +2,8 @@ import { NavLink } from "react-router"
 import Logo from "../Logo"
 import FIcon from "../FIcon"
 import { cn } from "../../lib/utils"
+import HeroBig from "~/assets/images/hero_big.png"
+import HeroSmall from "~/assets/images/hero_small.png"
 
 type MobileMenuProps = {
   isOpen: boolean
@@ -18,7 +20,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
 
   return (
     <div className="fixed inset-0 z-50 bg-dark text-white">
-      <div className="relative flex h-full flex-col px-4 pt-4 pb-6">
+      <div className="relative flex h-full flex-col px-4 py-8">
         <div className="flex items-center justify-between">
           <Logo />
 
@@ -26,30 +28,39 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
             <FIcon iconName="close-x" className="h-6 w-6 text-white" />
           </button>
         </div>
+        <div className="flex h-full flex-col">
+          <nav className="flex flex-1 flex-col items-center justify-end gap-8">
+            {links.map(({ to, label }) => (
+              <NavLink
+                key={to}
+                to={to}
+                onClick={onClose}
+                className={({ isActive }) =>
+                  cn(
+                    "text-sm",
+                    isActive &&
+                      "rounded-full border border-gray px-[35px] py-[14px]"
+                  )
+                }
+              >
+                {label}
+              </NavLink>
+            ))}
+          </nav>
 
-        <nav className="flex flex-1 flex-col items-center justify-center gap-8">
-          {links.map(({ to, label }) => (
-            <NavLink
-              key={to}
-              to={to}
-              onClick={onClose}
-              className={({ isActive }) =>
-                cn(
-                  "text-xs",
-                  isActive && "rounded-full border border-white px-6 py-3"
-                )
-              }
-            >
-              {label}
-            </NavLink>
-          ))}
-        </nav>
-
-        <img
-          src="/images/mobile-menu-dish.png"
-          alt="Dish preview"
-          className="mx-auto w-[190px] object-contain"
-        />
+          <div className="jus flex flex-1 items-center justify-center gap-9 pt-17 pb-9">
+            <img
+              src={HeroSmall}
+              alt=""
+              className="h-[70px] w-[77px] rotate-12"
+            />
+            <img
+              src={HeroBig}
+              alt=""
+              className="h-[172px] w-[190px] -rotate-11"
+            />
+          </div>
+        </div>
       </div>
     </div>
   )

@@ -30,7 +30,7 @@ const CategoryItem = ({
       <div
         className="absolute bottom-0 left-0 size-full bg-cover bg-center opacity-80"
         style={{
-          backgroundImage: `url(/category_${category.name.toLowerCase()}.jpg)`,
+          backgroundImage: `url(/category_${category.name.toLowerCase()}.webp)`,
         }}
       />
       <div className="relative flex gap-1">

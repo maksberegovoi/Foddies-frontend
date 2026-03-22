@@ -34,7 +34,7 @@ const RecipeItem = ({ item }: RecipeItemProps) => {
           className="flex items-center gap-2"
         >
           <img
-            src={item.ownerAvatarURL || "/fallback_ava.png"}
+            src={item.ownerAvatarURL || "/fallback_ava.webp"}
             alt="Owner Avatar"
             className="size-10 rounded-full"
           />

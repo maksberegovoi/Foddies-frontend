@@ -32,7 +32,7 @@ export default function RecipeSummarySection({
       >
         <img
           className="size-8 rounded-full md:size-12.5"
-          src={recipe.ownerAvatarURL || "/fallback_ava.png"}
+          src={recipe.ownerAvatarURL || "/fallback_ava.webp"}
           alt=""
         />
         <div className="flex flex-col">

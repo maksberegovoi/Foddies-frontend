@@ -29,7 +29,7 @@ export default function UserBar({ variant = "dark" }: UserBarProps) {
         )}
       >
         <img
-          src={user?.avatarURL || "/fallback_ava.png"}
+          src={user?.avatarURL || "/fallback_ava.webp"}
           alt={user?.name}
           className="h-8 w-8 shrink-0 rounded-full object-cover md:h-12.5 md:w-12.5"
         />
