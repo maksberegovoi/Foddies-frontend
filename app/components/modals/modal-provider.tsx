@@ -17,6 +17,7 @@ import { toast } from "sonner"
 import type { SignInDto, SignUpDto } from "~/api/generated/model"
 import type { ApiErrorHTTP } from "~/api/axios-instance"
 import axios from "axios"
+import { queryClient } from "~/api/query-client"
 
 type ModalType = "log-out" | "sign-in" | "sign-up" | null
 
@@ -129,6 +130,16 @@ function ModalHost() {
     )
   }
 
+  const handleLogout = async () => {
+    try {
+      await signOutMutation.mutateAsync()
+    } finally {
+      setSignedIn(false)
+      modalStore.setModal(null)
+      queryClient.clear()
+    }
+  }
+
   return (
     <>
       <SignInModal
@@ -163,11 +174,7 @@ function ModalHost() {
 
       <LogOutModal
         isLoading={signOutMutation.isPending}
-        onConfirm={async () => {
-          await signOutMutation.mutateAsync()
-          setSignedIn(false)
-          modalStore.setModal(null)
-        }}
+        onConfirm={handleLogout}
         onOpenChange={(open) => {
           if (!open) {
             signOutMutation.reset()

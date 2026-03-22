@@ -15,6 +15,7 @@ import { queryClient } from "~/api/query-client"
 import { Toaster } from "sonner"
 import NotFoundPage from "~/routes/not-found/route"
 import Title from "~/components/Title"
+import { TopLoader } from "~/components/TopLoader"
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -26,6 +27,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
+        <TopLoader />
         {children}
         <Toaster
           position="top-right"
