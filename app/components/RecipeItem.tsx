@@ -25,7 +25,7 @@ const RecipeItem = ({ item }: RecipeItemProps) => {
         <Title as={"h4"} className={"line-clamp-1"}>
           {item.title}
         </Title>
-        <Text className="line-clamp-2 h-13.5">{item.instructions}</Text>
+        <Text className="line-clamp-2 h-10 md:h-13.5">{item.instructions}</Text>
       </div>
 
       <div className="flex justify-between">

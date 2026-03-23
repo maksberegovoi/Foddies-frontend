@@ -40,7 +40,7 @@ const Testimonials = ({ items }: TestimonialsProps) => {
           </CarouselContent>
 
           <CarouselDots
-            className="relative mt-10 w-full gap-3"
+            className="relative mt-7.5 w-full gap-3 md:mt-10"
             dotClassName="size-4 p-0"
           />
         </Carousel>
