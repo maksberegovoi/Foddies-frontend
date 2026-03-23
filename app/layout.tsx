@@ -56,6 +56,10 @@ function ModalSearchBridge() {
 
     const nextSearchParams = new URLSearchParams(searchParams)
     nextSearchParams.delete("modal")
+    const restoredScrollY = Number(
+      searchParams.get("scrollY") ?? window.scrollY
+    )
+    nextSearchParams.delete("scrollY")
 
     if (!isSignedIn) {
       openSignIn()
@@ -67,8 +71,14 @@ function ModalSearchBridge() {
         pathname: location.pathname,
         search: nextSearch ? `?${nextSearch}` : "",
       },
-      { replace: true }
+      { replace: true, preventScrollReset: true }
     )
+
+    requestAnimationFrame(() => {
+      window.scrollTo({
+        top: Number.isNaN(restoredScrollY) ? 0 : restoredScrollY,
+      })
+    })
   }, [isSignedIn, location.pathname, navigate, openSignIn, searchParams])
 
   return null

@@ -1,14 +1,16 @@
-import { useState } from "react"
 import { Button } from "~/components/ui/button"
 import FIcon from "~/components/FIcon"
 import Title from "~/components/Title"
 import Text from "~/components/Text"
 import {
+  getGetUsersCurrentQueryKey,
+  getGetUsersIdFollowingQueryKey,
   usePatchUsersAvatar,
   usePostUsersIdFollow,
   useDeleteUsersIdFollow,
   getGetUsersIdQueryKey,
   getGetUsersIdFollowersQueryKey,
+  useGetUsersCurrent,
 } from "~/api/generated/endpoints/user/user"
 import { toast } from "sonner"
 import { useModal } from "~/components/modals/modal-context"
@@ -25,14 +27,16 @@ type UserInfoProps =
 
 export default function UserInfo({ user, isOwnProfile }: UserInfoProps) {
   const { openLogOut } = useModal()
+  const { data: currentUserResponse } = useGetUsersCurrent()
 
   const updateAvatar = usePatchUsersAvatar()
   const followMutation = usePostUsersIdFollow()
   const unfollowMutation = useDeleteUsersIdFollow()
 
-  const initialIsFollowed = !isOwnProfile ? user.isFollowing : false
-  const [isFollowed, setIsFollowed] = useState(initialIsFollowed)
-  const [followersCount, setFollowersCount] = useState(user.totalFollowers)
+  const currentUserId = currentUserResponse?.data?.id
+
+  const isFollowed = !isOwnProfile ? !!user.isFollowing : false
+  const followersCount = user.totalFollowers
 
   const stats = [
     { label: "Email:", value: user.email },
@@ -46,32 +50,117 @@ export default function UserInfo({ user, isOwnProfile }: UserInfoProps) {
       : []),
   ].filter(Boolean)
 
-  const handleFollowToggle = () => {
+  const handleFollowToggle = async () => {
     const mutation = isFollowed ? unfollowMutation : followMutation
+    const isNowFollowing = !isFollowed
+    const followingQueryKey = currentUserId
+      ? getGetUsersIdFollowingQueryKey(currentUserId)
+      : null
 
-    mutation.mutate(
-      { id: user.id },
-      {
-        onSuccess: () => {
-          const nextState = !isFollowed
-          setIsFollowed(nextState)
-          setFollowersCount((prev) => (nextState ? prev + 1 : prev - 1))
+    await Promise.all([
+      queryClient.cancelQueries({ queryKey: getGetUsersIdQueryKey(user.id) }),
+      queryClient.cancelQueries({ queryKey: getGetUsersCurrentQueryKey() }),
+      followingQueryKey
+        ? queryClient.cancelQueries({ queryKey: followingQueryKey })
+        : Promise.resolve(),
+    ])
 
-          toast.success(nextState ? "Subscribed!" : "Unsubscribed!")
+    const previousUser = queryClient.getQueryData(
+      getGetUsersIdQueryKey(user.id)
+    )
+    const previousCurrentUser = queryClient.getQueryData(
+      getGetUsersCurrentQueryKey()
+    )
+    const previousFollowing = followingQueryKey
+      ? queryClient.getQueryData(followingQueryKey)
+      : undefined
 
-          queryClient.invalidateQueries({
-            queryKey: getGetUsersIdQueryKey(user.id),
-          })
-          queryClient.invalidateQueries({
-            queryKey: getGetUsersIdFollowersQueryKey(user.id),
-          })
-        },
-        onError: (err) => {
-          toast.error("Action failed")
-          console.error(err)
+    queryClient.setQueryData(getGetUsersIdQueryKey(user.id), (old: any) => {
+      if (!old?.data) return old
+      return {
+        ...old,
+        data: {
+          ...old.data,
+          isFollowing: isNowFollowing,
+          totalFollowers: Math.max(
+            0,
+            (old.data.totalFollowers || 0) + (isNowFollowing ? 1 : -1)
+          ),
         },
       }
-    )
+    })
+
+    queryClient.setQueryData(getGetUsersCurrentQueryKey(), (old: any) => {
+      if (!old?.data) return old
+      return {
+        ...old,
+        data: {
+          ...old.data,
+          totalFollowing: Math.max(
+            0,
+            (old.data.totalFollowing || 0) + (isNowFollowing ? 1 : -1)
+          ),
+        },
+      }
+    })
+
+    if (followingQueryKey) {
+      queryClient.setQueryData(followingQueryKey, (old: any) => {
+        const list = old?.data || []
+        const exists = list.some(
+          (followedUser: any) =>
+            (followedUser.id || followedUser._id) === user.id
+        )
+
+        if (isNowFollowing && !exists) {
+          return {
+            ...old,
+            data: [...list, user],
+          }
+        }
+
+        if (!isNowFollowing) {
+          return {
+            ...old,
+            data: list.filter(
+              (followedUser: any) =>
+                (followedUser.id || followedUser._id) !== user.id
+            ),
+          }
+        }
+
+        return old
+      })
+    }
+
+    try {
+      await mutation.mutateAsync({ id: user.id })
+      toast.success(isNowFollowing ? "Subscribed!" : "Unsubscribed!")
+    } catch (err) {
+      queryClient.setQueryData(getGetUsersIdQueryKey(user.id), previousUser)
+      queryClient.setQueryData(
+        getGetUsersCurrentQueryKey(),
+        previousCurrentUser
+      )
+      if (followingQueryKey) {
+        queryClient.setQueryData(followingQueryKey, previousFollowing)
+      }
+      toast.error("Action failed")
+      console.error(err)
+    } finally {
+      queryClient.invalidateQueries({
+        queryKey: getGetUsersIdQueryKey(user.id),
+      })
+      queryClient.invalidateQueries({
+        queryKey: getGetUsersIdFollowersQueryKey(user.id),
+      })
+      queryClient.invalidateQueries({
+        queryKey: getGetUsersCurrentQueryKey(),
+      })
+      if (followingQueryKey) {
+        queryClient.invalidateQueries({ queryKey: followingQueryKey })
+      }
+    }
   }
 
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -83,7 +172,12 @@ export default function UserInfo({ user, isOwnProfile }: UserInfoProps) {
       {
         onSuccess: () => {
           toast.success("Avatar updated!")
-          window.location.reload()
+          queryClient.invalidateQueries({
+            queryKey: getGetUsersCurrentQueryKey(),
+          })
+          queryClient.invalidateQueries({
+            queryKey: getGetUsersIdQueryKey(user.id),
+          })
         },
         onError: () => toast.error("Failed to update avatar"),
       }

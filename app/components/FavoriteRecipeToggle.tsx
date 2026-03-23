@@ -4,6 +4,7 @@ import {
   useGetRecipesFavorite,
   usePostRecipesIdFavorite,
 } from "~/api/generated/endpoints/recipes/recipes"
+import { getGetUsersCurrentQueryKey } from "~/api/generated/endpoints/user/user"
 import { useIsSignedIn } from "~/components/auth/sign-in-hooks"
 import { useModal } from "~/components/modals/modal-context"
 import type {
@@ -34,6 +35,19 @@ function getFavoritesSnapshot() {
 
 function restoreFavoritesSnapshot(snapshot?: GetRecipesFavorite200) {
   queryClient.setQueryData(favoriteQueryKey, snapshot)
+}
+
+function invalidateUserProfileFavoritesCaches() {
+  queryClient.invalidateQueries({
+    predicate: (query) => {
+      const key = query.queryKey
+      return (
+        Array.isArray(key) && key[0] === favoriteQueryKey[0] && key.length > 1
+      )
+    },
+  })
+
+  queryClient.invalidateQueries({ queryKey: getGetUsersCurrentQueryKey() })
 }
 
 function addRecipeToFavoritesCache(recipe: RecipeCardDto) {
@@ -133,6 +147,9 @@ export default function FavoriteRecipeToggle({
       removeFavorite(
         { id: recipe.id },
         {
+          onSuccess: () => {
+            invalidateUserProfileFavoritesCaches()
+          },
           onError: () => {
             restoreFavoritesSnapshot(previousFavorites)
             toast.error("Failed to remove from favorites.")
@@ -147,6 +164,9 @@ export default function FavoriteRecipeToggle({
     addFavorite(
       { id: recipe.id },
       {
+        onSuccess: () => {
+          invalidateUserProfileFavoritesCaches()
+        },
         onError: () => {
           restoreFavoritesSnapshot(previousFavorites)
           toast.error(
